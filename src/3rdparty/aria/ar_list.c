@@ -147,7 +147,7 @@ ar_Value *p_remove_n(ar_State *S, ar_Value *args, ar_Value *env) {
 
 ar_Value *p_length(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value* v = ar_eval(S, ar_car(args), env);
-    int size = 0;
+    double size = 0;
     while (v != NULL)
     {
         size++;
@@ -167,12 +167,11 @@ ar_Value *p_length(ar_State *S, ar_Value *args, ar_Value *env) {
 ar_Value *p_member(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *from = ar_eval(S, ar_car(args), env);
     ar_Value *to_find = ar_eval(S, ar_nth(args, 1), env);
-    ar_Value *v = from;
-    ar_Value *ret = NULL;
+    ar_Value *ret = NULL, *copy = from;
 
-    for (; v != NULL; v = ar_cdr(v)){
-        if (is_equal(ar_car(v), to_find) != 0) {
-            ret = ar_new_pair(S, v, ret);
+    for (; copy != NULL; copy = ar_cdr(copy)){
+        if (is_equal(ar_car(copy), to_find) != 0) {
+            ret = ar_new_pair(S, ar_car(copy), ret);
         }
     }
     return ret;
@@ -187,7 +186,7 @@ ar_Value *p_append(ar_State *S, ar_Value *args, ar_Value *env) {
     ret = ar_reverse(ret);
     if (ar_type(lst) == AR_TPAIR) {
         for (; to_append != NULL; to_append = ar_cdr(to_append)) {
-            ret = ar_new_pair(S, ar_car(to_append), ret);
+            ret = ar_new_pair(S, to_append, ret);
         }
     }
     else {

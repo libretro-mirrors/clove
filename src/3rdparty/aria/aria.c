@@ -16,13 +16,6 @@ struct ar_Chunk {
     struct ar_Chunk *next;
 };
 
-static void zassert(int cond) {
-    if (!(cond)) {
-        printf("Assert failed at line %d, file %s\n", __LINE__, __FILE__);
-        exit(EXIT_FAILURE);
-    }
-}
-
 static void *zrealloc(ar_State *S, void *ptr, size_t n) {
     void *p = S->alloc(S->udata, ptr, n);
     if (!p) ar_error(S, S->oom_error);
@@ -132,7 +125,7 @@ ar_Value *ar_new_number(ar_State *S, double n) {
 
 ar_Value *ar_new_break(ar_State *S, ar_Value *n) {
     ar_Value *res = new_value(S, AR_TBREAK);
-    res->u.ret.r = n;
+    res->u.br.b = n;
     return res;
 }
 
@@ -147,6 +140,13 @@ ar_Value *ar_new_udata(ar_State *S, void *ptr) {
 ar_Value *ar_new_vector(ar_State *S, vec_t *vector) {
     ar_Value *res = new_value(S, AR_TVECTOR);
     res->u.udata.ptr = vector;
+    return res;
+}
+
+
+ar_Value *ar_new_map(ar_State *S, hash_t *map) {
+    ar_Value *res = new_value(S, AR_TMAP);
+	res->u.hmap.m = map;
     return res;
 }
 
@@ -219,19 +219,20 @@ int ar_type(ar_Value *v) {
 
 const char *ar_type_str(int type) {
     switch (type) {
-    case AR_TNIL    : return "nil";
-    case AR_TPAIR   : return "pair";
-    case AR_TNUMBER : return "number";
-    case AR_TSTRING : return "string";
-    case AR_TSYMBOL : return "symbol";
-    case AR_TFUNC   : return "function";
-    case AR_TMACRO  : return "macro";
-    case AR_TPRIM   : return "primitive";
-    case AR_TCFUNC  : return "cfunction";
-    case AR_TENV    : return "env";
-    case AR_TUDATA  : return "udata";
-    case AR_TVECTOR : return "vector";
-    case AR_TBREAK : return  "break";
+    case AR_TNIL    	: return "nil";
+    case AR_TPAIR   	: return "pair";
+    case AR_TNUMBER 	: return "number";
+    case AR_TSTRING 	: return "string";
+    case AR_TSYMBOL 	: return "symbol";
+    case AR_TFUNC   	: return "function";
+    case AR_TMACRO  	: return "macro";
+    case AR_TPRIM   	: return "primitive";
+    case AR_TCFUNC  	: return "cfunction";
+    case AR_TENV    	: return "env";
+    case AR_TUDATA  	: return "udata";
+    case AR_TVECTOR 	: return "vector";
+    case AR_TMAP 	    : return "map";
+    case AR_TBREAK    	: return "break";
     }
     return "?";
 }
@@ -328,24 +329,51 @@ ar_Value *ar_to_string_value(ar_State *S, ar_Value *v, int quotestr) {
         return ar_new_string(S, "nil");
 
 	case AR_TBREAK:
-        return ar_to_string_value(S, v->u.ret.r, 1);
+        return ar_to_string_value(S, v->u.br.b, 1);
 
     case AR_TSYMBOL:
 		return ar_new_string(S, v->u.str.s);
 
+	case AR_TMAP:
+		{
+			/**
+			 * TODO optimize this.
+			 * Right now you look in every bucket != "" and output its
+			 * key and value, not optimal!
+			 * Store the actual used bucket in a container and fetch it for
+			 * printing.
+			 */
+			last = ar_append_tail(S, &res, ar_new_string(S, "("));
+			size_t i = 0;
+			for (; i < v->u.hmap.m->size; i++)
+			{
+				if (strcmp(v->u.hmap.m->table[i]->key, "") != 0) {
+					last = ar_append_tail(S, last,
+							ar_to_string_value(S, ar_new_string(S, v->u.hmap.m->table[i]->key), 1));
+					last = ar_append_tail(S, last, ar_new_string(S, " "));
+					last = ar_append_tail(S, last,
+							ar_to_string_value(S, v->u.hmap.m->table[i]->value, 1));
+					last = ar_append_tail(S, last, ar_new_string(S, " "));
+				}
+			}
+			last = ar_append_tail(S, last, ar_new_string(S, ")"));
+		}
+		return  join_list_of_strings(S, res);
 
     case AR_TVECTOR:
-        vector = ar_to_vector(S, v);
-        size_t i = 0;
-        last = ar_append_tail(S, &res, ar_new_string(S, "("));
-        while (i < vec_size(vector)) {
-            val = vec_get(vector, i);
-            if (i > 0)
-                last = ar_append_tail(S, last, ar_new_string(S, " "));
-            last = ar_append_tail(S, last, ar_to_string_value(S, ar_car(val), 1));
-            i++;
-        }
-        last = ar_append_tail(S, last, ar_new_string(S, ")"));
+		{
+			vector = ar_to_vector(S, v);
+			size_t i = 0;
+			last = ar_append_tail(S, &res, ar_new_string(S, "("));
+			while (i < vec_size(vector)) {
+				val = vec_get(vector, i);
+				if (i > 0)
+					last = ar_append_tail(S, last, ar_new_string(S, " "));
+				last = ar_append_tail(S, last, ar_to_string_value(S, ar_car(val), 1));
+				i++;
+			}
+			last = ar_append_tail(S, last, ar_new_string(S, ")"));
+		}
         return  join_list_of_strings(S, res);
 
     case AR_TPAIR:
@@ -445,10 +473,19 @@ vec_t *ar_to_vector(ar_State *S, ar_Value *v) {
 }
 
 
+hash_t *ar_to_hash_map(ar_State *S, ar_Value *v) {
+    UNUSED(S);
+    if (ar_type(v) == AR_TMAP)
+        return (hash_t*)v->u.hmap.m;
+
+    return NULL;
+}
+
+
 ar_Value *ar_to_return(ar_State *S, ar_Value *v) {
     UNUSED(S);
     if (ar_type(v) == AR_TBREAK)
-        return v->u.ret.r;
+        return v->u.br.b;
 
     return NULL;
 }
@@ -574,7 +611,7 @@ ar_Value *ar_eval_return(ar_State *S, ar_Value *v, ar_Value *env)
 {
     ar_Value* res = ar_eval(S, v, env);
     if (ar_type(res) == AR_TBREAK)
-        return res->u.ret.r;
+        return res->u.br.b;
     else
         ar_error_str(S, "Expecting return value, got %s",
                      ar_type_str(ar_type(res)));
@@ -589,6 +626,18 @@ vec_t *ar_eval_vector(ar_State *S, ar_Value *v, ar_Value *env)
         return (vec_t*)res->u.udata.ptr;
     else
         ar_error_str(S, "Expecting vector value, got %s",
+                     ar_type_str(ar_type(res)));
+    return NULL;
+}
+
+
+hash_t *ar_eval_map(ar_State *S, ar_Value *v, ar_Value *env)
+{
+    ar_Value* res = ar_eval(S, v, env);
+    if (ar_type(res) == AR_TMAP)
+        return (hash_t*)res->u.hmap.m;
+    else
+		ar_error_str(S, "Expecting map value, got %s",
                      ar_type_str(ar_type(res)));
     return NULL;
 }
@@ -655,6 +704,9 @@ static void gc_free(ar_State *S, ar_Value *v) {
     case AR_TVECTOR:
         vec_destroy(v->u.udata.ptr);
         break;
+	case AR_TMAP:
+		hash_destroy(v->u.hmap.m);
+		break;
     }
     /* Set type to nil (ignored by GC) and add to dead values pool */
     v->type = AR_TNIL;
@@ -710,14 +762,26 @@ begin:
         v = v->u.env.parent;
         goto begin;
     case AR_TVECTOR:
-        {size_t index = 0;
+        {
+			size_t index = 0;
             while (index < vec_size(v->u.udata.ptr)) {
                 ar_mark(S, vec_get(v->u.udata.ptr, index));
                 index++;
-            }}
+            }
+		}
         break;
+	case AR_TMAP:
+		{
+			size_t i = 0;
+			/*TODO optimize this to look only on the added buckets!*/
+			for (; i < v->u.hmap.m->size; i++) {
+				if (strcmp(v->u.hmap.m->table[i]->key, "") != 0)
+					ar_mark(S, (ar_Value*)v->u.hmap.m->table[i]->value);
+			}
+		}
+		break;
 	case AR_TBREAK:
-		ar_mark(S, v->u.ret.r);
+        ar_mark(S, v->u.br.b);
 		break;
     case AR_TUDATA:
         break;
@@ -882,6 +946,7 @@ static ar_Value *parse(ar_State *S, const char **str) {
 
     case '#':
         p++;
+		res = NULL;
         if (*p == '|') {
             p++;
             *str = p + strcspn(p, "|#") + 2;
@@ -1059,7 +1124,7 @@ ar_Value *ar_eval(ar_State *S, ar_Value *v, ar_Value *env) {
     ar_Value *fn, *args;
 
 	switch (ar_type(v)) {
-		case AR_TBREAK 	: return v->u.ret.r;
+        case AR_TBREAK 	: return v->u.br.b;
 		case AR_TPAIR   : break;
 		case AR_TSYMBOL : return get_bound_value(v, env);
 		default         : return v;
@@ -1089,7 +1154,7 @@ ar_Value *ar_do_list(ar_State *S, ar_Value *body, ar_Value *env) {
     while (body) {
         res = ar_eval(S, ar_car(body), env);
 		if (ar_type(res) == AR_TBREAK)
-			return res->u.ret.r;
+            return res->u.br.b;
         body = ar_cdr(body);
     }
     return res;
@@ -1111,6 +1176,12 @@ ar_Value *ar_do_file(ar_State *S, const char *filename) {
 /*===========================================================================
  * Built-in primitives and funcs
  *===========================================================================*/
+
+static ar_Value *p_require(ar_State *S, ar_Value *args, ar_Value *env) {
+	const char *filename = ar_eval_string(S, ar_car(args), env);
+	return ar_do_file(S, filename);
+}
+
 
 static ar_Value *p_do(ar_State *S, ar_Value *args, ar_Value *env) {
     return ar_do_list(S, args, env);
@@ -1307,7 +1378,7 @@ static ar_Value *p_loop(ar_State *S, ar_Value *args, ar_Value *env) {
 }
 
 
-static ar_Value *p_dotimes(ar_State *S, ar_Value *args, ar_Value *env) {
+static ar_Value *p_untill(ar_State *S, ar_Value *args, ar_Value *env) {
 	#ifdef FLOAT
 		float times, index = 0;
 	#else
@@ -1403,8 +1474,10 @@ static ar_Value *p_gte(ar_State *S, ar_Value *args, ar_Value *env) {
  * https://www.tutorialspoint.com/c_standard_library/c_function_system.htm
  */
 static ar_Value *p_system(ar_State *S, ar_Value *args, ar_Value *env) {
-    system(ar_eval_string(S, ar_car(args), env));
-    return NULL;
+    int err = system(ar_eval_string(S, ar_car(args), env));
+	if (err == -1)
+		return NULL;
+    return S->t;
 }
 
 
@@ -1431,8 +1504,9 @@ static ar_Value *p_exit(ar_State *S, ar_Value *args, ar_Value *env) {
 
 static ar_Value *p_assert(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *cond = ar_eval(S, ar_car(args), env);
+    const char* msg = ar_opt_string(S, ar_nth(args, 1), env, "unspecified reason");
     if (!cond) {
-        ar_error_str(S, "Assert failed");
+        ar_error_str(S, "Assert failed, reason: %s\n", msg);
     }
     return S->t;
 }
@@ -1536,8 +1610,13 @@ static void register_builtin(ar_State *S) {
     int i;
     /* Primitives */
     struct { const char *name; ar_Prim fn; } prims[] = {
+	{ "map",      p_map                     },
+	{ "map-get",  p_map_get                 },
+	{ "map-add",  p_map_add                 },
+	{ "map-remove",  p_map_remove           },
     { "=",        p_set                     },
     { "do",       p_do                      },
+    { "require",  p_require                 },
     { "quote",    p_quote                   },
     { "eval",     p_eval                    },
     { "nth",      p_nth                     },
@@ -1550,7 +1629,6 @@ static void register_builtin(ar_State *S) {
     { "vector-pop",    p_vector_pop         },
     { "vector-set",    p_vector_set         },
     { "vector-find",   p_vector_find        },
-    { "vector-member", p_vector_member      },
     { "append",   p_append                  },
     { "reverse",  p_reverse                 },
     { "length",   p_length                  },
@@ -1575,7 +1653,7 @@ static void register_builtin(ar_State *S) {
     { "or",       p_or                      },
     { "let",      p_let                     },
     { "loop",     p_loop                    },
-    { "dotimes",  p_dotimes                 },
+    { "untill",   p_untill                  },
     { "pcall",    p_pcall                   },
     { "<",        p_lt                      },
     { ">",        p_gt                      },
@@ -1601,15 +1679,15 @@ static void register_builtin(ar_State *S) {
     { "import",       p_import              },
     { "free-import",  p_free_import         },
     { "read-char",    p_readchar            },
-    { "directory",    p_directory           },
-    { "assert",   p_assert                  },
+    { "dirp",         p_dirp                },
+    { "assert",       p_assert              },
+    { "vector",       p_vector              },
     { NULL, NULL }
 };
     /* Functions */
     struct { const char *name; ar_CFunc fn; } funcs[] = {
     { "list",     f_list    },
     { "break",    f_break   },
-    { "vector",   f_vector  },
     { "type",     f_type    },
     { "parse",    f_parse   },
     { "print",    f_print   },
@@ -1633,8 +1711,8 @@ static void register_builtin(ar_State *S) {
     { "ord",      f_ord     },
     { "string-downcase",    f_lower   },
     { "string-upcase",      f_upper   },
-    { "read",    f_loads   },
-    { "write",    f_dumps   },
+    { "read",     f_read    },
+    { "write",    f_write   },
     { "eq",       f_eq      },
     { NULL, NULL }
 };
@@ -1793,6 +1871,7 @@ static ar_Value *f_readline(ar_State *S, ar_Value *args) {
 
 int main(int argc, char **argv) {
     ar_State *S = ar_new_state(NULL, NULL);
+
     if (!S) {
         printf("out of memory\n");
         return EXIT_FAILURE;

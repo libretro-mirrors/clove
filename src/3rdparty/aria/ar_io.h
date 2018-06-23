@@ -8,13 +8,12 @@
 
 #include "aria.h"
 
-ar_Value *f_loads(ar_State *S, ar_Value *args);
-ar_Value *f_dumps(ar_State *S, ar_Value *args);
+ar_Value *f_read(ar_State *S, ar_Value *args);
+ar_Value *f_write(ar_State *S, ar_Value *args);
 ar_Value *p_import(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_free_import(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_open(ar_State *S, ar_Value *args, ar_Value *env);
-ar_Value *p_directory(ar_State *S, ar_Value *args, ar_Value *env);
+ar_Value *p_dirp(ar_State *S, ar_Value *args, ar_Value *env);
 
 #endif
-
 

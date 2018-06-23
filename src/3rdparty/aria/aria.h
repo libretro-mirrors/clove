@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 
-#define AR_VERSION "0.2.0"
+#define AR_VERSION "0.3.0 - rc3"
 
 #define UNUSED(x) ((void) x)
 
@@ -48,6 +48,8 @@ extern "C" {
 #endif
 
 #include "utils/vector.h"
+#include "utils/hash.h"
+
 
 typedef struct ar_Value ar_Value;
 typedef struct ar_State ar_State;
@@ -62,7 +64,7 @@ typedef ar_Value* (*ar_Prim)(ar_State *S, ar_Value* args, ar_Value *env);
 struct ar_Value {
   unsigned char type, mark;
   union {
-	struct { ar_Value *r  ;                       } ret;
+    struct { ar_Value *b  ;                       } br;
     struct { ar_Value *name; int line;            } dbg;
     struct { ar_Value *pair, *left, *right;       } map;
     struct { ar_Value *car, *cdr, *dbg;           } pair;
@@ -79,6 +81,7 @@ struct ar_Value {
     struct { ar_CFunc fn;                         } cfunc;
     struct { ar_Prim fn;                          } prim;
     struct { char *s; size_t len; uint64_t hash;  } str;
+	struct { hash_t *m;                           } hmap;
   } u;
 };
 
@@ -129,8 +132,9 @@ enum {
   AR_TPRIM = 10,
   AR_TCFUNC = 11,
   AR_TENV = 12,
-  AR_TUDATA = 13,/* AR_TUDATA is not managed by Aria's GC, you must free the data yourself*/
-  AR_TBREAK = 14
+  AR_TUDATA = 13,/*AR_TUDATA is not managed by Aria's GC, you must free the data manually*/
+  AR_TBREAK = 14,
+  AR_TMAP = 15
 };
 
 #define ar_get_global(S,x)    ar_eval(S, ar_new_symbol(S, x), (S)->global)
@@ -178,6 +182,7 @@ ar_Value *ar_new_symbol(ar_State *S, const char *name);
 ar_Value *ar_new_cfunc(ar_State *S, ar_CFunc fn);
 ar_Value *ar_new_prim(ar_State *S, ar_Prim fn);
 ar_Value *ar_new_vector(ar_State *S, vec_t *vector);
+ar_Value *ar_new_map(ar_State *S, hash_t *map);
 
 ar_Value *ar_reverse(ar_Value *p);
 int ar_type(ar_Value *v);
@@ -193,6 +198,7 @@ ar_Value *ar_to_string_value(ar_State *S, ar_Value *v, int quotestr);
 const char *ar_to_stringl(ar_State *S, ar_Value *v, size_t *len);
 const char *ar_to_string(ar_State *S, ar_Value *v);
 vec_t *ar_to_vector(ar_State *S, ar_Value *v);
+hash_t *ar_to_map(ar_State *S, ar_Value *v);
 void *ar_to_udata(ar_State *S, ar_Value *v);
 
 #ifdef AR_FLOAT
@@ -234,13 +240,16 @@ double ar_eval_number(ar_State *S, ar_Value *v, ar_Value *env);
 bool ar_eval_boolean(ar_State *S, ar_Value *v, ar_Value *env);
 const char *ar_eval_string(ar_State *S, ar_Value *v, ar_Value *env);
 vec_t* ar_eval_vector(ar_State *S, ar_Value *v, ar_Value *env);
+hash_t *ar_eval_map(ar_State *S, ar_Value *v, ar_Value *env);
 void *ar_eval_udata(ar_State *S, ar_Value *v, ar_Value *env);
+
 
 #include "ar_io.h"
 #include "ar_list.h"
 #include "ar_math.h"
 #include "ar_string.h"
 #include "ar_vector.h"
+#include "ar_map.h"
 
 
 #ifdef __cplusplus

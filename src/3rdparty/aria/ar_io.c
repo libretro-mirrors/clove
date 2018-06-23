@@ -12,7 +12,7 @@
     #include <WinBase.h>
 #endif
 
-ar_Value *f_loads(ar_State *S, ar_Value *args) {
+ar_Value *f_read(ar_State *S, ar_Value *args) {
     ar_Value *res;
     int r, size;
     const char* file = ar_check_string(S, ar_car(args));
@@ -31,7 +31,7 @@ ar_Value *f_loads(ar_State *S, ar_Value *args) {
 }
 
 
-ar_Value *f_dumps(ar_State *S, ar_Value *args) {
+ar_Value *f_write(ar_State *S, ar_Value *args) {
     const char *name, *data;
     int r;
     size_t len;
@@ -98,7 +98,6 @@ ar_Value *p_free_import(ar_State *S, ar_Value *args, ar_Value *env) {
 }
 
 
-/* TODO - test on Windows */
 /*
  * Used to open a directory.
  * @Return: a list of names contained in that directory
@@ -126,10 +125,8 @@ ar_Value *p_open(ar_State *S, ar_Value *args, ar_Value *env) {
     return ret;
 }
 
-/* TODO - test on Windows */
-ar_Value *p_directory(ar_State *S, ar_Value *args, ar_Value *env) {
+ar_Value *p_dirp(ar_State *S, ar_Value *args, ar_Value *env) {
     const char* name = ar_eval_string(S, ar_car(args), env);
-    /*#ifdef ARIA_UNIX*/
     DIR* dir = opendir(name);
     if (dir != NULL)
     {
@@ -137,14 +134,6 @@ ar_Value *p_directory(ar_State *S, ar_Value *args, ar_Value *env) {
         closedir(dir);
         return ret;
     }
-/*    #elif ARIA_WINDOWS
-    DWORD dwAttrib = GetFileAttributes(szPath);
-
-    int res = (dwAttrib != INVALID_FILE_ATTRIBUTES &&
-            (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-    if (res > 0)
-        return S->t;
-    #endif
-    */
     return NULL;
 }
+

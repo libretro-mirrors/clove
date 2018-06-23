@@ -98,8 +98,8 @@ FILE(
     src/image/*.c
     src/luaapi/*.h
     src/luaapi/*.c
-	src/ariaapi/*.c
-	src/ariaapi/*.h
+    src/ariaapi/*.c
+    src/ariaapi/*.h
     src/tools/*.c
     src/tools/*.h
     src/math/*.h
@@ -110,15 +110,17 @@ FILE(
     src/net/*.h
     src/physics/*.c
     src/physics/*.h
-  	src/resources/*.png
+    src/resources/*.png
 
     #Add custom native plugins
     native/*.c*
     native/*.h
 
     #3rdparty "small" libs
-	src/3rdparty/aria/*.c
-	src/3rdparty/aria/*.h
+    src/3rdparty/aria/utils/*.c
+    src/3rdparty/aria/utils/*.h
+    src/3rdparty/aria/*.c
+    src/3rdparty/aria/*.h
     src/3rdparty/microtar/*.c
     src/3rdparty/microtar/*.h
     src/3rdparty/stb/*.c

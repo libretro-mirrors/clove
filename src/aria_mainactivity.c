@@ -5,7 +5,7 @@
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
-*/
+ */
 
 #include "aria_mainactivity.h"
 
@@ -46,7 +46,7 @@ void aria_main_activity_load(int argc, char* argv[])
 	ar_graphics_window_register(S);
 	ar_graphics_register(S);
 	ar_graphics_font_register(S);
-    ar_graphics_bitmapfont_register(S);
+	ar_graphics_bitmapfont_register(S);
 	ar_graphics_quad_register(S);
 	ar_graphics_image_register(S);
 	ar_input_register(S);
