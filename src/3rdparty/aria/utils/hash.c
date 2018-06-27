@@ -33,12 +33,10 @@ hash_t* hash_init(size_t size)
 		hash->table[i]->value = 0;
 		hash->table[i]->next = NULL;
 	}
+
 	return hash;
 }
 
-/*
- * TODO find better algorithm for hashing
- */
 size_t hash_make(hash_t* h, const char* key)
 {
 	size_t hash = 0;
@@ -161,6 +159,27 @@ void hash_add(hash_t* h, const char* key, void* value)
 	{
 		/* we have a value, we must construct a linked list to avoid collision*/
 		hash_table_t* d = h->table[index]; /*data*/
+
+        /*
+         * Push the new value to end of the linked list.
+         * We also check if the pushed key has been stored
+         * previously and if it has then we replace its value
+         * with the new one
+         */
+        while (d->next != NULL)
+        {
+            /*
+             * As soon as we found a matching key
+             * replace old value with the new one
+             */
+            if (strcmp(d->key, key) == 0)
+            {
+                d->value = value;
+                return;
+            }
+			d = d->next;
+        }
+
 		hash_table_t* n = malloc(sizeof(hash_table_t)); /*next*/
 
 		strcpy(n->key, key);
@@ -168,9 +187,6 @@ void hash_add(hash_t* h, const char* key, void* value)
 
 		n->value = value;
 		n->next = NULL;
-
-		while (d->next != NULL)
-			d = d->next;
 
 		d->next = n;
 	}
@@ -239,9 +255,9 @@ void hash_destroy(hash_t* hash)
 	for (; i < hash->size; i++)
 	{
 		hash_table_t *n = hash->table[i], *d;
-		while (n->next) 
+		while (n->next)
 		{
-			d = n; 
+			d = n;
 			n = n->next;
 			free(d);
 		}

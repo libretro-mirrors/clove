@@ -25,19 +25,19 @@
   (print "Min between 10 and 20 " (min 10 20))
   (print "Random value between 0 and 100 " (random 100))
 
-  #| 
-  Testing multi-line comments 
-  |# 
+  #|
+  Testing multi-line comments
+  |#
   (print "Correct")
 
-  ; Testin single line comment 
-  (print "Correct") ; test 
+  ; Testin single line comment
+  (print "Correct") ; test
 
   #|
   (print "Correct")
 
   (print "Calling from custom module")
-  (cond 
+  (cond
     (eq (uname) "Linux") (= lib (import "./script/my_lib.so"))
     (eq (uname) "Apple") (= lib (import "./script/my_lib.dylib"))
     (eq (uname) "Windows") (= lib (import "./script/my_lib.dll")))
@@ -80,7 +80,7 @@
   (= b (append b 4))
   (= b (append b "vlad"))
   (= b (append b "hey"))
-    
+
   (print "Done " (member b "hey") "  " (member b 4))
   (= b (remove b "vlad"))
   (= b (remove-n b "hey" 1))
@@ -90,14 +90,14 @@
      (function (x)
 
         ; GLOBAL FUNCTION!
-        (= my-class-member-1 
+        (= my-class-member-1
            (function (x)
              (print (* x (+ x 10)))
              ))
 
         ; LOCAL FUNCTION!
         (let (mother nil)
-        (= mother 
+        (= mother
            (function (duck)
              (print "Hello from local function! " duck)
              )))
@@ -112,4 +112,25 @@
   (print "From hello.lsp:")
   (require "script/hello.lsp")
 
+  (= temp (vector 5 6 7))
+  (= t2 (vector 1 2 3 temp))
+  (vector-push t2 temp)
+
+  (print t2)
+
+  (= my-structure (map
+    "frames" (list 1 2 3 4 5)
+    "image" "image.png"
+    "size" (list 32 32)
+    "color" (vector 255 100 200 255)
+   ))
+
+  (print "C like structure:" my-structure)
+
+  (= color (map-get my-structure "color"))
+  (print "color" color (type color))
+  ; Lets modify the color
+  (= color (vector 0 0 0 0))
+  (map-add my-structure "color" color)
+  (print "New color" (map-get my-structure "color"))
   )

@@ -109,6 +109,63 @@ ar_Value *p_sin(ar_State *S, ar_Value *args, ar_Value *env) {
 }
 
 
+ar_Value *p_atan(ar_State *S, ar_Value *args, ar_Value *env) {
+	#ifdef FLOAT
+	float a;
+	float res;
+	#else
+	double a;
+	double res;
+	#endif
+
+    a = ar_eval_number(S, ar_car(args), env);
+
+	#ifdef FLOAT
+	res = atanf(a);
+	#else
+	res = atan(a);
+	#endif
+
+    return ar_new_number(S, res);
+}
+
+
+ar_Value *p_atan2(ar_State *S, ar_Value *args, ar_Value *env) {
+	#ifdef FLOAT
+	float a, b;
+	float res;
+	#else
+	double a, b;
+	double res;
+	#endif
+
+    a = ar_eval_number(S, ar_car(args), env);
+    b = ar_eval_number(S, ar_nth(args, 1), env);
+
+	#ifdef FLOAT
+	res = atan2f(a, b);
+	#else
+	res = atan2(a, b);
+	#endif
+
+    return ar_new_number(S, res);
+}
+
+
+ar_Value *p_clamp(ar_State *S, ar_Value *args, ar_Value *env) {
+    double a, min, max, res;
+
+    a = ar_eval_number(S, ar_car(args), env);
+    min = ar_eval_number(S, ar_nth(args, 1), env);
+    max = ar_eval_number(S, ar_nth(args, 2), env);
+    res = a;
+
+    if (res <= min) res = min;
+    else if (res >= max) res = max;
+    return ar_new_number(S, res);
+}
+
+
 ar_Value *p_pi(ar_State *S, ar_Value *args, ar_Value *env)  {
 	UNUSED(args);
 	UNUSED(env);

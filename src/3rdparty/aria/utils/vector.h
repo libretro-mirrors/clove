@@ -70,7 +70,7 @@ static __inline void* vec_pop(vec_t* vec)
 
 static __inline int vec_del(vec_t* vec, size_t index, size_t type_size)
 {
-	if (index > vec->size)
+	if (index > vec->size - 1)
 		return 1;
 
     if (index == vec->size) {

@@ -52,11 +52,8 @@ ar_Value *p_vector_push(ar_State *S, ar_Value *args, ar_Value *env) {
     }
 
     /*
-     * We have two cases here:
-     * 1) When we push a non-vector type object we just use ar_cdr
+     * When we push a non-vector type object we just use ar_cdr
      * to get the next element.
-     * 2) When we push another vector inside this vector we have to
-     * iterate through it and append each element.
      */
     if (ar_type(to_push) != AR_TVECTOR) {
         ar_Value *entry = NULL;
@@ -67,12 +64,7 @@ ar_Value *p_vector_push(ar_State *S, ar_Value *args, ar_Value *env) {
         entry = ar_reverse(entry);
         vec_append(ar_to_vector(S, vector),  (ar_Value*) entry);
     } else {
-        vec_t *append = ar_to_vector(S, to_push);
-        size_t index = 0;
-        while (index < vec_size(append)) {
-            vec_append(ar_to_vector(S, vector), vec_get(append, index));
-            index++;
-        }
+        vec_append(ar_to_vector(S, vector), to_push);
     }
     return NULL;
 }
@@ -89,7 +81,7 @@ ar_Value *p_vector_set(ar_State *S, ar_Value *args, ar_Value *env) {
     index = ar_eval_number(S, ar_nth(args, 1), env);
     ar_Value *to_set = ar_eval(S, ar_nth(args, 2), env);
 
-    if (vec_set(vector, index, to_set) != 0 || index < 0)
+    if (vec_set(vector, index, to_set) != 0)
 		ar_error_str(S, "Index out of bounds exception");
 	return to_set;
 }
@@ -111,7 +103,7 @@ ar_Value *p_vector_get(ar_State *S, ar_Value *args, ar_Value *env) {
     vec_t *vector = ar_eval_vector(S, ar_car(args), env);
     index = ar_eval_number(S, ar_nth(args, 1), env);
     ar_Value *ret = vec_get(vector, index);
-	if (ret == NULL || index < 0)
+	if (ret == NULL)
 		ar_error_str(S, "Index out of bounds exception");
 	return ret;
 }
@@ -141,5 +133,4 @@ ar_Value *p_vector_find(ar_State *S, ar_Value *args, ar_Value *env) {
     }
     return NULL;
 }
-
 
