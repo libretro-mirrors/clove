@@ -8,8 +8,10 @@
 */
 
 #include "graphics_geometry.h"
-#include "../graphics/geometry.h"
 
+
+#include "../graphics/geometry.h"
+#include "../tools/utils.h"
 
 static struct
 {
@@ -88,7 +90,7 @@ ar_Value* ar_geometry_vertex(ar_State* S, ar_Value* args, ar_Value* env)
 	}
 	if (moduleData.vertices == 0)
 	{
-		printf("Error: Could not allocate memory for ar_geometry_vertex \n");
+		clove_error("Error: Could not allocate memory for ar_geometry_vertex \n");
 		return NULL;
 	}
 

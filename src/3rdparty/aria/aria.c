@@ -172,26 +172,17 @@ ar_Value *ar_new_string(ar_State *S, const char *str) {
 
 ar_Value *ar_new_symbol(ar_State *S, const char *name) {
     ar_Value *v;
-    size_t i = 0;
-    uint64_t x = 0xcbf29ce484222325ull;
 
     v = ar_new_string(S, name);
+
     /* Build hash of string*/
-    /*
-    unsigned hash = 5381;
-    const char *p = name;
-    while (*p) hash = ((hash << 5) + hash) ^ *p++;
-    */
+    size_t hash = 0;
+    size_t i = 0;
 
-    while (i < strlen(name)) {
-        x ^= name[i];
-        x *= 0x100000001b3ull;
-        x ^= x >> 32;
+    while (i = *name++) hash = i + (hash << 8) + (hash << 16);
 
-        i++;
-    }
     v->type = AR_TSYMBOL;
-    v->u.str.hash = x;
+    v->u.str.hash = hash;
     return v;
 }
 

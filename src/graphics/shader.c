@@ -47,7 +47,7 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
         int bufferSize;
         glGetShaderInfoLog(shader, info,&bufferSize,buffer);
 
-        printf("%s %s \n","vertex shader compile error " , buffer);
+        clove_error("%s %s \n","vertex shader compile error " , buffer);
         free (buffer);
 
     }
@@ -62,7 +62,7 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
         int bufferSize;
         glGetShaderInfoLog(shader, info,&bufferSize,buffer);
 
-        printf("%s %s \n","fragment shader compile error " , buffer);
+        clove_error("%s %s \n","fragment shader compile error " , buffer);
 
         free (buffer);
     }
@@ -285,10 +285,10 @@ graphics_ShaderCompileStatus graphics_Shader_new(graphics_Shader *shader, char c
     int linkState;
     glGetProgramiv(shader->program, GL_LINK_STATUS, &linkState);
     if (linkState != GL_TRUE) {
-        printf("ERROR OpenGL : unable to compile shader\n");
+        clove_error("ERROR OpenGL : unable to compile shader\n");
         char shader_link_error[4096];
         glGetShaderInfoLog(shader->program, sizeof(shader_link_error), NULL, shader_link_error);
-        printf("%s", shader_link_error);
+        clove_error("%s", shader_link_error);
         return graphics_ShaderCompileStatus_linkError;
     }
 

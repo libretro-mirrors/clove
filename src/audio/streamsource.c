@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -40,9 +40,6 @@ int audio_loadStream(audio_StreamSource *source, char const * filename) {
     source->decoderData = malloc(sizeof(audio_vorbis_DecoderData));
 
     //NOTE: CLove only supports vorbis files when it comes to streaming!
-    //if (strncmp(get_filename_ext(filename), "wav", 3) == 0)
-    //err = -1;
-    //else
     err = audio_vorbis_loadStream(source->decoderData, filename);
     if (err == 0)
         err = 1;
@@ -77,7 +74,7 @@ void audio_updateStreams() {
         alGetSourcei(src, AL_BUFFERS_PROCESSED, &count);
         alGetSourcei(src, AL_BUFFERS_QUEUED, &queued);
         alGetSourcei(src, AL_SOURCE_STATE, &state);
-    
+
 
         int loaded = audio_vorbis_preloadStreamSamples(source->decoderData, 8000);
         if (count > 0 && source->state == audio_SourceState_playing) {

@@ -16,6 +16,7 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "../tools/utils.h"
 #include "../tools/utf8.h"
 #include "../math/minmax.h"
 
@@ -43,7 +44,7 @@ static struct {
 void graphics_font_init() {
     int error = FT_Init_FreeType(&moduleData.ft);
     if (error)
-        printf("Error, could not initialize freetype! \n");
+        clove_error("Error, could not initialize freetype! \n");
     moduleData.batchcount = 0;
     moduleData.batches = NULL;
     moduleData.batchsize = 0;
@@ -174,9 +175,9 @@ int graphics_Font_new(graphics_Font *dst, char const* filename, int ptsize) {
     }
     if (error != 0) {
         if ( error == FT_Err_Unknown_File_Format )
-            printf("%s \n","Error, the font file could be opened and read");
+            clove_error("%s \n","Error, the font file could be opened and read");
         else
-            printf("%s \n", "Error, the font file could not be opened or read");
+            clove_error("%s \n", "Error, the font file could not be opened or read");
     }
 
     FT_Set_Pixel_Sizes(dst->face, 0, ptsize);

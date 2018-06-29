@@ -31,7 +31,7 @@ void graphics_BitmapFont_new(graphics_BitmapFont* dst, char const* filename,
 
     int err = image_ImageData_new_with_filename(dst->data, filename);
     if (err == 0)
-        printf("%s \n", dst->data->error_msg);
+        clove_error("%s \n", dst->data->error_msg);
 
     graphics_Image_new_with_ImageData(dst->image, dst->data);
 

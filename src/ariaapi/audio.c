@@ -13,6 +13,8 @@
 #include "../audio/staticsource.h"
 #include "../audio/streamsource.h"
 
+#include "../tools/utils.h"
+
 static struct
 {
 	audio_Type audio_type;
@@ -47,12 +49,12 @@ ar_Value* ar_audio_newSource(ar_State* S, ar_Value* args, ar_Value* env)
 
 	if (err == -1)
 	{
-		printf("%s%s%s\n", "Could not load sound file: ", filename, "reason: unknow file type");
+		clove_error("%s%s%s\n", "Could not load sound file: ", filename, "reason: unknow file type");
 		return NULL;
 	}
 	else if (err == 0)
 	{
-		printf("%s%s%s\n", "Could not load sound file: ", filename, "reason: file does not exist");
+		clove_error("%s%s%s\n", "Could not load sound file: ", filename, "reason: file does not exist");
 		return NULL;
 	}
 

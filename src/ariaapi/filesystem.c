@@ -10,6 +10,7 @@
 #include <stdio.h>
 
 #include "../filesystem/filesystem.h"
+#include "../tools/utils.h"
 
 #include "filesystem.h"
 
@@ -21,7 +22,7 @@ ar_Value* ar_filesystem_read(ar_State* S, ar_Value* args, ar_Value* env)
 	int len = filesystem_read(filename, &data);
 	if (len < 0)
 	{
-		printf("Could not read file: %s", filename);
+		clove_error("Could not read file: %s", filename);
 		return NULL;
 	}
 	return ar_new_pair(S, ar_new_string(S, data), ar_new_number(S, len));

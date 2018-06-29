@@ -6,10 +6,14 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#include <stdlib.h>
+
 #include "vorbis_decoder.h"
 
+#include "../tools/utils.h"
 #include "../3rdparty/stb/stb_vorbis.h"
-#include <stdlib.h>
+
 
 int audio_vorbis_load(ALuint buffer, char const *filename) {
   short *data;
@@ -18,7 +22,7 @@ int audio_vorbis_load(ALuint buffer, char const *filename) {
   int len = stb_vorbis_decode_filename(filename, &channels, &samplingrate, &data);
 
   if(len == -1) {
-      printf("%s %s \n", "Error in loading ", filename);
+      clove_error("%s %s \n", "Error in loading ", filename);
       return 0;
     }
 
@@ -92,7 +96,7 @@ int audio_vorbis_uploadSreamSamples(audio_vorbis_DecoderData *data, ALuint buffe
   if(data->preloadedSamples < data->readBufferSize / 2) {
       audio_vorbis_preloadStreamSamples(data, data->readBufferSize / 2);
     }
-    
+
 
   //printf("uploaded %d samples to buffer %d\n", data->preloadedSamples, buffer);
   alBufferData(

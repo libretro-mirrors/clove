@@ -1,16 +1,19 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "wav_decoder.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h> // for memcmp
 #include <stdint.h> // for int16_t and int32_t
+
+#include "../tools/utils.h"
 
 struct wavfile
 {
@@ -33,7 +36,7 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 
 	if(file == NULL)
 	{
-		fprintf(stderr,"Can't read input file %s\n", filename);
+		clove_error(stderr,"Can't read input file %s\n", filename);
 		return 0;
 	}
 
@@ -46,7 +49,7 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 	struct wavfile header;
 
 	if ( fread(&header,sizeof(header),1,file) < 1 ) {
-		fprintf(stderr,"Can't read input file header %s\n", filename);
+		clove_error(stderr,"Can't read input file header %s\n", filename);
 		return 0;
 	}
 

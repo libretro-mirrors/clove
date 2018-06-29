@@ -24,7 +24,7 @@ int image_ImageData_new_with_filename(image_ImageData *dst, char const* filename
 
   if(!dst->surface){  //image could not be loaded
       dst->error_msg = util_concatenate("Error: Could not open image: ", filename);
-      printf("%s \n", dst->error_msg);
+      clove_error("%s \n", dst->error_msg);
  	  return 0;
   }
   dst->pixels = (pixel*) dst->surface;
@@ -73,12 +73,12 @@ int image_ImageData_save(image_ImageData *dst, const char* format, const char* f
 	else if (strncmp(format, "hdr", 3) == 0)
      	succeded = stbi_write_hdr(filename, dst->w, dst->h, dst->c, (const float*)dst->surface);
 	else
-		printf("%s %s %s \n", "Error, format:", format,  " is not avalabile.Only png,bmp,tga and hdr image formats are possible");
+		clove_error("%s %s %s \n", "Error, format:", format,  " is not avalabile.Only png,bmp,tga and hdr image formats are possible");
 	if(succeded != 0)
 		return 1;
 	else {
         dst->error_msg = util_concatenate("Error: failed to save imageData: ", filename);
-        printf("%s \n", dst->error_msg );
+        clove_error("%s \n", dst->error_msg );
 		return 0;
 	}
 }

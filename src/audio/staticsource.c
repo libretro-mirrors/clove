@@ -7,9 +7,12 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "staticsource.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "../tools/utils.h"
 
 // loaders
 #include "wav_decoder.h"
@@ -34,7 +37,7 @@ int audio_loadStatic(audio_StaticSource *source, char const * filename) {
 
 	if (err != AL_NO_ERROR)
 	{
-		printf("Error: Could not generate openAL buffer \n");
+		clove_error("Error: Could not generate openAL buffer \n");
 		return 0;
 	}
 

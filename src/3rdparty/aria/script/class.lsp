@@ -24,4 +24,5 @@
     ))
 
   (foo my-structure)
+
   )

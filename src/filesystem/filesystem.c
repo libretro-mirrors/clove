@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -47,7 +47,7 @@ void filesystem_init(char* argv0, int stats) {
 
 	#ifdef USE_PHYSFS
 		if (!PHYSFS_init(argv0))
-			CLOVE_ERROR(PHYSFS_getLastError());
+			clove_error(PHYSFS_getLastError());
 	#endif
 
 }
@@ -119,12 +119,12 @@ int filesystem_write(const char* name, const char* data)
 		PHYSFS_File* file;
 		file = PHYSFS_openWrite(name);
 		if(! file)
-			CLOVE_ERROR(PHYSFS_getLastError());
+			clove_error(PHYSFS_getLastError());
 
 
 		int write_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
 		if (write_size == -1)
-			CLOVE_ERROR(PHYSFS_getLastError());
+			clove_error(PHYSFS_getLastError());
 
 		PHYSFS_close(file);
 
@@ -133,7 +133,7 @@ int filesystem_write(const char* name, const char* data)
 	#else
 		FILE* file = fopen(name, "w");
 		if(!file){
-			printf("%s No file named %s",name,"%s creating one");
+			clove_error("%s No file named %s",name,"%s creating one");
 			return -1;
 		}
 
@@ -155,11 +155,11 @@ int filesystem_append(const char* name, const char* data) {
 		PHYSFS_File* file;
 		file = PHYSFS_openAppend(name);
 		if(! file)
-			CLOVE_ERROR(PHYSFS_getLastError());
+			clove_error(PHYSFS_getLastError());
 
 		int append_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
 		if (append_size == -1)
-			CLOVE_ERROR(PHYSFS_getLastError());
+			clove_error(PHYSFS_getLastError());
 
 		PHYSFS_close(file);
 
@@ -189,7 +189,7 @@ const char* filesystem_getCurrentDirectory() {
 	if (dir != NULL)
 		return dir;
 #endif
-	printf("Error, Could not get the current directory \n");
+	clove_error("Error, Could not get the current directory \n");
 	return NULL;
 }
 
@@ -254,7 +254,7 @@ bool filesystem_mkDir(const char* path)
 
 	#else
 
-		CLOVE_ERROR("mkDir feature is supported by enabling physfs.");
+		clove_error("mkDir feature is supported by enabling physfs.");
 		return false;
 	#endif
 }
@@ -265,7 +265,7 @@ bool filesystem_isDir(const char* dir)
 		return PHYSFS_isDirectory(dir) != 0;
 	#else
 
-		CLOVE_ERROR("isDir feature is supported by enabling physfs.");
+		clove_error("isDir feature is supported by enabling physfs.");
 		return false;
 	#endif
 }
@@ -275,13 +275,13 @@ void filesystem_setSource(const char* source, const char* dir)
 	#ifdef USE_PHYSFS
 		if (! PHYSFS_mount(source, dir, 1))
 		{
-			CLOVE_ERROR("couldn't mount file:");
-			CLOVE_ERROR(source);
+			clove_error("couldn't mount file:");
+			clove_error(source);
 
 		}
 		moduleData.source = source;
 	#else
-		CLOVE_ERROR("setSource works only with physfs!");
+		clove_error("setSource works only with physfs!");
 	#endif
 }
 
@@ -300,27 +300,27 @@ bool filesystem_setIdentity(const char* name)
 
 	if (! PHYSFS_setWriteDir(save_dir))
 	{
-		CLOVE_ERROR(PHYSFS_getLastError());
+		clove_error(PHYSFS_getLastError());
 		return false;
 	}
 
 	if (! filesystem_mkDir(name))
 	{
 		PHYSFS_setWriteDir(NULL);
-		CLOVE_ERROR(PHYSFS_getLastError());
+		clove_error(PHYSFS_getLastError());
 		return false;
 	}
 
 	if (! PHYSFS_setWriteDir(name))
 	{
-		CLOVE_ERROR(PHYSFS_getLastError());
+		clove_error(PHYSFS_getLastError());
 		return false;
 	}
 
 	if (! PHYSFS_mount(name, NULL, 0))
 	{
 		PHYSFS_setWriteDir(NULL);
-		CLOVE_ERROR(PHYSFS_getLastError());
+		clove_error(PHYSFS_getLastError());
 		return false;
 	}
 
@@ -336,7 +336,7 @@ bool filesystem_mount(const char* path, const char* mountPoint, int appendToPath
 	#ifdef USE_PHYSFS
 		return PHYSFS_mount(path, mountPoint, appendToPath) != 0;
 	#else
-		CLOVE_ERROR("mouting feature is supported by enabling physfs.");
+		clove_error("mouting feature is supported by enabling physfs.");
 		return false;
 	#endif
 }
@@ -347,15 +347,15 @@ bool filesystem_unmount(const char* path)
 		const char* getMountPoint = PHYSFS_getMountPoint(path);
 		if (!getMountPoint)
 		{
-			CLOVE_ERROR("no mouting point for:");
-			CLOVE_ERROR(path);
+			clove_error("no mouting point for:");
+			clove_error(path);
 
 			return false;
 		}
 		return PHYSFS_removeFromSearchPath(path) != 0;
 	#else
 
-		CLOVE_ERROR("unmouting feature is supported by enabling physfs.");
+		clove_error("unmouting feature is supported by enabling physfs.");
 		return false;
 	#endif
 }
@@ -365,7 +365,7 @@ char** filesystem_enumerate(const char* path)
 	#ifdef USE_PHYSFS
 		return PHYSFS_enumerateFiles(path);
 	#else
-		CLOVE_ERROR("enumerate feature is supported by enabling physfs.");
+		clove_error("enumerate feature is supported by enabling physfs.");
 		return NULL;
 	#endif
 }
@@ -375,7 +375,7 @@ const char* filesystem_getUsrDir()
 	#ifdef USE_PHYSFS
 		return PHYSFS_getUserDir();
 	#else
-		CLOVE_ERROR("getUsrDir feature is supported by enabling physfs.");
+		clove_error("getUsrDir feature is supported by enabling physfs.");
 		return NULL;
 	#endif
 }

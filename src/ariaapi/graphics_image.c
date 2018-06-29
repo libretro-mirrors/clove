@@ -12,6 +12,7 @@
 
 #include "../graphics/image.h"
 #include "../image/imagedata.h"
+#include "../tools/utils.h"
 
 ar_Value* ar_graphics_newImage(ar_State* S, ar_Value* args, ar_Value* env)
 {
@@ -24,7 +25,7 @@ ar_Value* ar_graphics_newImage(ar_State* S, ar_Value* args, ar_Value* env)
 	int err = image_ImageData_new_with_filename(&image_data, filename);
 	if (err == 0)
 	{
-		ar_error_str(S, "Could not find image %s\n", filename);
+		clove_error("Could not find image %s\n", filename);
 		return NULL;
 	}
 	graphics_Image_new_with_ImageData(img, &image_data);

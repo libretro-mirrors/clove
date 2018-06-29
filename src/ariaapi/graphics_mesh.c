@@ -13,6 +13,7 @@
 #include <stdbool.h>
 
 #include "../graphics/mesh.h"
+#include "../tools/utils.h"
 
 #include "graphics_image.h"
 
@@ -56,7 +57,7 @@ static int readVertices(ar_State* S, ar_Value* args, ar_Value* env, int index)
 		pair = ar_eval(S, ar_nth(args, index), env);
 	int count = ar_length(pair) / 8;
 	if (count % 8 != 0)
-		printf("Your number of vertices is not right in your mesh! %d \n", count);
+		clove_error("Your number of vertices is not right in your mesh! %d \n", count);
 	feedVertices(count * sizeof(graphics_Vertex));
 
 	int c = 0;
@@ -129,7 +130,7 @@ ar_Value* ar_graphics_newMesh(ar_State* S, ar_Value* args, ar_Value* env)
 		mode = graphics_MeshDrawMode_points;
 	else
 	{
-		printf("Can't handle mesh mode: %s", str_mode);
+		clove_error("Can't handle mesh mode: %s", str_mode);
 		return NULL;
 	}
     graphics_Mesh3d* mesh = malloc(sizeof(graphics_Mesh3d));

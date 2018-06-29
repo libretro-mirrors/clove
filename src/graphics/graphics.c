@@ -79,7 +79,7 @@ static void graphics_init_window(int width, int height)
     GLenum res = glewInit();
 
     if(res != GLEW_OK)
-        printf("Error: Could not init glew!");
+        clove_error("Error: Could not init glew!");
 
     glViewport(0, 0, width, height);
 
@@ -112,7 +112,7 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
     moduleData.hasWindow = show;
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        printf("Error: Could not init SDL video \n");
+        clove_error("Error: Could not init SDL video \n");
 
     moduleData.isCreated = false;
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, 0);
@@ -142,11 +142,11 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
 		moduleData.window = SDL_CreateWindow(moduleData.title, moduleData.x, moduleData.y, width, height, moduleData.w_flags);
 
 		if(!moduleData.window)
-			printf("Error: Could not create window :O");
+			clove_error("Error: Could not create window :O");
 
 		moduleData.context = SDL_GL_CreateContext(moduleData.window);
 		if(!moduleData.context)
-			printf("Error: Could not create window context!");
+			clove_error("Error: Could not create window context!");
 
 		//moduleData.surface = SDL_GetWindowSurface(moduleData.window);
 		SDL_GL_SetSwapInterval(1); //limit FPS to 60, this may not work on all drivers
@@ -229,7 +229,7 @@ void graphics_drawArray(graphics_Quad const* quad, mat4x4 const* tr2d, GLuint ib
 int* graphics_getDesktopDimension() {
     SDL_DisplayMode dm;
     if (SDL_GetDesktopDisplayMode(0, &dm) != 0) {
-        printf("Error, love.window.getDesktopDimension(): %s", SDL_GetError());
+        clove_error("Error, love.window.getDesktopDimension(): %s", SDL_GetError());
     }
     static int ret[2] = {0};
     ret[0] = dm.w;
@@ -349,12 +349,12 @@ int graphics_setMode(int width, int height,
     {
         moduleData.window = SDL_CreateWindow(moduleData.title, moduleData.x, moduleData.y, width, height, moduleData.w_flags);
         if (!moduleData.window)
-            printf("Error: Could not create window :O");
+            clove_error("Error: Could not create window :O");
 
         moduleData.context = SDL_GL_CreateContext(moduleData.window);
 
         if (!moduleData.context)
-            printf("Error: Could not create window context!");
+            clove_error("Error: Could not create window context!");
 
         if (vsync)
             SDL_GL_SetSwapInterval(1);
@@ -373,8 +373,6 @@ int graphics_setMode(int width, int height,
 
     if (fullscreen)
         SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN);
-
-	printf("%d%d\n", x, y);
 
     SDL_SetWindowMinimumSize(moduleData.window, min_size_x, min_size_y);
     SDL_SetWindowMaximumSize(moduleData.window, max_size_x, max_size_y);

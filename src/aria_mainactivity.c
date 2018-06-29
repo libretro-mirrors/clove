@@ -30,44 +30,44 @@
 
 void aria_main_activity_load(int argc, char* argv[])
 {
-	keyboard_init();
-	joystick_init();
-	timer_init();
-	filesystem_init(argv[0], 0);
-	audio_init(0);
-	filesystem_setIdentity(".");
+  keyboard_init();
+  joystick_init();
+  timer_init();
+  filesystem_init(argv[0], 0);
+  audio_init(0);
+  filesystem_setIdentity(".");
 
-	graphics_init(800, 600, false, true, true);
+  graphics_init(800, 600, false, true, true);
 
-	ar_State* S = ar_new_state(NULL, NULL);
-	if (!S)
-		printf("out of memory\n");
+  ar_State* S = ar_new_state(NULL, NULL);
+  if (!S)
+    clove_error("out of memory\n");
 
-	ar_graphics_window_register(S);
-	ar_graphics_register(S);
-	ar_graphics_font_register(S);
-	ar_graphics_bitmapfont_register(S);
-	ar_graphics_quad_register(S);
-	ar_graphics_image_register(S);
-	ar_input_register(S);
-	ar_time_register(S);
-	ar_audio_register(S);
-	ar_math_register(S);
-	ar_filesystem_register(S);
-	ar_system_register(S);
-	ar_geometry_register(S);
-	ar_graphics_mesh_register(S);
-	ar_graphics_SpriteBatch_register(S);
+  ar_graphics_window_register(S);
+  ar_graphics_register(S);
+  ar_graphics_font_register(S);
+  ar_graphics_bitmapfont_register(S);
+  ar_graphics_quad_register(S);
+  ar_graphics_image_register(S);
+  ar_input_register(S);
+  ar_time_register(S);
+  ar_audio_register(S);
+  ar_math_register(S);
+  ar_filesystem_register(S);
+  ar_system_register(S);
+  ar_geometry_register(S);
+  ar_graphics_mesh_register(S);
+  ar_graphics_SpriteBatch_register(S);
 
-	/* Load and do file from argv[1] */
-	ar_do_file(S, argv[1]);
+  /* Load and do file from argv[1] */
+  ar_do_file(S, argv[1]);
 
-	joystick_close();
-	graphics_destroyWindow();
-	filesystem_free();
-	audio_close();
-	graphics_geometry_free();
+  joystick_close();
+  graphics_destroyWindow();
+  filesystem_free();
+  audio_close();
+  graphics_geometry_free();
 
-	ar_close_state(S);
+  ar_close_state(S);
 }
 

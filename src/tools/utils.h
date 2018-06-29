@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -15,8 +15,10 @@
 
 #define SAFE_FREE(o) {  if (o) { free(o); o = NULL; } }
 
-#define CLOVE_ERROR(x) {  printf("CLove Error: %s \n ", x);  }
 #define CLOVE_DEBUG(x) { printf("CLove Debug: %s %s %s %s %s \n", x , " at line " __LINE__, " in file  ", __FILE__ ); }
+
+void clove_error(const char* format, ...);
+
 
 #ifndef USE_NATIVE
     #define USE_NATIVE 0x01

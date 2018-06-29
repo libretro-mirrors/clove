@@ -30,7 +30,7 @@ ar_Value* ar_graphics_swap(ar_State* S, ar_Value* args, ar_Value* env)
 ar_Value* ar_graphics_push(ar_State* S, ar_Value* args, ar_Value* env)
 {
 	if (matrixstack_push())
-		printf("Matrix stack overflow\n");
+		clove_error("Matrix stack overflow\n");
 	return NULL;
 }
 
@@ -38,7 +38,7 @@ ar_Value* ar_graphics_push(ar_State* S, ar_Value* args, ar_Value* env)
 ar_Value* ar_graphics_pop(ar_State* S, ar_Value* args, ar_Value* env)
 {
 	if (matrixstack_pop())
-		printf("Matrix stack underflow\n");
+		clove_error("Matrix stack underflow\n");
 	return NULL;
 }
 

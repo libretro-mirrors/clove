@@ -10,7 +10,6 @@
 
 #include "../tools/utils.h"
 
-//TODO indices based on array size. eg: uint8,uint16 etc
 
 void graphics_Mesh_new(graphics_Mesh3d* mesh, int vertexCount, graphics_Vertex* vertices, int indexCount, unsigned int* indices, graphics_MeshDrawMode3d drawMode) {
 

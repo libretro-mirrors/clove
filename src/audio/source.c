@@ -6,9 +6,13 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
-#include "source.h"
 
 #include <stdio.h>
+
+#include "../tools/utils.h"
+
+#include "source.h"
+
 
 void audio_SourceCommon_init(audio_SourceCommon *source) {
 
@@ -18,7 +22,7 @@ void audio_SourceCommon_init(audio_SourceCommon *source) {
 	err = alGetError();
 
 	if (err != AL_NO_ERROR)
-		printf("Error: Could not generate openAL source \n");
+		clove_error("Error: Could not generate openAL source \n");
 
 	source->state = audio_SourceState_stopped;
 
@@ -26,31 +30,31 @@ void audio_SourceCommon_init(audio_SourceCommon *source) {
 	err = alGetError();
 
 	if (err != AL_NO_ERROR)
-		printf("Error: Could not set openAL pitch \n");
+		clove_error("Error: Could not set openAL pitch \n");
 
 	alSourcef(source->source, AL_GAIN, 1);
 	err = alGetError();
 
 	if (err != AL_NO_ERROR)
-		printf("Error: Could not set openAL gain \n");
+		clove_error("Error: Could not set openAL gain \n");
 
 	alSource3f(source->source, AL_POSITION, 0.0f, 0.0f, 0.0f);
 	err = alGetError();
 
 	if (err != AL_NO_ERROR)
-		printf("Error: Could not set openAL position \n");
+		clove_error("Error: Could not set openAL position \n");
 
 	alSource3f(source->source, AL_VELOCITY, 0.0f, 0.0f, 0.0f);
 	err = alGetError();
 
 	if (err != AL_NO_ERROR)
-		printf("Error: Could not set openAL velocity \n");
+		clove_error("Error: Could not set openAL velocity \n");
 
 	alSourcei(source->source, AL_LOOPING, AL_FALSE);
 	err = alGetError();
 
 	if (err != AL_NO_ERROR)
-		printf("Error: Could not set openAL looping \n");
+		clove_error("Error: Could not set openAL looping \n");
 
 }
 
