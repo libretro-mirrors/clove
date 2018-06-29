@@ -77,13 +77,12 @@ ar_Value* ar_graphics_setFont(ar_State* S, ar_Value* args, ar_Value* env)
     }
   else if (ar_type(arg) == AR_TUDATA)
     {
-      font = (graphics_Font*) arg;
+      font = (graphics_Font*) arg->u.udata.ptr;
       int size = ar_opt_number(S, ar_nth(args, 1), env, 12);
       graphics_Font_new(font, NULL, size);
     }
 
-  ar_Value* ufont = ar_new_udata(S, font);
-  return ufont;
+  return ar_new_udata(S, font);
 }
 
 
@@ -135,7 +134,7 @@ ar_Value* ar_graphics_font_print(ar_State* S, ar_Value* args, ar_Value* env)
   ar_Value* has_car_as_font = ar_eval(S, ar_car(args), env);
   if (ar_type(has_car_as_font) == AR_TUDATA)
     {
-      font = (graphics_Font*) has_car_as_font;
+      font = (graphics_Font*) has_car_as_font->u.udata.ptr;
       argc++;
     }
   else
