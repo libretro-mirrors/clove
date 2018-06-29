@@ -1,6 +1,5 @@
 version 0.8.0 - not released yet
 =============
-* added: error screen
 * fixed:  newImageFont is not broke anymore.
 * modify: changed the structure of folders a bit 
 * added: new scripting language made in-house - Aria
