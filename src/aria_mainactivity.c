@@ -38,7 +38,7 @@ static void aria_main_loop(ar_State* S)
 {
   timer_step();
   matrixstack_origin();
-  ar_call_global(S, "love-update", NULL);
+  ar_call_global(S, "love-update", ar_new_number(S, timer_getDelta()));
 
   graphics_clear();
   ar_call_global(S, "love-draw", NULL);
@@ -109,7 +109,8 @@ void aria_main_activity_load(int argc, char* argv[])
   ar_event_register(S);
 
   /* Load and do file from argv[1] */
-  ar_do_file(S, argv[1]);
+  if (!ar_do_file(S, argv[1]))
+    return;
 
   ar_call_global(S, "love-load", NULL);
 
@@ -131,4 +132,3 @@ void aria_main_activity_load(int argc, char* argv[])
 
   ar_close_state(S);
 }
-

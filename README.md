@@ -142,6 +142,7 @@ Aria:
 ; Example of playing music
 (= ogg_music (love:audio-newSource "music.ogg"))
 (love:audio-play ogg_music)
+)
 ```
 
 CLove pictures

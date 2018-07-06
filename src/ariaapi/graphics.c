@@ -105,7 +105,7 @@ ar_Value* ar_graphics_setBackgroundColor(ar_State* S, ar_Value* args, ar_Value* 
   int red   = ar_eval_number(S, ar_car(args), env);
   int green   = ar_eval_number(S, ar_nth(args, 1), env);
   int blue   = ar_eval_number(S, ar_nth(args, 2), env);
-  int alpha   = ar_eval_number(S, ar_nth(args, 3), env);
+  int alpha   = ar_opt_number(S, ar_nth(args, 3), env, 255);
 
   float scale = 1.0f / 255.0f;
 
@@ -131,7 +131,7 @@ ar_Value* ar_graphics_setColor(ar_State* S, ar_Value* args, ar_Value* env)
   int red   = ar_eval_number(S, ar_car(args), env);
   int green   = ar_eval_number(S, ar_nth(args, 1), env);
   int blue   = ar_eval_number(S, ar_nth(args, 2), env);
-  int alpha   = ar_eval_number(S, ar_nth(args, 3), env);
+  int alpha   = ar_opt_number(S, ar_nth(args, 3), env, 255);
 
   float scale = 1.0f / 255.0f;
 
