@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -10,10 +10,8 @@
 
 #include <stdbool.h>
 
-#include "../3rdparty/lua/lua.h"
+#include "../3rdparty/aria/aria.h"
 
-int l_event_register(lua_State* state);
-bool l_event_running();
+void ar_event_register(ar_State* S);
 
-bool l_running;
-float swap_At;
+bool ar_running;

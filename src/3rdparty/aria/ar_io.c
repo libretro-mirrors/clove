@@ -12,22 +12,41 @@
     #include <WinBase.h>
 #endif
 
-ar_Value *f_read(ar_State *S, ar_Value *args) {
+
+char* ar_io_read_file (const char* file)
+{
+	char* read_file;
+	long int size;
+	FILE *fp = fopen(file, "rb");
+	if (!fp)
+		fprintf(stderr, "Could not open file: %s\n", file);
+	/* Get size */
+	fseek(fp, 0, SEEK_END);
+	size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	read_file = malloc(size);
+	int r = fread(read_file, 1, size, fp);
+	fclose(fp);
+    if (r != size) fprintf(stderr, "Could not read file: %s\n", file);
+	return read_file;
+}
+
+ar_Value *p_read(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *res;
-    int r, size;
     const char* file = ar_check_string(S, ar_car(args));
     FILE *fp = fopen(file, "rb");
     if (!fp) ar_error_str(S, "could not open file %s\n", file);
-    /* Get size */
-    fseek(fp, 0, SEEK_END);
-    size = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
-    /* Load file into string value */
-    res = ar_new_stringl(S, NULL, size);
-    r = fread(res->u.str.s, 1, size, fp);
-    fclose(fp);
-    if (r != size) ar_error_str(S, "could not read file %s\n ", file);
-    return res;
+    int r, size;
+	/* Get size */
+	fseek(fp, 0, SEEK_END);
+	size = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
+	/* Load file into string value */
+	res = ar_new_stringl(S, NULL, size);
+	r = fread(res->u.str.s, 1, size, fp);
+	fclose(fp);
+	if (r != size) ar_error_str(S, "could not read file %s\n ", file);
+	return res;
 }
 
 
@@ -39,10 +58,10 @@ ar_Value *f_write(ar_State *S, ar_Value *args) {
     name = ar_to_string( S, ar_check(S, ar_nth(args, 0), AR_TSTRING));
     data = ar_to_stringl(S, ar_check(S, ar_nth(args, 1), AR_TSTRING), &len);
     fp = fopen(name, ar_nth(args, 2) ? "ab" : "wb");
-    if (!fp) ar_error_str(S, "could not open file");
+    if (!fp) ar_error_str(S, "could not open file: %s\n", name);
     r = fwrite(data, len, 1, fp);
     fclose(fp);
-    if (r != 1) ar_error_str(S, "could not write file");
+    if (r != 1) ar_error_str(S, "could not write file: %s\n", name);
     return NULL;
 }
 

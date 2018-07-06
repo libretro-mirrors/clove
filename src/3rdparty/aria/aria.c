@@ -936,11 +936,20 @@ static ar_Value *parse(ar_State *S, const char **str) {
         return parse(S, str);
 
     case '#':
-        p++;
+        *p++;
 		res = NULL;
         if (*p == '|') {
-            p++;
-            *str = p + strcspn(p, "|#") + 2;
+            *p++;
+            while (*p != '|') {
+                if (*p == '\n')
+                    S->parse_line++;
+                *p++;
+            }
+            *p++;
+            if (*p != '#')
+                ar_error_str(S,
+                    "Error parsing comment,line %d, # must be followed by |", S->parse_line);
+            *str = p + 1;
             return parse(S, str);
         }
         else {
@@ -1158,15 +1167,25 @@ ar_Value *ar_do_string(ar_State *S, const char *str) {
 
 
 ar_Value *ar_do_file(ar_State *S, const char *filename) {
-    ar_Value *args = ar_new_list(S, 1, ar_new_string(S, filename));
-    ar_Value *str = ar_call_global(S, "read", args);
-    return ar_eval(S, ar_parse(S, str->u.str.s, filename), S->global);
+    /*ar_Value *args = ar_new_list(S, 1, ar_new_string(S, filename));*/
+    /*ar_Value *str = ar_call_global(S, "read", args);*/
+	char* str = ar_io_read_file(filename);
+	char copy_str[strlen(str)];
+	strcpy(copy_str, str);
+	free(str);
+    return ar_eval(S, ar_parse(S, copy_str, filename), S->global);
 }
 
 
 /*===========================================================================
  * Built-in primitives and funcs
  *===========================================================================*/
+
+static ar_Value *p_sizeof(ar_State *S, ar_Value *args, ar_Value *env) {
+	ar_Value *expr = ar_eval(S, ar_car(args), env);
+	return ar_new_number(S, sizeof(expr));
+}
+
 
 static ar_Value *p_require(ar_State *S, ar_Value *args, ar_Value *env) {
 	const char *filename = ar_eval_string(S, ar_car(args), env);
@@ -1483,7 +1502,7 @@ static ar_Value *p_uname(ar_State *S, ar_Value *args, ar_Value *env) {
 #elif ARIA_WINDOWS
     uname = "Windows";
 #endif
-    return ar_new_string(S, uname);
+    return ar_new_symbol(S, uname);
 }
 
 
@@ -1605,6 +1624,7 @@ static void register_builtin(ar_State *S) {
 	{ "map-get",  p_map_get                 },
 	{ "map-add",  p_map_add                 },
 	{ "map-remove",  p_map_remove           },
+	{ "sizeof",      p_sizeof               },
     { "=",        p_set                     },
     { "do",       p_do                      },
     { "require",  p_require                 },
@@ -1676,6 +1696,7 @@ static void register_builtin(ar_State *S) {
     { "dirp",      p_dirp                   },
     { "assert",    p_assert                 },
     { "vector",    p_vector                 },
+    { "read",      p_read                   },
     { NULL, NULL }
 };
     /* Functions */
@@ -1705,7 +1726,6 @@ static void register_builtin(ar_State *S) {
     { "ord",      f_ord     },
     { "string-downcase",    f_lower   },
     { "string-upcase",      f_upper   },
-    { "read",     f_read    },
     { "write",    f_write   },
     { "eq",       f_eq      },
     { NULL, NULL }

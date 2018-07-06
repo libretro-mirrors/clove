@@ -8,8 +8,12 @@
 
 #include "aria.h"
 
-ar_Value *f_read(ar_State *S, ar_Value *args);
+char* ar_io_read_file (const char* file);
+
+ar_Value *f_seek(ar_State *S, ar_Value *args);
 ar_Value *f_write(ar_State *S, ar_Value *args);
+
+ar_Value *p_read(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_import(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_free_import(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_open(ar_State *S, ar_Value *args, ar_Value *env);

@@ -1,5 +1,6 @@
 (do
   #| This file is used to test various aspects from Aria. |#
+
   (random-seed)
 
   (= a "a string")
@@ -133,4 +134,30 @@
   (= color (vector 0 0 0 0))
   (map-add my-structure "color" color)
   (print "New color" (map-get my-structure "color"))
+
+
+  (print (eq 'test "test")) ; symbol != string
+
+  (= i 0)
+  (= size 0)
+  (= color (vector "testing-tests" 3 4 5))
+  (untill (vector-length color)
+		  (print (type (car (vector-get color i))))
+		  (if (eq (type (car (vector-get color i))) 'string)
+		  (= size (+ size (strlen (car (vector-get color i)))))
+		  (= size (+ size (sizeof (car (vector-get color i))))))
+		  (= i (+ i 1)))
+  (print size)
+
+ ; Lets read serialized and deserialize it
+
+  (= rez (substr (read "script/read_from_file.txt") 0 10))
+  (print (eval (parse rez "rez")))
+
+  (= rez (substr (read "script/read_from_file.txt") 10 20))
+  (print (eval (parse rez "rez")))
+
+
+  (= rez (substr (read "script/read_from_file.txt") 20))
+  (print (eval (parse rez "rez")))
   )
