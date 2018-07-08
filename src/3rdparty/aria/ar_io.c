@@ -18,8 +18,10 @@ char* ar_io_read_file (const char* file)
 	char* read_file;
 	long int size;
 	FILE *fp = fopen(file, "rb");
-	if (!fp)
+	if (!fp) {
 		fprintf(stderr, "Could not open file: %s\n", file);
+		return NULL;
+	  }
 	/* Get size */
 	fseek(fp, 0, SEEK_END);
 	size = ftell(fp);
@@ -27,8 +29,11 @@ char* ar_io_read_file (const char* file)
 	read_file = malloc(size);
 	int r = fread(read_file, 1, size, fp);
 	fclose(fp);
-    if (r != size) fprintf(stderr, "Could not read file: %s\n", file);
-	return read_file;
+	if (r != size) {
+	    fprintf(stderr, "Could not read file: %s\n", file);
+	    return NULL;
+	  }
+    return read_file;
 }
 
 ar_Value *p_read(ar_State *S, ar_Value *args, ar_Value *env) {

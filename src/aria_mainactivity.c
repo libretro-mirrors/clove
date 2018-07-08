@@ -43,34 +43,9 @@ static void aria_main_loop(ar_State* S)
   graphics_clear();
   ar_call_global(S, "love-draw", NULL);
   graphics_swap();
-  SDL_Event event;
-  while(SDL_PollEvent(&event)) {
-      if (event.type == SDL_WINDOWEVENT) {
-          switch (event.window.event) {
-            case SDL_WINDOWEVENT_ENTER:
-              graphics_setMouseFocus(1);
-              break;
-            case SDL_WINDOWEVENT_LEAVE:
-              graphics_setMouseFocus(0);
-              break;
-            case SDL_WINDOWEVENT_FOCUS_LOST:
-              graphics_setFocus(0);
-              break;
-            case SDL_WINDOWEVENT_FOCUS_GAINED:
-              graphics_setFocus(1);
-              break;
-            default:
-              break;
-            }
-        }
-      switch(event.type) {
-#ifdef CLOVE_DESKTOP
-	case SDL_QUIT:
-	  ar_running = 0;
-	  break;
-#endif
-        }
-    }
+
+  ar_input_update();
+
   audio_updateStreams();
 }
 

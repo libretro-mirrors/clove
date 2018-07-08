@@ -754,20 +754,28 @@ begin:
         goto begin;
     case AR_TVECTOR:
         {
-			size_t index = 0;
-            while (index < vec_size(v->u.udata.ptr)) {
-                ar_mark(S, vec_get(v->u.udata.ptr, index));
-                index++;
+            size_t i = 0;
+            while (i < vec_size(v->u.udata.ptr)) {
+                ar_Value *curr = vec_get(v->u.udata.ptr, i);
+                ar_mark(S, curr);
+                ++i;
             }
 		}
         break;
 	case AR_TMAP:
 		{
 			size_t i = 0;
-			/*TODO optimize this to look only on the added buckets!*/
+			/*TODO optimize this to look only in added buckets!*/
 			for (; i < v->u.hmap.m->size; i++) {
-				if (strcmp(v->u.hmap.m->table[i]->key, "") != 0)
-					ar_mark(S, (ar_Value*)v->u.hmap.m->table[i]->value);
+				if (strcmp(v->u.hmap.m->table[i]->key, "") != 0) {
+				    hash_table_t* t = v->u.hmap.m->table[i];
+                    ar_mark(S, (ar_Value*)t->value);
+
+                    while (t->next != NULL) {
+                        ar_mark(S, (ar_Value*)t->value);
+                        t = t->next;
+                    }
+                }
 			}
 		}
 		break;
@@ -1170,6 +1178,9 @@ ar_Value *ar_do_file(ar_State *S, const char *filename) {
     /*ar_Value *args = ar_new_list(S, 1, ar_new_string(S, filename));*/
     /*ar_Value *str = ar_call_global(S, "read", args);*/
 	char* str = ar_io_read_file(filename);
+	if (!str) {
+	    ar_error_str(S, "");
+	  }
 	char copy_str[strlen(str)];
 	strcpy(copy_str, str);
 	free(str);
@@ -1617,125 +1628,125 @@ static ar_Value *f_eq(ar_State *S, ar_Value *args) {
 
 
 static void register_builtin(ar_State *S) {
-    int i;
-    /* Primitives */
-    struct { const char *name; ar_Prim fn; } prims[] = {
-	{ "map",      p_map                     },
-	{ "map-get",  p_map_get                 },
-	{ "map-add",  p_map_add                 },
-	{ "map-remove",  p_map_remove           },
-	{ "sizeof",      p_sizeof               },
-    { "=",        p_set                     },
-    { "do",       p_do                      },
-    { "require",  p_require                 },
-    { "quote",    p_quote                   },
-    { "eval",     p_eval                    },
-    { "nth",      p_nth                     },
-    { "nthcdr",   p_nthcdr                  },
-    { "function", p_fn                      },
-    { "macro",    p_macro                   },
-    { "vector-push",   p_vector_push        },
-    { "vector-get",    p_vector_get         },
-    { "vector-length", p_vector_length      },
-    { "vector-pop",    p_vector_pop         },
-    { "vector-set",    p_vector_set         },
-    { "vector-find",   p_vector_find        },
-    { "append",   p_append                  },
-    { "reverse",  p_reverse                 },
-    { "length",   p_length                  },
-    { "remove",   p_remove                  },
-    { "remove-n", p_remove_n                },
-    { "apply",    p_apply                   },
-    { "if",       p_if                      },
-    { "unless",   p_unless                  },
-    { "when",     p_when                    },
-    { "not",      p_not                     },
-    { "cond",     p_cond                    },
-    { "and",      p_and                     },
-    { "max",      p_max                     },
-    { "min",      p_min                     },
-    { "floor",    p_floor                   },
-    { "ceiling",  p_ceil                    },
-    { "pow", 	  p_pow                     },
-    { "abs", 	  p_abs                     },
-    { "sqrt",  	  p_sqrt                    },
-    { "random-seed",  p_random_seed         },
-    { "random", p_random     	            },
-    { "or",       p_or                      },
-    { "let",      p_let                     },
-    { "loop",     p_loop                    },
-    { "untill",   p_untill                  },
-    { "pcall",    p_pcall                   },
-    { "<",        p_lt                      },
-    { ">",        p_gt                      },
-    { "<=",       p_lte                     },
-    { ">=",       p_gte                     },
-    { "+",        p_add                     },
-    { "-",        p_sub                     },
-    { "*",        p_mul                     },
-    { "/",        p_div                     },
-    { "pi",       p_pi                      },
-	{ "sin",      p_sin                     },
-	{ "atan",     p_atan                    },
-	{ "atan2",    p_atan2                   },
-	{ "clamp",    p_clamp                   },
-	{ "cos",      p_cos                     },
-    { "mod",      p_mod                     },
-    { "exit",     p_exit                    },
-    { "strcmp",   p_strcmp                  },
-    { "substr",   p_substr                  },
-    { "strpos",   p_strpos                  },
-    { "system",   p_system                  },
-    { "uname",    p_uname                   },
-    { "open",     p_open                    },
-    { "find",     p_find                    },
-    { "member",   p_member                  },
-    { "import",   p_import                  },
-    { "free-import", p_free_import          },
-    { "read-char", p_readchar               },
-    { "dirp",      p_dirp                   },
-    { "assert",    p_assert                 },
-    { "vector",    p_vector                 },
-    { "read",      p_read                   },
-    { NULL, NULL }
+  int i;
+  /* Primitives */
+  struct { const char *name; ar_Prim fn; } prims[] = {
+  { "map",      p_map                     },
+  { "map-get",  p_map_get                 },
+  { "map-add",  p_map_add                 },
+  { "map-remove",  p_map_remove           },
+  { "sizeof",      p_sizeof               },
+  { "=",        p_set                     },
+  { "do",       p_do                      },
+  { "require",  p_require                 },
+  { "quote",    p_quote                   },
+  { "eval",     p_eval                    },
+  { "nth",      p_nth                     },
+  { "nthcdr",   p_nthcdr                  },
+  { "function", p_fn                      },
+  { "macro",    p_macro                   },
+  { "vector-push",   p_vector_push        },
+  { "vector-get",    p_vector_get         },
+  { "vector-length", p_vector_length      },
+  { "vector-pop",    p_vector_pop         },
+  { "vector-set",    p_vector_set         },
+  { "vector-find",   p_vector_find        },
+  { "append",   p_append                  },
+  { "reverse",  p_reverse                 },
+  { "length",   p_length                  },
+  { "remove",   p_remove                  },
+  { "remove-n", p_remove_n                },
+  { "apply",    p_apply                   },
+  { "if",       p_if                      },
+  { "unless",   p_unless                  },
+  { "when",     p_when                    },
+  { "not",      p_not                     },
+  { "cond",     p_cond                    },
+  { "and",      p_and                     },
+  { "max",      p_max                     },
+  { "min",      p_min                     },
+  { "floor",    p_floor                   },
+  { "ceiling",  p_ceil                    },
+  { "pow", 	  p_pow                     },
+  { "abs", 	  p_abs                     },
+  { "sqrt",  	  p_sqrt                    },
+  { "random-seed",  p_random_seed         },
+  { "random", p_random     	            },
+  { "or",       p_or                      },
+  { "let",      p_let                     },
+  { "loop",     p_loop                    },
+  { "untill",   p_untill                  },
+  { "pcall",    p_pcall                   },
+  { "<",        p_lt                      },
+  { ">",        p_gt                      },
+  { "<=",       p_lte                     },
+  { ">=",       p_gte                     },
+  { "+",        p_add                     },
+  { "-",        p_sub                     },
+  { "*",        p_mul                     },
+  { "/",        p_div                     },
+  { "pi",       p_pi                      },
+  { "sin",      p_sin                     },
+  { "atan",     p_atan                    },
+  { "atan2",    p_atan2                   },
+  { "clamp",    p_clamp                   },
+  { "cos",      p_cos                     },
+  { "mod",      p_mod                     },
+  { "exit",     p_exit                    },
+  { "strcmp",   p_strcmp                  },
+  { "substr",   p_substr                  },
+  { "strpos",   p_strpos                  },
+  { "system",   p_system                  },
+  { "uname",    p_uname                   },
+  { "open",     p_open                    },
+  { "find",     p_find                    },
+  { "member",   p_member                  },
+  { "import",   p_import                  },
+  { "free-import", p_free_import          },
+  { "read-char", p_readchar               },
+  { "dirp",      p_dirp                   },
+  { "assert",    p_assert                 },
+  { "vector",    p_vector                 },
+  { "read",      p_read                   },
+  { NULL, NULL }
 };
-    /* Functions */
-    struct { const char *name; ar_CFunc fn; } funcs[] = {
-    { "list",     f_list    },
-    { "break",    f_break   },
-    { "type",     f_type    },
-    { "parse",    f_parse   },
-    { "print",    f_print   },
-    { "pprint",   f_pprint  },
-    { "endp",     f_endp    },
-    { "zerop",    f_zerop   },
-    { "vectorp",  f_vectorp },
-    { "numberp",  f_numberp },
-    { "stringp",  f_stringp },
-    { "consp",    f_consp   },
-    { "error",    f_error   },
-    { "dbgloc",   f_dbgloc  },
-    { "cons",     f_cons    },
-    { "car",      f_car     },
-    { "cdr",      f_cdr     },
-    { "setcar",   f_setcar  },
-    { "setcdr",   f_setcdr  },
-    { "string",   f_string  },
-    { "strlen",   f_strlen  },
-    { "chr",      f_chr     },
-    { "ord",      f_ord     },
-    { "string-downcase",    f_lower   },
-    { "string-upcase",      f_upper   },
-    { "write",    f_write   },
-    { "eq",       f_eq      },
-    { NULL, NULL }
+  /* Functions */
+  struct { const char *name; ar_CFunc fn; } funcs[] = {
+  { "list",     f_list    },
+  { "break",    f_break   },
+  { "type",     f_type    },
+  { "parse",    f_parse   },
+  { "print",    f_print   },
+  { "pprint",   f_pprint  },
+  { "endp",     f_endp    },
+  { "zerop",    f_zerop   },
+  { "vectorp",  f_vectorp },
+  { "numberp",  f_numberp },
+  { "stringp",  f_stringp },
+  { "consp",    f_consp   },
+  { "error",    f_error   },
+  { "dbgloc",   f_dbgloc  },
+  { "cons",     f_cons    },
+  { "car",      f_car     },
+  { "cdr",      f_cdr     },
+  { "setcar",   f_setcar  },
+  { "setcdr",   f_setcdr  },
+  { "string",   f_string  },
+  { "strlen",   f_strlen  },
+  { "chr",      f_chr     },
+  { "ord",      f_ord     },
+  { "string-downcase",    f_lower   },
+  { "string-upcase",      f_upper   },
+  { "write",    f_write   },
+  { "eq",       f_eq      },
+  { NULL, NULL }
 };
-    /* Register */
-    for (i = 0; prims[i].name; i++) {
-        ar_bind_global(S, prims[i].name, ar_new_prim(S, prims[i].fn));
+  /* Register */
+  for (i = 0; prims[i].name; i++) {
+      ar_bind_global(S, prims[i].name, ar_new_prim(S, prims[i].fn));
     }
-    for (i = 0; funcs[i].name; i++) {
-        ar_bind_global(S, funcs[i].name, ar_new_cfunc(S, funcs[i].fn));
+  for (i = 0; funcs[i].name; i++) {
+      ar_bind_global(S, funcs[i].name, ar_new_cfunc(S, funcs[i].fn));
     }
 }
 

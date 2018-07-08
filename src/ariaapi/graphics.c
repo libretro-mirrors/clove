@@ -22,6 +22,8 @@ ar_Value* ar_graphics_clear(ar_State* S, ar_Value* args, ar_Value* env)
 
 ar_Value* ar_graphics_swap(ar_State* S, ar_Value* args, ar_Value* env)
 {
+  UNUSED(args);
+  UNUSED(env);
   graphics_swap();
   return NULL;
 }
@@ -175,15 +177,6 @@ ar_Value* ar_graphics_getScissor(ar_State* S, ar_Value* args, ar_Value* env)
 
 //TODO add blend more
 
-
-ar_Value* ar_graphics_update(ar_State* S, ar_Value* args, ar_Value* env)
-{
-  graphics_clear();
-  matrixstack_origin();
-  return NULL;
-}
-
-
 void ar_graphics_register(ar_State* S)
 {
   struct { const char* name; ar_Prim fn; } prims[] =
@@ -204,7 +197,6 @@ void ar_graphics_register(ar_State* S)
   {"love:graphics-getWidth", ar_graphics_getWidth},
   {"love:graphics-getHeight", ar_graphics_getHeight},
   {"love:graphics-reset", ar_graphics_reset},
-  {"love:graphics-update", ar_graphics_update},
   {NULL, NULL}
 };
   for (int i = 0; prims[i].name; i++)

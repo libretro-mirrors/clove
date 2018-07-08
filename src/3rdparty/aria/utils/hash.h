@@ -29,7 +29,7 @@ modification, are permitted provided that the following conditions are met:
 /*
  * Maximum size a key can have in bytes
  */
-#define HASH_DEFAULT_KEY_LIMIT 64
+#define HASH_DEFAULT_KEY_LIMIT 128
 
 typedef struct hash_table_t
 {
