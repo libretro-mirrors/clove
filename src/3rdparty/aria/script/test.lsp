@@ -13,11 +13,6 @@
   (assert (stringp "str" "str"))
   (assert (consp (cons 1 2)))
 
-  (= a 100)
-  (untill 50 (when a > 50) (= a (- a 1)))
-  (assert (not (eq a 0)))
-  (print a)
-
   #|
   Testing comments |#
   (print "Correct")
@@ -138,15 +133,13 @@
 
   (print (eq 'test "test")) ; symbol != string
 
-  (= i 0)
   (= size 0)
   (= color (vector "testing-tests" 3 4 5))
-  (untill (vector-length color)
+  (dotimes ((= i 0) (vector-length color))
 		  (print (type (car (vector-get color i))))
 		  (if (eq (type (car (vector-get color i))) 'string)
 		  (= size (+ size (strlen (car (vector-get color i)))))
-		  (= size (+ size (sizeof (car (vector-get color i))))))
-		  (= i (+ i 1)))
+		  (= size (+ size (sizeof (car (vector-get color i)))))))
   (print size)
 
  ; Lets read serialized and deserialize it

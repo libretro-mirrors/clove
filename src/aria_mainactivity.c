@@ -38,13 +38,13 @@ static void aria_main_loop(ar_State* S)
 {
   timer_step();
   matrixstack_origin();
+  ar_input_update(S);
+
   ar_call_global(S, "love-update", ar_new_number(S, timer_getDelta()));
 
   graphics_clear();
   ar_call_global(S, "love-draw", NULL);
   graphics_swap();
-
-  ar_input_update();
 
   audio_updateStreams();
 }

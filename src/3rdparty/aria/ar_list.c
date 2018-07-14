@@ -35,7 +35,7 @@ ar_Value *p_reverse(ar_State *S, ar_Value *args, ar_Value *env) {
 ar_Value *p_nth(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *from = ar_eval(S, ar_car(args), env);
     ar_Value *n = ar_eval(S, ar_nth(args, 1), env);
-    return ar_eval(S, ar_nth(from, n->u.num.n), env);
+    return ar_nth(from, n->u.num.n);
 }
 
 

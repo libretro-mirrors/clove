@@ -26,7 +26,7 @@ extern "C" {
 #endif
 
 
-#define AR_VERSION "0.3.0 - rc3"
+#define AR_VERSION "0.3.0 - rc4"
 
 #define UNUSED(x) ((void) x)
 

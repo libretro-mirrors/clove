@@ -245,17 +245,6 @@ void hash_destroy(hash_t* hash)
 {
   size_t i = 0;
   for (; i < hash->size; i++)
-    {
-      hash_table_t *n = hash->table[i], *d;
-      while (n->next)
-        {
-          d = n;
-          n = n->next;
-          free(d);
-        }
-    }
-  i = 0;
-  for (; i < hash->size; i++)
     hash_remove(hash, hash->table[i]->key);
   free(hash->table);
   free(hash);

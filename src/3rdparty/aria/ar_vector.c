@@ -42,30 +42,22 @@ ar_Value *p_vector(ar_State *S, ar_Value *args, ar_Value *env) {
 
 
 ar_Value *p_vector_push(ar_State *S, ar_Value *args, ar_Value *env) {
-    ar_Value *vector = ar_eval(S, ar_car(args), env);
+    vec_t *vector = ar_eval_vector(S, ar_car(args), env);
     if (!vector) {
-        ar_error_str(S, "Missing value");
+        ar_error_str(S, "Missing vector value in vector-push");
     }
     ar_Value *to_push= ar_eval(S, ar_nth(args, 1), env);
     if (!to_push) {
-        ar_error_str(S, "Missing value");
+        ar_error_str(S, "Missing value in vector-push");
     }
+    ar_Value *entry = NULL;
+    while (to_push) {
+        entry = ar_new_pair(S, ar_car(to_push), entry);
+        to_push = ar_cdr(to_push);
+    }
+    entry = ar_reverse(entry);
+    vec_append(vector, entry);
 
-    /*
-     * When we push a non-vector type object we just use ar_cdr
-     * to get the next element.
-     */
-    if (ar_type(to_push) != AR_TVECTOR) {
-        ar_Value *entry = NULL;
-        while (to_push != NULL) {
-            entry = ar_new_pair(S, to_push, entry);
-            to_push = ar_cdr(to_push);
-        }
-        entry = ar_reverse(entry);
-        vec_append(ar_to_vector(S, vector),  (ar_Value*) entry);
-    } else {
-        vec_append(ar_to_vector(S, vector), to_push);
-    }
     return NULL;
 }
 
@@ -79,11 +71,11 @@ ar_Value *p_vector_set(ar_State *S, ar_Value *args, ar_Value *env) {
 
     vec_t *vector = ar_eval_vector(S, ar_car(args), env);
     index = ar_eval_number(S, ar_nth(args, 1), env);
-    ar_Value *to_set = ar_eval(S, ar_nth(args, 2), env);
-
-    if (vec_set(vector, index, to_set) != 0)
-		ar_error_str(S, "Index out of bounds exception");
-	return to_set;
+    if (index > vec_size(vector))
+        ar_error_str(S, "index out of bounds");
+    ar_Value *value = ar_eval(S, ar_nth(args, 2), env);
+    vec_set(vector,index,ar_new_pair(S, value, NULL));
+    return NULL;
 }
 
 
@@ -103,9 +95,9 @@ ar_Value *p_vector_get(ar_State *S, ar_Value *args, ar_Value *env) {
     vec_t *vector = ar_eval_vector(S, ar_car(args), env);
     index = ar_eval_number(S, ar_nth(args, 1), env);
     ar_Value *ret = vec_get(vector, index);
-	if (ret == NULL)
-		ar_error_str(S, "Index out of bounds exception");
-	return ret;
+    if (!ret)
+        ar_error_str(S, "index out of bounds");
+    return ar_car(ret);
 }
 
 

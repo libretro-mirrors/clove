@@ -11,7 +11,10 @@
 
 #include "../graphics/graphics.h"
 
-void ar_input_update(void)
+static int keydown = -1;
+static int keyup = -1;
+
+void ar_input_update(ar_State* S)
 {
   while(SDL_PollEvent(&aria_input_event)) {
       if (aria_input_event.type == SDL_WINDOWEVENT) {
@@ -32,26 +35,31 @@ void ar_input_update(void)
               break;
             }
         }
-      if (aria_input_event.type == SDL_QUIT) {
+      switch (aria_input_event.type) {
+        case SDL_QUIT:
           ar_running = 0;
-          return;
-        }
+          break;
+        case SDL_KEYDOWN:
+          keyup = -1;
+          keydown = aria_input_event.key.keysym.sym;
+          break;
+        case SDL_KEYUP:
+          keydown = -1;
+          keyup = aria_input_event.key.keysym.sym;
+          break;
+      }
     }
 }
 
 ar_Value* ar_keyboard_keypressed(ar_State* S, ar_Value* args, ar_Value* env)
 {
-  if (aria_input_event.type == SDL_KEYDOWN)
-    return ar_new_number(S, aria_input_event.key.keysym.sym);
-  return NULL;
+    return ar_new_number(S, keydown);
 }
 
 
 ar_Value* ar_keyboard_keyreleased(ar_State* S, ar_Value* args, ar_Value* env)
 {
-  if (aria_input_event.type == SDL_KEYUP)
-    return ar_new_number(S, aria_input_event.key.keysym.sym);
-  return NULL;
+    return ar_new_number(S, keyup);
 }
 
 
@@ -107,9 +115,8 @@ void ar_input_register(ar_State* S)
   {"love:mouse-released", ar_mouse_mousereleased},
   {"love:mouse-wheel", ar_mouse_mousewheel},
   {"love:mouse-moved", ar_mouse_mousemoved},
-
-  {"love:keyboard-keypressed", ar_keyboard_keypressed},
-  {"love:keyboard-keyreleased", ar_keyboard_keyreleased},
+  {"love:keyboard-pressed", ar_keyboard_keypressed},
+  {"love:keyboard-released", ar_keyboard_keyreleased},
   {NULL, NULL}
 };
   for (int i = 0; prims[i].name; i++)

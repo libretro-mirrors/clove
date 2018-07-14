@@ -6,6 +6,6 @@
                     (fib (- n 2)))
                  n)))
 
-  (= res (fib 40))
+  (= res (fib 30))
   (print res)]
 

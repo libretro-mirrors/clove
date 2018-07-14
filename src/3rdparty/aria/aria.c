@@ -11,6 +11,8 @@
 #define MAX_STACK 1024
 #define CHUNK_LEN 1024
 
+double AR_MIN_THRESHOLD = 0;
+
 struct ar_Chunk {
     ar_Value values[CHUNK_LEN];
     struct ar_Chunk *next;
@@ -47,7 +49,7 @@ static ar_Value *new_value(ar_State *S, int type) {
     ar_Value *v;
     /* Run garbage collector? */
     S->gc_count--;
-   if (!S->gc_pool && S->gc_count < 0) {
+   if (!S->gc_pool && S->gc_count < AR_MIN_THRESHOLD) {
         ar_gc(S);
     }
 
@@ -360,7 +362,7 @@ ar_Value *ar_to_string_value(ar_State *S, ar_Value *v, int quotestr) {
 				val = vec_get(vector, i);
 				if (i > 0)
 					last = ar_append_tail(S, last, ar_new_string(S, " "));
-				last = ar_append_tail(S, last, ar_to_string_value(S, ar_car(val), 1));
+				last = ar_append_tail(S, last, ar_to_string_value(S, val, 1));
 				i++;
 			}
 			last = ar_append_tail(S, last, ar_new_string(S, ")"));
@@ -1360,7 +1362,6 @@ static ar_Value *p_and(ar_State *S, ar_Value *args, ar_Value *env) {
 }
 
 
-
 static ar_Value *p_or(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *res;
     while (args) {
@@ -1399,22 +1400,91 @@ static ar_Value *p_loop(ar_State *S, ar_Value *args, ar_Value *env) {
 }
 
 
-static ar_Value *p_untill(ar_State *S, ar_Value *args, ar_Value *env) {
-	#ifdef FLOAT
-		float times, index = 0;
-	#else
-		double times, index = 0;
-	#endif
+static ar_Value *p_dotimes(ar_State *S, ar_Value *args, ar_Value *env) {
+	ar_Value *cond = ar_car(args);
+	if (ar_type(cond) != AR_TPAIR)
+		ar_error_str(S, "expected pair, got %s!\n", ar_type_str(ar_type(cond)));
 
-	times = ar_eval_number(S, ar_car(args), env);
+	ar_Value *iterator = ar_eval(S, ar_car(cond), env);
+	double iterator_limit = ar_eval_number(S, ar_nth(cond, 1), env);
+
 	ar_Value *body = ar_cdr(args);
-    int orig_stack_idx = S->gc_stack_idx;
-    while (index < times) {
-        /* Truncate stack so we don't accumulate protected values */
-        S->gc_stack_idx = orig_stack_idx;
-        ar_do_list(S, body, env);
-        index++;
-    }
+	int orig_stack_idx = S->gc_stack_idx;
+	while (iterator->u.num.n < iterator_limit) {
+
+		/* Truncate stack so we don't accumulate protected values */
+		S->gc_stack_idx = orig_stack_idx;
+
+		ar_do_list(S, body, env);
+		++iterator->u.num.n;
+	}
+	return NULL;
+}
+
+
+static ar_Value *p_dovector(ar_State *S, ar_Value *args, ar_Value *env) {
+	ar_Value *cond = ar_car(args);
+
+	if (ar_type(cond) != AR_TPAIR)
+		ar_error_str(S, "expected pair, got %s!\n", ar_type_str(ar_type(cond)));
+
+	ar_Value *sym = ar_eval(S, ar_car(cond), env);
+	if (ar_type(sym) != AR_TSYMBOL)
+		ar_error_str(S, "expected symbol, got %s!\n", ar_type_str(ar_type(sym)));
+
+    const char *sym_name = sym->u.str.s;
+    sym = ar_new_pair(S, NULL, NULL);
+
+	vec_t *vector = (vec_t*)ar_eval_vector(S, ar_nth(cond, 1), env);
+
+	ar_Value *body = ar_cdr(args);
+
+	int orig_stack_idx = S->gc_stack_idx;
+	size_t index = 0;
+
+	while (index < vec_size(vector)) {
+
+		/* Truncate stack so we don't accumulate protected values */
+		S->gc_stack_idx = orig_stack_idx;
+
+		sym->u.pair.car = ar_new_symbol(S, sym_name);
+		sym->u.pair.car = ar_set(S, sym->u.pair.car, ar_car(vec_get(vector, index)), env);
+		ar_do_list(S, body, env);
+		index++;
+	}
+	return NULL;
+}
+
+
+static ar_Value *p_dolist(ar_State *S, ar_Value *args, ar_Value *env) {
+	ar_Value *cond = ar_car(args);
+
+	if (ar_type(cond) != AR_TPAIR)
+		ar_error_str(S, "expected pair, got %s!\n", ar_type_str(ar_type(cond)));
+
+	ar_Value *sym = ar_eval(S, ar_car(cond), env);
+	if (ar_type(sym) != AR_TSYMBOL)
+		ar_error_str(S, "expected symbol, got %s!\n", ar_type_str(ar_type(sym)));
+
+    const char *sym_name = sym->u.str.s;
+    sym = ar_new_pair(S, NULL, NULL);
+
+	ar_Value *list = ar_eval(S, ar_nth(cond, 1), env);
+
+	ar_Value *body = ar_cdr(args);
+
+	int orig_stack_idx = S->gc_stack_idx;
+
+	while (list) {
+
+		/* Truncate stack so we don't accumulate protected values */
+		S->gc_stack_idx = orig_stack_idx;
+
+		sym->u.pair.car = ar_new_symbol(S, sym_name);
+		sym->u.pair.car = ar_set(S, sym->u.pair.car, ar_car(list), env);
+		ar_do_list(S, body, env);
+		list = ar_cdr(list);
+	}
 	return NULL;
 }
 
@@ -1602,6 +1672,15 @@ static ar_Value *f_error(ar_State *S, ar_Value *args) {
 }
 
 
+static ar_Value *f_threshold(ar_State *S, ar_Value *args) {
+    ar_Value *threshold = ar_check(S, ar_car(args), AR_TNUMBER);
+    if (threshold->u.num.n > 0)
+        ar_error_str(S, "Value must be <= 0");
+    AR_MIN_THRESHOLD = threshold->u.num.n;
+    return NULL;
+}
+
+
 static ar_Value *f_dbgloc(ar_State *S, ar_Value *args) {
     return debug_location(S, ar_car(args));
 }
@@ -1675,7 +1754,9 @@ static void register_builtin(ar_State *S) {
   { "or",       p_or                      },
   { "let",      p_let                     },
   { "loop",     p_loop                    },
-  { "untill",   p_untill                  },
+  { "dotimes",  p_dotimes                 },
+  { "dovector", p_dovector                },
+  { "dolist",   p_dolist                  },
   { "pcall",    p_pcall                   },
   { "<",        p_lt                      },
   { ">",        p_gt                      },
@@ -1726,6 +1807,7 @@ static void register_builtin(ar_State *S) {
   { "consp",    f_consp   },
   { "error",    f_error   },
   { "dbgloc",   f_dbgloc  },
+  { "gc-threshold", f_threshold   },
   { "cons",     f_cons    },
   { "car",      f_car     },
   { "cdr",      f_cdr     },
@@ -1892,7 +1974,6 @@ static ar_Value *f_readline(ar_State *S, ar_Value *args) {
     printf("> ");
     return ar_new_string(S, fgets(buf, sizeof(buf) - 1, stdin));
 }
-
 
 int main(int argc, char **argv) {
     ar_State *S = ar_new_state(NULL, NULL);
