@@ -18,7 +18,7 @@
 #include "../src/luaapi/event.h"
 
 #include "../src/3rdparty/Chipmunk2D/include/chipmunk/chipmunk.h"
-
+/*
 static cpSpace* space;
 
 
@@ -61,31 +61,31 @@ static cpSpace* init(void)
 
   return space;
 }
-
+*/
 void game_load() {
   // graphics_setTitle("Clove in native");
-  space = init();
+  //space = init();
 }
 
 void game_update(float delta) {
-  if (keyboard_ispressed(SDLK_d))
-    {
-    }
-  if (keyboard_ispressed(SDLK_a))
-    {
-    }
-  cpSpaceStep(space, delta);
+//  if (keyboard_ispressed(SDLK_d))
+//    {
+//    }
+//  if (keyboard_ispressed(SDLK_a))
+//    {
+//    }
+//  cpSpaceStep(space, delta);
 }
 
 void game_draw() {
-  graphics_setBackgroundColor(.8f, .6f, .5f, 1);
-  graphics_geometry_rectangle(true, body->p.x, body->p.y, width2, HEIGHT, body->a, 1, 1, 0, 0);
-  graphics_geometry_rectangle(true, 0, 40, WIDTH, HEIGHT, 0, 1, 1, 0, 0);
-  //graphics_geometry_rectangle(true, ground->body->p.x, ground->body->p.y, 800, 32, 0, 1, 1, 0, 0);
+//  graphics_setBackgroundColor(.8f, .6f, .5f, 1);
+//  graphics_geometry_rectangle(true, body->p.x, body->p.y, width2, HEIGHT, body->a, 1, 1, 0, 0);
+//  graphics_geometry_rectangle(true, 0, 40, WIDTH, HEIGHT, 0, 1, 1, 0, 0);
+//  //graphics_geometry_rectangle(true, ground->body->p.x, ground->body->p.y, 800, 32, 0, 1, 1, 0, 0);
 }
 
 void game_quit()
 {
-  cpSpaceFree(space);
+//  cpSpaceFree(space);
 }
 

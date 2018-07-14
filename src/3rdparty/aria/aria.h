@@ -140,6 +140,7 @@ enum {
 #define ar_get_global(S,x)    ar_eval(S, ar_new_symbol(S, x), (S)->global)
 #define ar_bind_global(S,x,v) ar_bind(S, ar_new_symbol(S, x), v, (S)->global)
 #define ar_call_global(S,f,a) ar_call(S, ar_get_global(S, f), a)
+#define ar_call_global_s(S,f,a) ar_call_s(S, ar_get_global(S, f), f, a)
 
 #define ar_check_string(S,v)  ar_to_string(S, ar_check(S, v, AR_TSTRING))
 #define ar_check_udata(S,v)   ar_to_udata(S, ar_check(S, v, AR_TUDATA))
@@ -216,6 +217,7 @@ void ar_gc(ar_State *S);
 ar_Value *ar_parse(ar_State *S, const char *str, const char *name);
 ar_Value *ar_eval(ar_State *S, ar_Value *v, ar_Value *env);
 ar_Value *ar_call(ar_State *S, ar_Value *fn, ar_Value *args);
+ar_Value *ar_call_s(ar_State *S, ar_Value *fn, const char *fn_name, ar_Value *args);
 ar_Value *ar_do_list(ar_State *S, ar_Value *body, ar_Value *env);
 ar_Value *ar_do_string(ar_State *S, const char *str);
 ar_Value *ar_do_file(ar_State *S, const char *filename);

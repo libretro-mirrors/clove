@@ -31,7 +31,7 @@
 
 static void quit_function(ar_State* S)
 {
-  ar_call_global(S, "love-quit", NULL);
+  ar_call_global_s(S, "love-quit", NULL);
 }
 
 static void aria_main_loop(ar_State* S)
@@ -40,10 +40,10 @@ static void aria_main_loop(ar_State* S)
   matrixstack_origin();
   ar_input_update(S);
 
-  ar_call_global(S, "love-update", ar_new_number(S, timer_getDelta()));
+  ar_call_global_s(S, "love-update", ar_new_number(S, timer_getDelta()));
 
   graphics_clear();
-  ar_call_global(S, "love-draw", NULL);
+  ar_call_global_s(S, "love-draw", NULL);
   graphics_swap();
 
   audio_updateStreams();
@@ -87,7 +87,7 @@ void aria_main_activity_load(int argc, char* argv[])
   if (!ar_do_file(S, argv[1]))
     return;
 
-  ar_call_global(S, "love-load", NULL);
+  ar_call_global_s(S, "love-load", NULL);
 
 #ifdef CLOVE_WEB
   //TODO find a way to quit(love.event.quit) love on web?

@@ -11,7 +11,7 @@
 #define MAX_STACK 1024
 #define CHUNK_LEN 1024
 
-double AR_MIN_THRESHOLD = 0;
+volatile int AR_MIN_THRESHOLD = 1000000;
 
 struct ar_Chunk {
     ar_Value values[CHUNK_LEN];
@@ -49,9 +49,9 @@ static ar_Value *new_value(ar_State *S, int type) {
     ar_Value *v;
     /* Run garbage collector? */
     S->gc_count--;
-   if (!S->gc_pool && S->gc_count < AR_MIN_THRESHOLD) {
+   /*if (!S->gc_pool && S->gc_count < AR_MIN_THRESHOLD) {
         ar_gc(S);
-    }
+    }*/
 
     /* No values in pool? Create and init new chunk */
     if (!S->gc_pool) {
@@ -1129,9 +1129,16 @@ static ar_Value *raw_call(
     return res;
 }
 
-
+static volatile int evaluations = 0;
 ar_Value *ar_eval(ar_State *S, ar_Value *v, ar_Value *env) {
     ar_Value *fn, *args;
+
+	evaluations++;
+	if (evaluations > AR_MIN_THRESHOLD)
+	{
+		ar_gc(S);
+		evaluations = 0;
+	}
 
 	switch (ar_type(v)) {
         case AR_TBREAK 	: return v->u.br.b;
@@ -1154,6 +1161,15 @@ ar_Value *ar_call(ar_State *S, ar_Value *fn, ar_Value *args) {
     int t = ar_type(fn);
     if (t != AR_TFUNC && t != AR_TCFUNC) {
         ar_error_str(S, "expected function, got %s", ar_type_str(t));
+    }
+    return raw_call(S, ar_new_pair(S, fn, args), fn, args, NULL);
+}
+
+
+ar_Value *ar_call_s(ar_State *S, ar_Value *fn, const char *fn_name, ar_Value *args) {
+    int t = ar_type(fn);
+    if (t != AR_TFUNC && t != AR_TCFUNC) {
+        ar_error_str(S, "expected function named '%s', got %s", fn_name, ar_type_str(t));
     }
     return raw_call(S, ar_new_pair(S, fn, args), fn, args, NULL);
 }
@@ -1183,8 +1199,10 @@ ar_Value *ar_do_file(ar_State *S, const char *filename) {
 	if (!str) {
 	    ar_error_str(S, "");
 	  }
-	char copy_str[strlen(str)];
+	size_t len = strlen(str);
+	char copy_str[len+1];
 	strcpy(copy_str, str);
+	copy_str[len+1] = '\0';
 	free(str);
     return ar_eval(S, ar_parse(S, copy_str, filename), S->global);
 }
@@ -1674,8 +1692,8 @@ static ar_Value *f_error(ar_State *S, ar_Value *args) {
 
 static ar_Value *f_threshold(ar_State *S, ar_Value *args) {
     ar_Value *threshold = ar_check(S, ar_car(args), AR_TNUMBER);
-    if (threshold->u.num.n > 0)
-        ar_error_str(S, "Value must be <= 0");
+    if (threshold->u.num.n < 0)
+        ar_error_str(S, "Value must be grater than 0");
     AR_MIN_THRESHOLD = threshold->u.num.n;
     return NULL;
 }
