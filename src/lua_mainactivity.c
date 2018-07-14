@@ -251,9 +251,9 @@ void lua_main_activity_load(int argc, char* argv[]) {
 
   graphics_init(config.window.width, config.window.height, config.window.resizable, config.window.stats, config.window.window);
   /*
-         * When we do not have a visible window we can't put
-         * these propieties
-         */
+  * When we do not have a visible window we can't put
+  * these propieties
+  */
   if (config.window.window)
     {
       graphics_setTitle(config.window.title);
@@ -269,7 +269,7 @@ void lua_main_activity_load(int argc, char* argv[]) {
     {
       fclose(icon);
       image_ImageData* img = malloc(sizeof(image_ImageData));
-      int found = image_ImageData_new_with_filename(img, "icon.png");
+      image_ImageData_new_with_filename(img, "icon.png");
       graphics_setIcon(img);
       free(img);
     }

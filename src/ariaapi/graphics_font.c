@@ -170,15 +170,15 @@ void ar_graphics_font_register(ar_State* S)
 {
   struct { const char* name; ar_Prim fn; } prims[] =
   {
-  {"love:graphics-newFont", 						ar_graphics_newFont},
-  {"love:graphics-font-gc",           	        ar_graphics_Font_free},
+  {"love:graphics-newFont", 				        ar_graphics_newFont},
+  {"love:graphics-font-free",           	                ar_graphics_Font_free},
   {"love:graphics-setFont", 					ar_graphics_setFont},
   {"love:graphics-font-getBaseline", 				ar_graphics_Font_getBaseline},
   {"love:graphics-font-getWidth", 				ar_graphics_Font_getWidth},
   {"love:graphics-font-getHeight", 				ar_graphics_Font_getHeight},
   {"love:graphics-font-getDescent", 				ar_graphics_Font_getDescent},
   {"love:graphics-font-getAscent", 				ar_graphics_Font_getAscent},
-  {"love:graphics-print", 						ar_graphics_font_print},
+  {"love:graphics-print", 				        ar_graphics_font_print},
   {NULL, NULL}
 };
   for (int i = 0; prims[i].name; i++)

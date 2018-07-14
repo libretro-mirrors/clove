@@ -26,7 +26,8 @@ int l_image_newImageData(lua_State* state) {
     int s1type = lua_type(state, 1);
     if(s1type == LUA_TSTRING) {
         moduleData.imageData->path = lua_tostring(state, 1);
-        if(image_ImageData_new_with_filename(moduleData.imageData, lua_tostring(state, 1)) == 0){
+        image_ImageData_new_with_filename(moduleData.imageData, lua_tostring(state, 1));
+        if(moduleData.imageData->pixels == NULL){
             lua_pushstring(state, "Could not load image file: ");
             lua_pushstring(state, lua_tostring(state, 1));
             lua_pushstring(state, ", reason: ");

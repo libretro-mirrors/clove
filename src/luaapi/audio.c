@@ -237,7 +237,7 @@ static int l_audio_SourceCommon_setLooping(lua_State* state){
 static int l_audio_SourceCommon_free(lua_State* state){
   if (moduleData.audio_type == audio_type_stream){
       audio_StreamSource* source = (audio_StreamSource *)lua_touserdata(state, 1);
-      audio_StreamSource_free(source, lua_toboolean(state, 2));
+      audio_StreamSource_free(source);
     } else {
       audio_SourceCommon* source = (audio_SourceCommon*)lua_touserdata(state, 1);
       audio_SourceCommon_free(source);

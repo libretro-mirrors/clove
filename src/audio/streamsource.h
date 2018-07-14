@@ -53,4 +53,4 @@ void audio_StreamSource_setPitch(audio_StreamSource* source, float gain);
 void audio_StreamSource_setPosition(audio_StreamSource* source, float x, float y, float z);
 void audio_StreamSource_setVelocity(audio_StreamSource* source, float x, float y, float z);
 void audio_StreamSource_setLooping(audio_StreamSource* source, int value);
-void audio_StreamSource_free();
+void audio_StreamSource_free(audio_StreamSource* source);

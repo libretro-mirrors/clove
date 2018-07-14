@@ -63,13 +63,13 @@ void ar_input_update(ar_State* S)
           break;
         case SDL_MOUSEBUTTONDOWN:
           ar_call_global_s(S, "love-mousepressed", ar_new_list(S, 3, ar_new_number(S, aria_input_event.button.x),
-                                                             ar_new_number(S, aria_input_event.button.y),
-                                                             ar_new_number(S, aria_input_event.button.button)));
+                                                               ar_new_number(S, aria_input_event.button.y),
+                                                               ar_new_number(S, aria_input_event.button.button)));
           break;
         case SDL_MOUSEBUTTONUP:
           ar_call_global_s(S, "love-mousereleased", ar_new_list(S, 3, ar_new_number(S, aria_input_event.button.x),
-                                                              ar_new_number(S, aria_input_event.button.y),
-                                                              ar_new_number(S, aria_input_event.button.button)));
+                                                                ar_new_number(S, aria_input_event.button.y),
+                                                                ar_new_number(S, aria_input_event.button.button)));
           break;
         case SDL_MOUSEMOTION:
           moduleData.mouse_x = aria_input_event.motion.x;
