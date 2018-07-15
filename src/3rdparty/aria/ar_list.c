@@ -14,7 +14,7 @@
  * @NOTE: This doesn't work on vectors!
  */
 ar_Value *p_find(ar_State *S, ar_Value *args, ar_Value *env) {
-    ar_Value *from = ar_eval(S, ar_car(args), env);
+    ar_Value *from = ar_check(S, ar_car(args), AR_TPAIR);
     ar_Value *to_find = ar_eval(S, ar_nth(args, 1), env);
     ar_Value *v = from;
 
@@ -27,21 +27,21 @@ ar_Value *p_find(ar_State *S, ar_Value *args, ar_Value *env) {
 
 
 ar_Value *p_reverse(ar_State *S, ar_Value *args, ar_Value *env) {
-    ar_Value* v = ar_eval(S, ar_car(args), env);
+    ar_Value* v = ar_check(S, ar_car(args), AR_TPAIR);
     return ar_reverse(v);
 }
 
 
 ar_Value *p_nth(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *from = ar_eval(S, ar_car(args), env);
-    ar_Value *n = ar_eval(S, ar_nth(args, 1), env);
+    ar_Value *n = ar_check(S, ar_nth(args, 1), AR_TNUMBER);
     return ar_nth(from, n->u.num.n);
 }
 
 
 ar_Value *p_nthcdr(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *from = ar_eval(S, ar_car(args), env);
-    ar_Value *n = ar_eval(S, ar_nth(args, 1), env);
+    ar_Value *n = ar_check(S, ar_nth(args, 1), AR_TNUMBER);
     int i = 0;
 
     while (i < n->u.num.n) {

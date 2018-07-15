@@ -17,6 +17,4 @@ void ar_input_register(ar_State* S);
 
 void ar_input_update(ar_State* S);
 
-SDL_Event aria_input_event;
-
 #endif
