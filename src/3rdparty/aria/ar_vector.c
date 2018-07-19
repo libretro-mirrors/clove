@@ -22,18 +22,26 @@ ar_Value *p_vector(ar_State *S, ar_Value *args, ar_Value *env) {
 
     while (ar_car(args) != NULL) {
         ar_Value *curr = ar_eval(S, ar_car(args), env);
-        if (ar_type(curr) != AR_TVECTOR)
-        {
-            ar_Value *entry = NULL;
-            while (curr != NULL) {
-                entry = ar_new_pair(S, curr, entry);
-                curr = ar_cdr(curr);
-            }
-            entry = ar_reverse(entry);
-            vec_append(vector,  (ar_Value*) entry);
-        }
-        else
+
+        if (ar_type(args) == AR_TPAIR) {
             vec_append(vector, (ar_Value*)curr);
+        }
+        else {
+            if (ar_type(curr) != AR_TVECTOR)
+            {
+                ar_Value *entry = NULL;
+                while (curr != NULL) {
+                    entry = ar_new_pair(S, curr, entry);
+                    curr = ar_cdr(curr);
+                }
+                entry = ar_reverse(entry);
+                vec_append(vector,  (ar_Value*) entry);
+            }
+            else
+                vec_append(vector, (ar_Value*)curr);
+        }
+
+
         args = ar_cdr(args);
     }
 
@@ -50,13 +58,17 @@ ar_Value *p_vector_push(ar_State *S, ar_Value *args, ar_Value *env) {
     if (!to_push) {
         ar_error_str(S, "Missing value in vector-push");
     }
-    ar_Value *entry = NULL;
-    while (to_push) {
-        entry = ar_new_pair(S, ar_car(to_push), entry);
-        to_push = ar_cdr(to_push);
+    if (ar_type(to_push) == AR_TVECTOR) {
+        vec_append(vector, to_push);
+    } else {
+        ar_Value *entry = NULL;
+        while (to_push) {
+            entry = ar_new_pair(S, ar_car(to_push), entry);
+            to_push = ar_cdr(to_push);
+        }
+        entry = ar_reverse(entry);
+        vec_append(vector, entry);
     }
-    entry = ar_reverse(entry);
-    vec_append(vector, entry);
 
     return NULL;
 }
@@ -78,6 +90,19 @@ ar_Value *p_vector_set(ar_State *S, ar_Value *args, ar_Value *env) {
     return NULL;
 }
 
+
+ar_Value *p_vector_remove(ar_State *S, ar_Value *args, ar_Value *env) {
+    vec_t *vector = ar_eval_vector(S, ar_car(args), env);
+#ifdef AR_FLOAT
+    float index;
+#else
+    double index;
+#endif
+    index = ar_eval_number(S, ar_nth(args, 1), env);
+    if (vec_del(vector, index, sizeof(ar_Value)) == 1)
+        return NULL;
+    return S->t;
+}
 
 ar_Value *p_vector_pop(ar_State *S, ar_Value *args, ar_Value *env) {
     vec_t *vector = ar_eval_vector(S, ar_car(args), env);

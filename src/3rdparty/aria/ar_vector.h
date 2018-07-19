@@ -13,6 +13,7 @@ ar_Value *f_vectorp(ar_State *S, ar_Value *args);
 ar_Value *p_vector(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_vector_push(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_vector_set(ar_State *S, ar_Value *args, ar_Value *env);
+ar_Value *p_vector_remove(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_vector_pop(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_vector_get(ar_State *S, ar_Value *args, ar_Value *env);
 ar_Value *p_vector_length(ar_State *S, ar_Value *args, ar_Value *env);

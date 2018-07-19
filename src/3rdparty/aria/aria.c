@@ -1061,9 +1061,21 @@ static ar_Value *args_to_env(
         if (ar_type(params) == AR_TSYMBOL) {
             ar_bind(S, params, args, e);
             return e;
-        }
-        /* Handle normal param */
-        ar_bind(S, ar_car(params), ar_car(args), e);
+		}
+		/* Handles <default value> (function (a b (c <default value>))) */
+		else if (ar_type(ar_car(params)) == AR_TPAIR) {
+            if (ar_type(ar_car(args)) != AR_TNIL) {
+                ar_bind(S, ar_car(ar_car(params)), ar_car(args), e);
+            }
+            else {
+                ar_Value *param_symbol = ar_car(params);
+                ar_bind(S, ar_car(param_symbol), ar_eval(S, ar_nth(param_symbol, 1), e), e);
+            }
+		}
+		else {
+			/* Handle normal param */
+			ar_bind(S, ar_car(params), ar_car(args), e);
+		}
         params = ar_cdr(params);
         args = ar_cdr(args);
     }
@@ -1254,6 +1266,20 @@ static ar_Value *p_eval(ar_State *S, ar_Value *args, ar_Value *env) {
 }
 
 
+static ar_Value *p_defn(ar_State *S, ar_Value *args, ar_Value *env) {
+	ar_Value *sym, *v;
+
+	sym = ar_check(S, ar_car(args), AR_TSYMBOL);
+    v = new_value(S, AR_TFUNC);
+	v->u.func.params = ar_nth(args, 1);
+    v->u.func.body = ar_cdr(ar_cdr(args));
+    v->u.func.env = env;
+
+	ar_set(S, sym, v, env);
+	return NULL;
+}
+
+
 static ar_Value *p_fn(ar_State *S, ar_Value *args, ar_Value *env) {
     ar_Value *v = ar_car(args);
     int t = ar_type(v);
@@ -1261,12 +1287,12 @@ static ar_Value *p_fn(ar_State *S, ar_Value *args, ar_Value *env) {
     if (t != AR_TPAIR && t != AR_TSYMBOL) {
         ar_error_str(S, "expected pair or symbol, got %s", ar_type_str(t));
     }
-    if (t == AR_TPAIR && (ar_car(v) || ar_cdr(v))) {
+    /*if (t == AR_TPAIR && (ar_car(v) || ar_cdr(v))) {
         while (v) {
             ar_check(S, ar_car(v), AR_TSYMBOL);
             v = ar_cdr(v);
         }
-    }
+    }*/
     /* Init function */
     v = new_value(S, AR_TFUNC);
     v->u.func.params = ar_car(args);
@@ -1345,6 +1371,18 @@ static ar_Value *p_if(ar_State *S, ar_Value *args, ar_Value *env) {
         }
         v = ar_cdr(next);
     }
+    return NULL;
+}
+
+
+static ar_Value *p_if2(ar_State *S, ar_Value *args, ar_Value *env) {
+    ar_Value *cond = ar_eval(S, ar_car(args), env);
+	if (cond) {
+		ar_do_list(S, ar_nth(args, 1), env);
+	}
+	else {
+		ar_do_list(S, ar_nth(args, 2), env);
+	}
     return NULL;
 }
 
@@ -1741,10 +1779,12 @@ static void register_builtin(ar_State *S) {
   { "nth",      p_nth                     },
   { "nthcdr",   p_nthcdr                  },
   { "function", p_fn                      },
+  { "defn",     p_defn                    },
   { "macro",    p_macro                   },
   { "vector-push",   p_vector_push        },
   { "vector-get",    p_vector_get         },
   { "vector-length", p_vector_length      },
+  { "vector-remove", p_vector_remove      },
   { "vector-pop",    p_vector_pop         },
   { "vector-set",    p_vector_set         },
   { "vector-find",   p_vector_find        },
@@ -1755,6 +1795,7 @@ static void register_builtin(ar_State *S) {
   { "remove-n", p_remove_n                },
   { "apply",    p_apply                   },
   { "if",       p_if                      },
+  { "if+",      p_if2                     },
   { "unless",   p_unless                  },
   { "when",     p_when                    },
   { "not",      p_not                     },

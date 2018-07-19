@@ -136,10 +136,10 @@
   (= size 0)
   (= color (vector "testing-tests" 3 4 5))
   (dotimes ((= i 0) (vector-length color))
-		  (print (type (car (vector-get color i))))
-		  (if (eq (type (car (vector-get color i))) 'string)
-		  (= size (+ size (strlen (car (vector-get color i)))))
-		  (= size (+ size (sizeof (car (vector-get color i)))))))
+		  (print (type (vector-get color i)))
+		  (if (eq (type (vector-get color i)) 'string)
+		  (= size (+ size (strlen (vector-get color i))))
+		  (= size (+ size (sizeof (vector-get color i))))))
   (print size)
 
  ; Lets read serialized and deserialize it
@@ -153,4 +153,35 @@
 
   (= rez (substr (read "script/read_from_file.txt") 20))
   (print (eval (parse rez "rez")))
+
+  (if+ (and (>= 2 1) (not (zerop 1)))
+	   ((print "yes condition 1"))
+	   ((print "no condition 1")
+	   (print "no condition 2"))
+	   )
+
+  #|
+  (= func-foo
+	 (function (a b)
+
+			   ))
+  |#
+
+  (= default-opt-text "carrots are healthy")
+  (= test -3)
+  (defn default-value-function
+		(a b (c default-opt-text) (d test))
+        (print a b c d)
+  )
+
+  (default-value-function 1 2)
+  (print "defn has type of: " (type default-value-function))
+
+
+  (= ten 10)
+  (= my-vector (vector ten 1 '2 "3" (list 4 5) (vector 7 8)))
+  (print "BEFORE" my-vector)
+  (vector-remove my-vector 4)
+  (print "AFTER" my-vector)
+  (print ten)
   )
