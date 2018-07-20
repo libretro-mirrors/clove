@@ -17,7 +17,7 @@ else
 	CC +=gcc
 endif
 
-SRC=aria.c ar_math.c ar_vector.c ar_list.c ar_io.c ar_string.c ar_map.c utils/hash.c
+SRC=aria.c ar_math.c ar_vector.c ar_list.c ar_io.c ar_string.c ar_map.c utils/hash.c utils/vector.c
 OBJ=$(patsubst %.c,%.o,$(SRC))
 
 # Place where the binary will be placed

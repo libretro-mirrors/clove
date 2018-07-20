@@ -358,8 +358,8 @@ ar_Value *ar_to_string_value(ar_State *S, ar_Value *v, int quotestr) {
 			vector = ar_to_vector(S, v);
 			size_t i = 0;
 			last = ar_append_tail(S, &res, ar_new_string(S, "("));
-			while (i < vec_size(vector)) {
-				val = vec_get(vector, i);
+			while (i < vector_count(vector)) {
+				val = vector_get(vector, i);
 				if (i > 0)
 					last = ar_append_tail(S, last, ar_new_string(S, " "));
 				last = ar_append_tail(S, last, ar_to_string_value(S, val, 1));
@@ -695,7 +695,7 @@ static void gc_free(ar_State *S, ar_Value *v) {
         zfree(S, v->u.str.s);
         break;
     case AR_TVECTOR:
-        vec_destroy(v->u.udata.ptr);
+        vector_free(v->u.udata.ptr);
         break;
 	case AR_TMAP:
 		hash_destroy(v->u.hmap.m);
@@ -757,8 +757,8 @@ begin:
     case AR_TVECTOR:
         {
             size_t i = 0;
-            while (i < vec_size(v->u.udata.ptr)) {
-                ar_Value *curr = vec_get(v->u.udata.ptr, i);
+            while (i < vector_count(v->u.udata.ptr)) {
+                ar_Value *curr = vector_get(v->u.udata.ptr, i);
                 ar_mark(S, curr);
                 ++i;
             }
@@ -1498,13 +1498,13 @@ static ar_Value *p_dovector(ar_State *S, ar_Value *args, ar_Value *env) {
 	int orig_stack_idx = S->gc_stack_idx;
 	size_t index = 0;
 
-	while (index < vec_size(vector)) {
+	while (index < vector_count(vector)) {
 
 		/* Truncate stack so we don't accumulate protected values */
 		S->gc_stack_idx = orig_stack_idx;
 
 		sym->u.pair.car = ar_new_symbol(S, sym_name);
-		sym->u.pair.car = ar_set(S, sym->u.pair.car, ar_car(vec_get(vector, index)), env);
+		sym->u.pair.car = ar_set(S, sym->u.pair.car, ar_car(vector_get(vector, index)), env);
 		ar_do_list(S, body, env);
 		index++;
 	}

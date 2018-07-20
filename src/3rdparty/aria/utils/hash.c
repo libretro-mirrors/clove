@@ -164,13 +164,21 @@ void hash_add(hash_t* h, const char* key, void* value)
          * previously and if it has then we replace its value
          * with the new one
          */
-      while (d->next != NULL) {
-          if (strcmp(d->key, key) == 0) {
-              d->value = value;
-              return;
-            }
-          d = d->next;
-        }
+	  if (d->next != NULL) {
+		  while (d->next != NULL) {
+			  if (strcmp(d->key, key) == 0) {
+				  d->value = value;
+				  return;
+			  }
+			  d = d->next;
+		  }
+	  }
+	  else {
+		  if (strcmp(d->key, key) == 0) {
+			  d->value = value;
+			  return;
+		  }
+	  }
 
       hash_table_t* n = malloc(sizeof(hash_table_t)); /*next*/
 
