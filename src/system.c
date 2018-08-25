@@ -16,62 +16,62 @@
 
 static struct
 {
-	char* clipboardText;
+  char* clipboardText;
 } moduleData;
 
 const char* system_getOS() {
-    return SDL_GetPlatform();
+  return SDL_GetPlatform();
 }
 
 int system_getProcessorCount()
 {
-	return SDL_GetCPUCount();
+  return SDL_GetCPUCount();
 }
 
 const char* system_getClipboardText()
 {
-	char* text = SDL_GetClipboardText(); //it's not null terminated
+  char* text = SDL_GetClipboardText(); //it's not null terminated
 
-	if (text)
-	{
-		moduleData.clipboardText = malloc(strlen(text) + 1);
-		strcpy(moduleData.clipboardText, text);
-		SDL_free(text);
+  if (text)
+    {
+      moduleData.clipboardText = malloc(strlen(text) + 1);
+      strcpy(moduleData.clipboardText, text);
+      SDL_free(text);
 
-		return moduleData.clipboardText;
-	}
+      return moduleData.clipboardText;
+    }
 
-	return "";
+  return "";
 }
 
 void system_setClipboardText(const char* text)
 {
-	moduleData.clipboardText = text;
-	SDL_SetClipboardText(text);
+  moduleData.clipboardText = (char*)text;
+  SDL_SetClipboardText(text);
 }
 
 system_PowerState system_getPowerInfo() {
-    int seconds, percent;
-    int power = SDL_GetPowerInfo(&seconds, &percent);
+  int seconds, percent;
+  SDL_PowerState power = SDL_GetPowerInfo(&seconds, &percent);
 
-	const char* state;
-	if (power == SDL_POWERSTATE_UNKNOWN)
-		state = "power_state_unknown";
-	else if (power == SDL_POWERSTATE_CHARGED)
-		state = "battery_charged";
-	else if (power == SDL_POWERSTATE_CHARGING)
-		state = "battery_charging";
-	else if (power == SDL_POWERSTATE_ON_BATTERY)
-		state = "not_plugged_running_on_battery";
-	else if (power == SDL_POWERSTATE_NO_BATTERY)
-		state = "plugged_in_no_battery";
-	else
-		state = "unknown";
+  const char* state;
+  if (power == SDL_POWERSTATE_UNKNOWN)
+    state = "power_state_unknown";
+  else if (power == SDL_POWERSTATE_CHARGED)
+    state = "battery_charged";
+  else if (power == SDL_POWERSTATE_CHARGING)
+    state = "battery_charging";
+  else if (power == SDL_POWERSTATE_ON_BATTERY)
+    state = "not_plugged_running_on_battery";
+  else if (power == SDL_POWERSTATE_NO_BATTERY)
+    state = "plugged_in_no_battery";
+  else
+    state = "unknown";
 
-   	system_PowerState powerState = {
-        state,
-        seconds,
-        percent
-    };
-    return powerState;
+  system_PowerState powerState = {
+    state,
+    seconds,
+    percent
+  };
+  return powerState;
 }

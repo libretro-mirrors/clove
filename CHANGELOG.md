@@ -1,8 +1,8 @@
 version 0.8.0 - not released yet
 =============
 * fixed:  newImageFont is not broke anymore.
-* modify: changed the structure of folders a bit 
-* added: new scripting language made in-house - Aria
+* modify: changed the structure of folders a bit
+* added: CLove can be compiled as shared or static lirary
 * added: 'set' function to batch.c. Allows for changing the structure of an entity which is part of the batch.
 * added: love.system.setClipboardText(text)
 * added: love.system.getClipboardText()

@@ -3,7 +3,7 @@
 CLove
 =====
 CLove is a simple, easy to learn and use 2D game framework tested on
-Mac/Linux/PC, made in C with OpenGLES 2 which uses Lua or Aria as scripting language.
+Mac/Linux/PC, made in C with OpenGLES 2 which uses Lua as scripting language.
 
 How to build
 ============
@@ -36,7 +36,6 @@ cmake ../ -DUSE_PHYSFS=OFF to use native functions for filesystem.
 Features
 ========
 - Lua
-- Aria
 - Native C/C++ support.
 - Easy to learn and use api.
 - Cross platform.
@@ -81,22 +80,7 @@ local image = love.graphics.newImage("image.png")
 function love.draw()
 	love.graphics.draw(image, 200, 200)
 end
-```
 
-Aria:
-```cl
-; Example of drawing an image
-(do
-
-(= image (love:graphics-newImage "image.png"))
-
-(= love-draw
-    (function ()
-
-	(love:graphics-drawImage image 200 200)
-    ))
-)
-```
 
 Lua:
 ```lua
@@ -109,23 +93,6 @@ function love.draw()
 end
 ```
 
-Aria:
-```cl
-; Example of drawing some primitives
-
-(do
-
-(= love-draw
-    (function ()
-
-	(love:graphics-rectangle "fill" 100 100 32 16)
-	(love:graphics-rectangle "line" 200 200 32 16)
-	(love:graphics-circle "fill" 300 200 32 16)
-	(love:graphics-circle "line" 380 300 32 8)
-    ))
-)
-```
-
 Lua:
 ```lua
 -- Example of playing music
@@ -135,15 +102,6 @@ function love.load()
 end
 ```
 
-Aria:
-```cl
-(do
-
-; Example of playing music
-(= ogg_music (love:audio-newSource "music.ogg"))
-(love:audio-play ogg_music)
-)
-```
 
 CLove pictures
 -----------------------------

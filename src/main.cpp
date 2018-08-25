@@ -17,18 +17,10 @@
 
 extern "C" {
 #include "lua_mainactivity.h"
-#include "aria_mainactivity.h"
 }
 
 int main(int argc, char* argv[]) {
-  if (argv[1] != NULL)
-    {
-      aria_main_activity_load(argc, argv);
-    }
-  else
-    {
-      lua_main_activity_load(argc, argv);
-    }
-
+  //TODO native should be ran else
+  lua_main_activity_load(argc, argv);
   return 0;
 }

@@ -5,8 +5,8 @@ SET( SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src )
 SET( INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include )
 SET( RC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/build )
 
-OPTION( glew-cmake_BUILD_SHARED "Build the shared glew library" OFF)
-OPTION( glew-cmake_BUILD_STATIC "Build the static glew library" ON)
+OPTION( glew-cmake_BUILD_SHARED "Build the shared glew library" ON)
+OPTION( glew-cmake_BUILD_STATIC "Build the static glew library" OFF)
 SET(ONLY_LIBS TRUE)
 
 INCLUDE_DIRECTORIES( ${INCLUDE_DIR} )
