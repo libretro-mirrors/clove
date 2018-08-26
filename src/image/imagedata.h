@@ -12,18 +12,18 @@
 
 typedef struct
 {
-	unsigned char r, g, b, a;
+    unsigned char r, g, b, a;
 } pixel;
 
 typedef struct {
-  int w;
-  int h;
-  int x;
-  int y;
-  int c;
-  const char* path;
-  unsigned char *surface;
-  pixel *pixels;
+    int w;
+    int h;
+    int x;
+    int y;
+    int c;
+    const char* path;
+    unsigned char *surface;
+    pixel *pixels;
 } image_ImageData;
 
 char const* image_error(void);

@@ -8,17 +8,12 @@
 */
 #include "image.h"
 #include "../image/imagedata.h"
-#include "../math/vector.h"
 #include "graphics.h"
 #include "vertex.h"
 #include "shader.h"
+
 #include <stdio.h>
 
-static struct {
-  GLuint vbo;
-  GLuint ibo;
-  mat4x4 tr2d;
-} moduleData;
 
 static graphics_Vertex const imageData[] = {
   {{0.0f, 0.0f}, {0.0f, 0.0f}, {1.0f, 1.0f, 1.0f, 1.0f}},
@@ -46,13 +41,13 @@ static const graphics_Filter defaultFilter = {
 };
 
 void graphics_Image_new_with_ImageData(graphics_Image *dst, image_ImageData *data) {
-  glGenBuffers(1, &moduleData.vbo);
-  glGenBuffers(1, &moduleData.ibo);
+  glGenBuffers(1, &dst->vbo);
+  glGenBuffers(1, &dst->ibo);
 
-  glBindBuffer(GL_ARRAY_BUFFER, moduleData.vbo);
+  glBindBuffer(GL_ARRAY_BUFFER, dst->vbo);
   glBufferData(GL_ARRAY_BUFFER, sizeof(imageData), imageData, GL_STATIC_DRAW);
 
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.ibo);
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dst->ibo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(imageIndices), imageIndices, GL_STATIC_DRAW);
 
   glEnableVertexAttribArray(0);
@@ -84,13 +79,13 @@ void graphics_Image_refresh(graphics_Image *img, image_ImageData const *data) {
   switch (image_ImageData_getChannels((image_ImageData*)data)) //we do not change "data" so it's safe to cast it.
     {
 
-    /*
-                 * Note:
-                 * When it comes to grey and grey + alpha
-                 * you might have to do something in the shaders
-                 * too in order to have them look good.
-                 * Idk because I haven't tested :P.
-                 */
+        /*
+         * Note:
+         * When it comes to grey and grey + alpha
+         * you might have to do something in the shaders
+         * too in order to have them look good.
+         * Idk because I haven't tested :P.
+         */
 
     case 1: //grey
       format = GL_RED;
@@ -120,8 +115,8 @@ void graphics_Image_refresh(graphics_Image *img, image_ImageData const *data) {
 
 void graphics_Image_free(graphics_Image *obj) {
   glDeleteTextures(1, &obj->texID);
-  glDeleteBuffers(1, &moduleData.ibo);
-  glDeleteBuffers(1, &moduleData.vbo);
+  glDeleteBuffers(1, &obj->ibo);
+  glDeleteBuffers(1, &obj->vbo);
 }
 
 void graphics_Image_setFilter(graphics_Image *img, graphics_Filter const* filter) {
@@ -150,14 +145,14 @@ void graphics_Image_draw(graphics_Image const* image, graphics_Quad const* quad,
 
   //glBufferData(GL_ARRAY_BUFFER, sizeof(imageVertices), imageVertices, GL_DYNAMIC_DRAW);
   glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(imageData), imageData);
-  m4x4_newTransform2d(&moduleData.tr2d, x, y, r, sx, sy, ox, oy, kx, ky);
+  m4x4_newTransform2d(&image->tr2d, x, y, r, sx, sy, ox, oy, kx, ky);
 
 
   //glEnable(GL_TEXTURE_2D); Deprecated in GLES 2
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, image->texID);
 
-  graphics_drawArray(quad, &moduleData.tr2d,  moduleData.ibo, 4, GL_TRIANGLE_STRIP, GL_UNSIGNED_BYTE,
+  graphics_drawArray(quad, &image->tr2d,  image->ibo, 4, GL_TRIANGLE_STRIP, GL_UNSIGNED_BYTE,
                      graphics_getColor(), image->width * quad->w, image->height * quad->h);
 
 }

@@ -34,8 +34,8 @@ void m4x4_shear2d(mat4x4 *inout, float x, float y) {
 
 void m4x4_newTransform2d(mat4x4 *out, float x, float y, float r, float sx, float sy,
                          float ox, float oy, float kx, float ky) {
-  float sa = sin(r);
-  float ca = cos(r);
+  float sa = sinf(r);
+  float ca = cosf(r);
   float e = ky * sy;
   float f = kx * sx;
   float g = -ky*ox-oy;

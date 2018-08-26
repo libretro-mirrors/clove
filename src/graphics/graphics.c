@@ -152,7 +152,7 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
 		SDL_GL_SetSwapInterval(1); //limit FPS to 60, this may not work on all drivers
 
 		if (stats > 0) {
-			printf("Debug: Sdl version: %d.%d.%c \n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+			printf("Debug: Sdl version: %d.%d.%d \n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
 			printf("Debug: OpenGL version: %s \n", glGetString(GL_VERSION));
 			printf("Debug: GLSL version %s \n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 			printf("Debug: Vendor: %s\n", glGetString(GL_VENDOR));

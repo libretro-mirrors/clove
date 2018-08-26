@@ -10,6 +10,7 @@
 
 #include "../image/imagedata.h"
 #include "../tools/gl.h"
+#include "../math/vector.h"
 
 #include "quad.h"
 #include "gltools.h"
@@ -27,13 +28,14 @@ typedef struct {
 
 
 typedef struct {
-  GLuint texID;
+  unsigned int texID;
+  unsigned int vbo;
+  unsigned int ibo;
   int width;
   int height;
-  GLuint imageVBO;
-  GLuint imageIBO;
   //Used to store the path to loaded image. May return null.
-  const char* path;
+  const char *path;
+  mat4x4 tr2d;
 } graphics_Image;
 
 
