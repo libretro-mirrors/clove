@@ -20,7 +20,6 @@ extern "C" {
 }
 
 int main(int argc, char* argv[]) {
-  //TODO native should be ran else
   lua_main_activity_load(argc, argv);
   return 0;
 }
