@@ -254,7 +254,7 @@ set_option(RENDER_D3D          "Enable the Direct3D render driver" ${WINDOWS})
 
 # TODO: We should (should we?) respect cmake's ${BUILD_SHARED_LIBS} flag here
 # The options below are for compatibility to configure's default behaviour.
-set(SDL_SHARED ON CACHE BOOL "Build a shared version of the library")
+set(SDL_SHARED OFF CACHE BOOL "Build a shared version of the library")
 set(SDL_STATIC ON CACHE BOOL "Build a static version of the library")
 
 # General source files
@@ -682,7 +682,7 @@ if(UNIX AND NOT APPLE)
         #include <linux/kd.h>
         #include <linux/keyboard.h>
 
-        int main(int argc, char **argv) 
+        int main(int argc, char **argv)
         {
             struct kbentry kbe;
             kbe.kb_table = KG_CTRL;

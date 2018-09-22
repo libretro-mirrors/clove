@@ -197,7 +197,7 @@ void graphics_geometry_rectangle(bool filled,
 	float *buf = moduleData.data;
 
 	/*
-	 * Which is commented with 0,1,2,3 represent the declaration of the shape for this rectangle
+	 * What is commented with 0,1,2,3 represent the declaration of the shape for this rectangle
 	 * the rest are texcoords(2 floats) and color(4 floats)
 	 */
 

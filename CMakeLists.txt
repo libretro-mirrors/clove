@@ -20,7 +20,7 @@ if (USE_PHYSFS)
 endif(USE_PHYSFS)
 
 IF(WIN32)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MOE_BUILD_FLAGS}")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MOE_BUILD_FLAGS} -static-libgcc")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /GR /FC /DWIN32 /D_MBCS")
@@ -35,10 +35,10 @@ ENDIF()
 IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
 set(MTCL_BUILD_FLAGS "")
-set(CMAKE_C_FLAGS " -std=gnu99 ${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
+set(CMAKE_C_FLAGS " -std=gnu99 -static-libgcc ${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
 set(CMAKE_C_FLAGS_DEBUG "  -std=gnu99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE " -std=gnu99 ${CMAKE_C_FLAGS_RELEASE} -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl -static-libstdc++")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 set(CMAKE_SHARED_LINKER_FLAGS "-ldl -Wl,-rpath=$ORIGIN,--as-needed,--allow-multiple-definition,--build-id")
@@ -59,7 +59,8 @@ if (APPLE)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX
+	-static-libstdc++")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__Debug__")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl")
     set(OS_SPECIFIC_LIBRARIES ${COCOA_LIB} ${CORE_SERVICES_LIB} ${FOUNDATION_LIB} ${IOKIT_LIB})
@@ -199,10 +200,9 @@ set(LUA_INCLUDE_DIR src/3rdparty/lua/)
 set(LUA_LIBRARIES lua)
 
 #glew
-if(NOT ANDROID)
-    add_subdirectory(src/3rdparty/glew/)
-    set(GLEW_INCLUDE_DIR src/3rdparty/glew/include/GL/)
-endif()
+add_subdirectory(src/3rdparty/glew/build/cmake/)
+include_directories(src/3rdparty/glew/include/GL)
+set(GLEW_LIBRARIES glew)
 
 #sdl2
 add_subdirectory(src/3rdparty/SDL2/)
@@ -223,21 +223,13 @@ endif()
 
 
 add_definitions(-DAL_LIBTYPE_STATIC)
-
-if (NOT ANDROID)
- #   add_definitions(-DGLEW_STATIC)
-endif()
-
 add_definitions(-DFT2_BUILD_LIBRARY)
-add_definitions(-DSDL2_SHARED)
+add_definitions(-DSDL2)
 
 #freetype
 set(FREETYPE_LIBRARIES freetype)
 include_directories(src/3rdparty/freetype/include)
 
-if(NOT ANDROID)
-    set(GLEW_LIBRARIES libglew_shared)
-endif()
 
 if(WIN32)
     if (USE_PHYSFS)

@@ -95,7 +95,7 @@ IF ("${CMAKE_C_PLATFORM_ID}" STREQUAL "QNX")
 ENDIF()
 
 IF(NOT LIBTYPE)
-    SET(LIBTYPE SHARED)
+    SET(LIBTYPE STATIC)
 ENDIF()
 
 SET(LIB_MAJOR_VERSION "1")
@@ -340,7 +340,8 @@ ELSE()
     CHECK_C_SOURCE_COMPILES("int foo() __attribute__((destructor));
                              int main() {return 0;}" HAVE_GCC_DESTRUCTOR)
 
-    option(ALSOFT_STATIC_LIBGCC "Force -static-libgcc for static GCC runtimes" OFF)
+    option(ALSOFT_STATIC_LIBGCC "Force -static-libgcc for static GCC runtimes"
+	ON)
     if(ALSOFT_STATIC_LIBGCC)
         set(OLD_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES})
         set(CMAKE_REQUIRED_LIBRARIES ${CMAKE_REQUIRED_LIBRARIES} -static-libgcc)
