@@ -1,20 +1,17 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#include <stdio.h>
-
 #include "../3rdparty/openal/include/AL/al.h"
 #include "../3rdparty/openal/include/AL/alc.h"
 
-#include "../tools/utils.h"
-
-#include "audio.h"
+#include "../include/utils.h"
+#include "../include/audio.h"
 
 static struct {
 	ALCdevice* device;

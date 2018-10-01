@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -26,9 +26,9 @@ static int callback(void* ptr) {
     lua_State* L = moduleData.state;
 
     if (luaL_checkstring(L, 1)) {
-        luaL_loadfile(L, lua_tostring(L, 1)); 
+        luaL_loadfile(L, lua_tostring(L, 1));
         if (lua_pcall(L, 0,0,0) != 0)
-            luaL_error(L, "%s \n", lua_tostring(L, -1)); 
+            luaL_error(L, "%s \n", lua_tostring(L, -1));
     }else {
         luaL_error(L, "Error in thread. Only .lua file is correct %s %\n", lua_tostring(L, -1));
         return -1;
@@ -43,24 +43,24 @@ static int l_thread_newThread(lua_State* state) {
     const char* name = luaL_optstring(state, 2, NULL);
     data->thread = SDL_CreateThread((SDL_ThreadFunction)callback, name, (void *)NULL);
 
-    if (NULL == data->thread) 
+    if (NULL == data->thread)
         luaL_error(state, "\n Create thread failed: %s\n", SDL_GetError());
-    else 
+    else
         SDL_WaitThread(data->thread, &data->res);
-    
+
     lua_rawgeti(state, LUA_REGISTRYINDEX, moduleData.threadDataMT);
     lua_setmetatable(state, -2);
 
     return 1;
 }
 /*
-static int l_thread_getThreadID(lua_State* state) { 
+static int l_thread_getThreadID(lua_State* state) {
     thread_Data* thread = (thread_Data*)lua_touserdata(state, 1);
     lua_pushinteger(state, SDL_GetThreadID(thread->thread));
     return 1;
 }
 
-static int l_thread_getThreadName(lua_State* state) { 
+static int l_thread_getThreadName(lua_State* state) {
     thread_Data* thread = (thread_Data*)lua_touserdata(state, 1);
     lua_pushstring(state, SDL_GetThreadName(thread->thread));
     return 1;

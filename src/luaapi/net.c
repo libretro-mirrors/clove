@@ -8,7 +8,7 @@
 */
 #include "net.h"
 
-#include "../net/net.h"
+#include "../include/net.h"
 
 #include "tools.h"
 

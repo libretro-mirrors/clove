@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2017 Muresan Vlad
+#   Copyright (C) 2017-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -19,29 +19,29 @@
 #include "vertex.h"
 #include "graphics.h"
 
-#include "../image/imagedata.h"
-#include "../math/vector.h"
-#include "../tools/gl.h"
+#include "imagedata.h"
+#include "vector.h"
+#include "gl.h"
 
 typedef enum {
-  graphics_MeshDrawMode_fan       = GL_TRIANGLE_FAN,
-  graphics_MeshDrawMode_strip     = GL_TRIANGLE_STRIP,
-  graphics_MeshDrawMode_triangles = GL_TRIANGLES,
-  graphics_MeshDrawMode_points    = GL_POINTS
+	graphics_MeshDrawMode_fan       = GL_TRIANGLE_FAN,
+	graphics_MeshDrawMode_strip     = GL_TRIANGLE_STRIP,
+	graphics_MeshDrawMode_triangles = GL_TRIANGLES,
+	graphics_MeshDrawMode_points    = GL_POINTS
 } graphics_MeshDrawMode3d;
 
 typedef struct {
-    GLuint vbo;
-    GLuint ibo;
-    graphics_Image* image;
-    graphics_MeshDrawMode3d drawMode;
-    graphics_Vertex* vertices;
-    int vertexCount;
-    unsigned int* indices;
-    int indexCount;
-    mat4x4 tr2d;
-    bool hasTexture;
-    graphics_Shader plainColorShader;
+	GLuint vbo;
+	GLuint ibo;
+	graphics_Image* image;
+	graphics_MeshDrawMode3d drawMode;
+	graphics_Vertex* vertices;
+	int vertexCount;
+	unsigned int* indices;
+	int indexCount;
+	mat4x4 tr2d;
+	bool hasTexture;
+	graphics_Shader plainColorShader;
 } graphics_Mesh3d;
 
 void graphics_Mesh_new(graphics_Mesh3d* mesh, int vertexCount, graphics_Vertex* vertices, int indexCount, unsigned int* indices, graphics_MeshDrawMode3d drawMode);

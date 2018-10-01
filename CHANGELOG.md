@@ -1,8 +1,10 @@
-version 0.8.0 - not released yet
+version 0.7.2 - 01.10.2018:
 =============
+
 * fixed:  newImageFont is not broke anymore.
 * modify: changed the structure of folders a bit
-* added: CLove can be compiled as shared or static lirary
+* added: CLove can be compiled as shared or static library, moved every header
+  file in src/include 
 * added: 'set' function to batch.c. Allows for changing the structure of an entity which is part of the batch.
 * added: love.system.setClipboardText(text)
 * added: love.system.getClipboardText()
@@ -31,7 +33,6 @@ version 0.7.1 22.07.2017:
 * added: love.filesystem.equals(String1, String2, length(optional))
 which lets you see if two strings are equal till a certain length. By default
 it takes the full length of the strings.
-
 * added: possibility to hide and create window when you want using conf.lua
 * fixed: imageData: getChannel, getPixel, now accepting: grey, grey_alpha, rgb, rgba
 * added: newImageFont. BitmapFonts. You can draw fonts using images (see examples for more info)

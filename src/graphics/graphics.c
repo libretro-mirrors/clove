@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -11,26 +11,20 @@
 
 #include "../3rdparty/SDL2/include/SDL.h"
 
-/*
- * For some reason I have to esplicitly tell
- * where glew is located, can't use ../tools
- */
 #ifdef __EMSCRIPTEN__
 #include "../3rdparty/glew/include/GL/glew.h"
 #endif
 
-#include "graphics.h"
-
-#include "../tools/gl.h"
-#include "../tools/utils.h"
-#include "../math/vector.h"
-
-#include "matrixstack.h"
-#include "font.h"
-#include "batch.h"
-#include "quad.h"
-#include "shader.h"
-#include "geometry.h"
+#include "../include/graphics.h"
+#include "../include/gl.h"
+#include "../include/utils.h"
+#include "../include/vector.h"
+#include "../include/matrixstack.h"
+#include "../include/font.h"
+#include "../include/batch.h"
+#include "../include/quad.h"
+#include "../include/shader.h"
+#include "../include/geometry.h"
 
 typedef struct {
     float red;

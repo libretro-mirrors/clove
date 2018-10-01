@@ -8,8 +8,7 @@
 */
 #pragma once
 
-#include "../image/imagedata.h"
-
+#include "imagedata.h"
 #include "image.h"
 #include "batch.h"
 #include "quad.h"

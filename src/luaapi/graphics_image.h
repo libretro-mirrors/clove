@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -17,8 +17,8 @@
 #include "graphics.h"
 #include "graphics_image.h"
 
-#include "../graphics/image.h"
-#include "../graphics/gltools.h"
+#include "../include/image.h"
+#include "../include/gltools.h"
 
 typedef struct {
     graphics_Image image;

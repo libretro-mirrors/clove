@@ -6,14 +6,16 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
-#include "streamsource.h"
+
+#include "../include/streamsource.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 // loaders
-#include "wav_decoder.h"
-#include "vorbis_decoder.h"
+#include "../include/wav_decoder.h"
+#include "../include/vorbis_decoder.h"
 
 static struct {
     audio_StreamSource ** playingStreams;

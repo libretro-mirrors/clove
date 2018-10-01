@@ -7,15 +7,14 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#include "bitmap_font.h"
-#include "shader.h"
-#include "batch.h"
-
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-#include "../tools/utf8.h"
+#include "../include/bitmap_font.h"
+#include "../include/shader.h"
+#include "../include/batch.h"
+#include "../include/utf8.h"
 
 /* TODO: A better implementation would be by using hashmaps instead of arrays. */
 

@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -9,10 +9,10 @@
 
 #include <stdlib.h>
 
-#include "vorbis_decoder.h"
-
-#include "../tools/utils.h"
 #include "../3rdparty/stb/stb_vorbis.h"
+
+#include "../include/vorbis_decoder.h"
+#include "../include/utils.h"
 
 
 int audio_vorbis_load(ALuint buffer, char const *filename) {

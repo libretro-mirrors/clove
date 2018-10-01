@@ -8,12 +8,14 @@
 */
 #include <stdlib.h>
 #include <stdio.h>
-#include "../tools/utils.h"
+#include "../include/utils.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "../3rdparty/stb/stb_image.c"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "../3rdparty/stb/stb_image_write.h"
-#include "imagedata.h"
+
+#include "../include/imagedata.h"
 
 void image_ImageData_new_with_filename(image_ImageData *dst, char const* filename) {
   int n;
@@ -104,5 +106,5 @@ void image_ImageData_free(image_ImageData *data) {
   free(data->surface);
 }
 
-void image_init() {
-}
+void image_init() {}
+

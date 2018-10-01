@@ -35,7 +35,8 @@ cmake ../ -DUSE_PHYSFS=OFF to use native functions for filesystem.
 
 Features
 ========
-- Lua
+- Lua.
+- Can be used as a shared or static library.
 - Native C/C++ support.
 - Easy to learn and use api.
 - Cross platform.
@@ -56,18 +57,12 @@ Features
 - Threads.
 - Error handling.
 
-Contributing
-========
-If you want to contribute to the project, feel free to work on what you please. I want to do a lot of the other stuff myself too.
-Please try to replicate the code style of the existing code by using tab width of 4 spaces and expand tabs to spaces, I will refuse to pull your changes otherwise.
-
 Planned work
 ============
-1. Stable physics system
+1. Physics system
 1. Networking for Windows
 1. Web build system
 1. Android
-1. Bug fixes
 
 Examples (see examples folder)
 --------

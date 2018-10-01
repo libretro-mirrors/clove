@@ -15,7 +15,7 @@
  * Mon 2 Jan 2017 - first real commit (1.0)
  */
 
-#include "net.h"
+#include "../include/net.h"
 
 // non OS idependent functions
 

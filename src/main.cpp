@@ -13,10 +13,10 @@
 
 #include <stdlib.h>
 
-#include "tools/utils.h"
+#include "include/utils.h"
 
 extern "C" {
-#include "lua_mainactivity.h"
+#include "include/lua_mainactivity.h"
 }
 
 int main(int argc, char* argv[]) {

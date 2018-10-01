@@ -12,10 +12,10 @@
 #include "tools.h"
 #include "graphics.h"
 
-#include "../graphics/bitmap_font.h"
-#include "../graphics/matrixstack.h"
-#include "../graphics/shader.h"
-#include "../graphics/graphics.h"
+#include "../include/bitmap_font.h"
+#include "../include/matrixstack.h"
+#include "../include/shader.h"
+#include "../include/graphics.h"
 
 static struct {
 	int mt;

@@ -1,21 +1,24 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
 
 #include "../3rdparty/lua/lauxlib.h"
 
+#include "../include/graphics.h"
+#include "../include/love.h"
+
 #include "boot.h"
 #include "tools.h"
-#include "../graphics/graphics.h"
-#include "../love.h"
+
 
 static void setConfDefault(lua_State* state, love_Config* config) {
 

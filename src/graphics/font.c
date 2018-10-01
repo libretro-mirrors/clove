@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #   Big thanks to Florian Kesseler
 #
 #   This project is free software; you can redistribute it and/or modify it
@@ -16,16 +16,14 @@
 #include <math.h>
 #include <stdlib.h>
 
-#include "../tools/utils.h"
-#include "../tools/utf8.h"
-#include "../math/minmax.h"
-
-#include "font.h"
-#include "quad.h"
-#include "graphics.h"
-
-#include "shader.h"
-#include "batch.h"
+#include "../include/utils.h"
+#include "../include/utf8.h"
+#include "../include/minmax.h"
+#include "../include/font.h"
+#include "../include/quad.h"
+#include "../include/graphics.h"
+#include "../include/shader.h"
+#include "../include/batch.h"
 #include "vera_ttf.c"
 
 #include FT_GLYPH_H

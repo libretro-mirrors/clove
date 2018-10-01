@@ -1,22 +1,22 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
-#include "staticsource.h"
+
+#include "../include/staticsource.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "../tools/utils.h"
-
+#include "../include/utils.h"
 // loaders
-#include "wav_decoder.h"
-#include "vorbis_decoder.h"
+#include "../include/wav_decoder.h"
+#include "../include/vorbis_decoder.h"
 
 static const char* get_filename_ext(const char *filename) {
 	const char *dot = strrchr(filename, '.');

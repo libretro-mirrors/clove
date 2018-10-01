@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -9,7 +9,8 @@
 #include <stdio.h>
 #include <math.h>
 #include <limits.h>
-#include "randomgenerator.h"
+
+#include "../include/randomgenerator.h"
 
 // Thomas Wang's 64-bit integer hashing function:
 // https://web.archive.org/web/20110807030012/http://www.cris.com/%7ETtwang/tech/inthash.htm

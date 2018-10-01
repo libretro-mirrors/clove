@@ -1,13 +1,13 @@
 /*
 #   clove
 #
-#   Copyright (C) 2017 Muresan Vlad
+#   Copyright (C) 2017-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#include "lua_mainactivity.h"
+#include "include/lua_mainactivity.h"
 
 #ifdef CLOVE_WEB
 #include <emscripten.h>
@@ -37,8 +37,7 @@ static void main_clean(lua_State* state) {
   joystick_close();
   graphics_destroyWindow();
   filesystem_free();
-  /* There is a nasty bug on Windows that
-           causes lua_close to give a segment fault. */
+  /*TODO There is/was a nasty bug on Windows that causes lua_close to give a segment fault. */
   lua_close(state);
   audio_close();
 }

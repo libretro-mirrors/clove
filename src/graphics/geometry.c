@@ -1,21 +1,21 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include <stdlib.h>
-#include "../math/util.h"
 #include <tgmath.h>
 #include <stdlib.h>
-#include "geometry.h"
-#include "graphics.h"
-#include "shader.h"
-#include "matrixstack.h"
-#include "vertex.h"
-#include <stdio.h>
+
+#include "../include/util.h"
+#include "../include/geometry.h"
+#include "../include/graphics.h"
+#include "../include/shader.h"
+#include "../include/matrixstack.h"
+#include "../include/vertex.h"
 
 static struct {
     GLuint dataVBO;

@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -14,8 +14,8 @@
 #include "../3rdparty/lua/lua.h"
 #include "../3rdparty/lua/lauxlib.h"
 
-#include "../love_config.h"
-#include "../graphics/font.h"
+#include "../include/love_config.h"
+#include "../include/font.h"
 
 void l_tools_registerFuncsInModule(lua_State* state, char const* module, luaL_Reg const* funcs);
 void l_tools_registerModule(lua_State* state, char const* moduleName, luaL_Reg const * funcs);

@@ -12,7 +12,7 @@
 
 #include "../3rdparty/lua/lua.h"
 
-#include "../graphics/font.h"
+#include "../include/font.h"
 
 void l_graphics_font_register(lua_State* state);
 int l_graphics_newFont(lua_State* state);

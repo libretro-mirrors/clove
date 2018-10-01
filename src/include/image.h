@@ -1,17 +1,16 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #pragma once
 
-#include "../image/imagedata.h"
-#include "../tools/gl.h"
-#include "../math/vector.h"
-
+#include "imagedata.h"
+#include "gl.h"
+#include "vector.h"
 #include "quad.h"
 #include "gltools.h"
 

@@ -7,11 +7,9 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#include <stdio.h>
 
-#include "../tools/utils.h"
-
-#include "source.h"
+#include "../include/utils.h"
+#include "../include/source.h"
 
 
 void audio_SourceCommon_init(audio_SourceCommon *source) {

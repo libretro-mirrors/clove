@@ -7,8 +7,10 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "../3rdparty/lua/lualib.h"
+
 #include "love.h"
-#include "../love.h"
+
+#include "../include/love.h"
 
 int l_love_getVersion(lua_State* state) {
   love_Version const * version = love_getVersion();
@@ -25,7 +27,7 @@ int l_love_register(lua_State* state) {
   lua_pushstring(state, "getVersion");
   lua_pushcfunction(state, l_love_getVersion);
   lua_rawset(state, -3);
-  
+
   lua_setglobal(state, "love");
 
   luaL_openlibs(state);

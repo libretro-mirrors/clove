@@ -11,7 +11,7 @@
 #include <ctype.h>
 #include <string.h>
 
-#include "keyboard.h"
+#include "include/keyboard.h"
 #include "luaapi/keyboard.h"
 
 typedef struct {

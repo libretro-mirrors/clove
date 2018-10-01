@@ -1,13 +1,13 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#include "utils.h"
+#include "../include/utils.h"
 
 #include <stdarg.h>
 #include <stdio.h>

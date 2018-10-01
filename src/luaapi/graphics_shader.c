@@ -1,20 +1,20 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "../3rdparty/lua/lauxlib.h"
+#include "../3rdparty/slre/slre.h"
 
 #include <string.h>
 #include <stdlib.h>
 
-#include "../3rdparty/slre/slre.h"
-#include "../graphics/shader.h"
-#include "../filesystem/filesystem.h"
-#include "../math/minmax.h"
+#include "../include/shader.h"
+#include "../include/filesystem.h"
+#include "../include/minmax.h"
 
 #include "tools.h"
 #include "graphics_shader.h"
@@ -51,7 +51,7 @@ int static l_graphics_newShader(lua_State* state) {
 
   if(lua_isstring(state, 2)) {
     fragmentSrc = lua_tostring(state, 2);
-    
+
     if(!isVertexShader(vertexSrc)) {
       // TODO
       int loadedFile1Size = filesystem_read(vertexSrc, &loadedFile1);
@@ -109,7 +109,7 @@ int static l_graphics_newShader(lua_State* state) {
 
   l_graphics_Shader * shader = lua_newuserdata(state, sizeof(l_graphics_Shader));
   graphics_Shader_new(&shader->shader, vertexSrc, fragmentSrc);
-  
+
   lua_rawgeti(state, LUA_REGISTRYINDEX, moduleData.shaderMT);
   lua_setmetatable(state, -2);
 
@@ -136,7 +136,7 @@ static int l_graphics_gcShader(lua_State* state) {
   for(int i = 0; i < shader->shader.textureUnitCount; ++i) {
     luaL_unref(state, LUA_REGISTRYINDEX, shader->referencedTextures[i]);
   }
-  
+
   graphics_Shader_free(&shader->shader);
   return 0;
 }
@@ -258,7 +258,7 @@ static void sendSamplers(lua_State *state, l_graphics_Shader* shader, graphics_S
 }
 
 static int l_graphics_Shader_send(lua_State *state) {
-  l_assertType(state, 1, l_graphics_isShader); 
+  l_assertType(state, 1, l_graphics_isShader);
   l_graphics_Shader* shader = l_graphics_toShader(state, 1);
 
   char const* name = l_tools_toStringOrError(state, 2);
@@ -267,7 +267,7 @@ static int l_graphics_Shader_send(lua_State *state) {
 }
 
 static int l_graphics_Shader_getExternVariable(lua_State* state) {
-  l_assertType(state, 1, l_graphics_isShader); 
+  l_assertType(state, 1, l_graphics_isShader);
   l_graphics_Shader const* shader = l_graphics_toShader(state, 1);
 
   char const* name = l_tools_toStringOrError(state, 2);
@@ -299,14 +299,14 @@ static void pushShaderInfoLog(lua_State *state, graphics_Shader const* shader) {
   strcat(fullLog, shader->warnings.fragment);
   strcat(fullLog, programName);
   strcat(fullLog, shader->warnings.program);
- 
+
   lua_pushstring(state, fullLog);
 
   free(fullLog);
 }
 
 static int l_graphics_Shader_getWarnings(lua_State *state) {
-  l_assertType(state, 1, l_graphics_isShader); 
+  l_assertType(state, 1, l_graphics_isShader);
   l_graphics_Shader const* shader = l_graphics_toShader(state, 1);
 
   pushShaderInfoLog(state, &shader->shader);

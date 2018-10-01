@@ -9,8 +9,10 @@
 #pragma once
 
 #include "../3rdparty/lua/lua.h"
-#include "../graphics/quad.h"
+
 #include <stdbool.h>
+
+#include "../include/quad.h"
 
 int l_graphics_newQuad(lua_State* state);
 void l_graphics_quad_register(lua_State* state);

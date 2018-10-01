@@ -1,13 +1,13 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#include "joystick.h"
+#include "include/joystick.h"
 #include "luaapi/joystick.h"
 
 static struct {
@@ -25,7 +25,7 @@ joystick_Joystick* joystick_get(SDL_JoystickID id) {
     return 0;
 }
 
-static joystick_Joystick* openJoystick(int index) {    
+static joystick_Joystick* openJoystick(int index) {
     moduleData.list->joystick = SDL_JoystickOpen(index);
 
     if (moduleData.list->joystick == NULL)
@@ -33,9 +33,9 @@ static joystick_Joystick* openJoystick(int index) {
 
     moduleData.list->id = SDL_JoystickInstanceID(moduleData.list->joystick);
 
-    if (SDL_IsGameController(index)) 
+    if (SDL_IsGameController(index))
         moduleData.list->controller = SDL_GameControllerOpen(index);
-    else 
+    else
         moduleData.list->controller = 0;
 
     return moduleData.list;
@@ -72,7 +72,7 @@ void joystick_remove(int id) {
 }
 
 float joystick_getAxis(joystick_Joystick* joystick, int axis) {
-    int16_t val = SDL_JoystickGetAxis(joystick->joystick, axis); 
+    int16_t val = SDL_JoystickGetAxis(joystick->joystick, axis);
     return val / 32767.0f;
 }
 
@@ -81,7 +81,7 @@ bool joystick_isDown(joystick_Joystick* joystick, int button) {
 }
 
 void joystick_buttonDown(int id, int button, int state) {
-    l_joystick_pressed(id, button);    
+    l_joystick_pressed(id, button);
 }
 
 void joystick_buttonUp(int id, int button, int state) {

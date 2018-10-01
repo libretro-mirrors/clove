@@ -12,7 +12,7 @@
 
 #include "../3rdparty/SDL2/include/SDL.h"
 
-#include "timer.h"
+#include "../include/timer.h"
 
 static float const FpsUpdateTimeout = 1.0f;
 

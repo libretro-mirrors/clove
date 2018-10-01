@@ -11,14 +11,15 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-#include "../src/graphics/graphics.h"
-#include "../src/graphics/geometry.h"
-#include "../src/graphics/matrixstack.h"
-#include "../src/keyboard.h"
+/*
+#include "../src/include/graphics.h"
+#include "../src/include/geometry.h"
+#include "../src/include/matrixstack.h"
+#include "../src/include/keyboard.h"
 #include "../src/luaapi/event.h"
 
 #include "../src/3rdparty/Chipmunk2D/include/chipmunk/chipmunk.h"
-/*
+
 static cpSpace* space;
 
 
