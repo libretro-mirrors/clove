@@ -8,8 +8,8 @@
 */
 #pragma once
 
-#include "../3rdparty/openal/include/AL/al.h"
-#include "../3rdparty/stb/stb_vorbis.h"
+#include <AL/al.h>//"../3rdparty/openal/include/AL/al.h"
+#include "stb_vorbis.h"
 #include "streamsource.h"
 
 typedef enum {

@@ -11,9 +11,9 @@
 #include "../include/utils.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "../3rdparty/stb/stb_image.c"
+#include "../include/stb_image.c"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "../3rdparty/stb/stb_image_write.h"
+#include "../include/stb_image_write.h"
 
 #include "../include/imagedata.h"
 

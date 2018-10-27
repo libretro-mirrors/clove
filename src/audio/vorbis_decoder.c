@@ -9,8 +9,7 @@
 
 #include <stdlib.h>
 
-#include "../3rdparty/stb/stb_vorbis.h"
-
+#include "../include/stb_vorbis.h"
 #include "../include/vorbis_decoder.h"
 #include "../include/utils.h"
 

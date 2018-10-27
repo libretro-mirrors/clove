@@ -57,7 +57,7 @@ if (APPLE)
     find_library(FOUNDATION_LIB Foundation)
     find_library(IOKIT_LIB IOKit)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX") #test -static-libgcc on OSX
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX
 	-static-libstdc++")
@@ -112,6 +112,8 @@ FILE(
     src/net/*.h
     src/physics/*.c
     src/physics/*.h
+    src/include/*.h
+    src/include/*.c
     src/resources/*.png
 
     #Add custom native plugins
@@ -121,8 +123,6 @@ FILE(
     #3rdparty "small" libs
     src/3rdparty/microtar/*.c
     src/3rdparty/microtar/*.h
-    src/3rdparty/stb/*.c
-    src/3rdparty/stb/*.h
     src/3rdparty/noise/*.c
     src/3rdparty/noise/*.h
     src/3rdparty/slre/*.c
