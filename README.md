@@ -32,7 +32,7 @@ libaudio-dev libesd0-dev libpulse-dev libroar-dev
 
 
 For Web: 
-- Install emscripten, add it to your path.
+- Install emscripten(1.38.15 (commit 7a0e27441eda6cb0e3f1210e6837cae4b080ab4c)) and add it to your path.
 - Run ./build_web.sh 
 - For testing you have the following options: 
     1. Copy generated files into /var/www/html/ and run localhost (you must have installed apache2)
@@ -40,6 +40,7 @@ For Web:
 
 
 NOTE:
+CLove might work with other version of emscripten but I haven't tested!
 Inside the build scripts you can disable/enable Lua and Physfs.
 When you want to release a project you must modify build_web.sh to preload your files.
 
