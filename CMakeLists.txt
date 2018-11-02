@@ -34,7 +34,7 @@ set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /GR /FC /DWIN32 /D_MBCS")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D__Debug__")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++ -static")
+set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++") #-static test this
 FIND_PACKAGE(OpenGL REQUIRED)
 set(MTCL_BUILD_FLAGS "")
 set(OS_SPECIFIC_LIBRARIES)
@@ -122,7 +122,6 @@ FILE(
     src/physics/*.h
     src/include/*.h
     src/include/*.c
-    src/resources/*.png
 
     #Add custom native plugins
     native/*.c*
@@ -210,9 +209,9 @@ if (USE_LUA)
 endif(USE_LUA)
 
 #glew
-add_subdirectory(src/3rdparty/glew/)
+add_subdirectory(src/3rdparty/glew/build/cmake/)
 include_directories(src/3rdparty/glew/include/GL)
-set(GLEW_LIBRARIES libglew_static)
+set(GLEW_LIBRARIES glew_s)
 
 #sdl2
 add_subdirectory(src/3rdparty/SDL2/)

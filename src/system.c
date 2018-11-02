@@ -22,7 +22,7 @@ static struct
 } moduleData;
 
 const char* system_getOS() {
-  return SDL_GetPlatform();
+    return SDL_GetPlatform();
 }
 
 int system_getProcessorCount()
@@ -38,6 +38,7 @@ const char* system_getClipboardText()
     {
       moduleData.clipboardText = malloc(strlen(text) + 1);
       strcpy(moduleData.clipboardText, text);
+      moduleData.clipboardText[strlen(moduleData.clipboardText)] = '\0';
       SDL_free(text);
 
       return moduleData.clipboardText;

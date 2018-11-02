@@ -114,6 +114,7 @@ static const l_tools_Enum l_graphics_AlignMode[] = {
 };
 
 static int l_graphics_printf(lua_State* state) {
+/*
 	if(!moduleData.currentFont) {
 		l_graphics_loadDefaultFont();
 	}
@@ -140,6 +141,7 @@ static int l_graphics_printf(lua_State* state) {
 
 	//graphics_Font_printf(moduleData.currentFont, text, x, y, limit, align, r, sx, sy, ox, oy, kx, ky);
 	//graphics_Font_render(moduleData.currentFont, text, x, y, r, sx, sy, ox, oy, kx, ky);
+*/
 	return 0;
 }
 

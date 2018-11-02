@@ -14,6 +14,9 @@
 #include "quad.h"
 #include "vector.h"
 
+#include "../3rdparty/SDL2/include/SDL.h"
+#include "../include/gl.h"
+
 /*
  * The width of the window in pixels
  * The height of the window in pixels
@@ -45,6 +48,7 @@ void graphics_drawArray3d(graphics_Quad const* quad, mat4x4 const* tr3d, GLuint 
 
 
 //Window
+SDL_Window* graphics_getWindow(void);
 int graphics_getDisplayCount();
 int graphics_setIcon(image_ImageData* imgd);
 image_ImageData* graphics_getIcon();

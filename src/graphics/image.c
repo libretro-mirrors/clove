@@ -73,6 +73,7 @@ void graphics_Image_refresh(graphics_Image *img, image_ImageData const *data) {
 	GLenum format;
 	GLint internalFormat;
 
+#ifndef CLOVE_WEB
 	switch (image_ImageData_getChannels((image_ImageData*)data)) //we do not change "data" so it's safe to cast it.
 	{
 
@@ -106,6 +107,15 @@ void graphics_Image_refresh(graphics_Image *img, image_ImageData const *data) {
 			internalFormat = GL_RGBA;
 			break;
 	}
+#else
+    if (image_ImageData_getChannels((image_ImageData*)data) == 4) {
+        format = GL_RGBA;
+        internalFormat = GL_RGBA;
+    } else {
+        format = GL_ALPHA;
+        internalFormat = GL_ALPHA;
+    }
+#endif
 
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, data->w, data->h, 0, format, GL_UNSIGNED_BYTE, data->surface);
 }

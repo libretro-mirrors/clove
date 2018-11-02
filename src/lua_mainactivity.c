@@ -20,6 +20,8 @@ typedef struct {
   int errhand;
 } MainLoopData;
 
+MainLoopData loopData;
+
 static void quit_function(lua_State* state) {
   lua_getglobal(state, "love");
   lua_pushstring(state, "quit");
@@ -97,36 +99,34 @@ static void main_load(lua_State* lua, char* argv[], love_Config* config) {
     }
 }
 
-void lua_main_loop(void *data) {
-  MainLoopData* loopData = (MainLoopData*)data;
-
+void lua_main_loop(void) {
   timer_step();
-  love_focus(loopData->luaState);
+  love_focus(loopData.luaState);
   matrixstack_origin();
-  lua_rawgeti(loopData->luaState, LUA_REGISTRYINDEX, loopData->errhand);
-  lua_getglobal(loopData->luaState, "love");
-  lua_pushstring(loopData->luaState, "update");
-  lua_rawget(loopData->luaState, -2);
-  lua_pushnumber(loopData->luaState, timer_getDelta());
+  lua_rawgeti(loopData.luaState, LUA_REGISTRYINDEX, loopData.errhand);
+  lua_getglobal(loopData.luaState, "love");
+  lua_pushstring(loopData.luaState, "update");
+  lua_rawget(loopData.luaState, -2);
+  lua_pushnumber(loopData.luaState, timer_getDelta());
 
-  pcall(loopData->luaState, 1);
+  pcall(loopData.luaState, 1);
 
 #ifdef USE_NATIVE
   game_update((float)timer_getDelta());
 #endif
 
   if (swap_At == 1){
-      if(luaL_dofile(loopData->luaState, "main.lua")) {
-          printf("Error: %s\n", lua_tostring(loopData->luaState, -1));
+      if(luaL_dofile(loopData.luaState, "main.lua")) {
+          printf("Error: %s\n", lua_tostring(loopData.luaState, -1));
         }
     }
 
   graphics_clear();
 
-  lua_pushstring(loopData->luaState, "draw");
-  lua_rawget(loopData->luaState, -2);
+  lua_pushstring(loopData.luaState, "draw");
+  lua_rawget(loopData.luaState, -2);
 
-  pcall(loopData->luaState, 0);
+  pcall(loopData.luaState, 0);
 
 #ifdef USE_NATIVE
   game_draw();
@@ -134,7 +134,7 @@ void lua_main_loop(void *data) {
 
   graphics_swap();
 
-  lua_pop(loopData->luaState, 1);
+  lua_pop(loopData.luaState, 1);
 
   SDL_Event event;
   while(SDL_PollEvent(&event)) {
@@ -205,7 +205,7 @@ void lua_main_loop(void *data) {
           break;
 #ifdef CLOVE_DESKTOP
 	case SDL_QUIT:
-	  quit_function(loopData->luaState);
+	  quit_function(loopData.luaState);
 	  l_running = 0;
 	  break;
 #endif
@@ -297,17 +297,14 @@ void lua_main_activity_load(int argc, char* argv[]) {
 
   lua_pushcfunction(lua, errorhandler);
 
-  MainLoopData mainLoopData = {
-    .luaState = lua,
-    .errhand = luaL_ref(lua, LUA_REGISTRYINDEX)
-  };
+  loopData.luaState = lua;
+  loopData.errhand = luaL_ref(lua, LUA_REGISTRYINDEX);
 
 #ifdef CLOVE_WEB
-  //TODO find a way to quit(love.event.quit) love on web?
-  emscripten_set_main_loop(main_loop, 60, 1);
+  emscripten_set_main_loop(lua_main_loop, 60, 1);
 #else
   while (l_event_running()) {
-    lua_main_loop(&mainLoopData);
+    lua_main_loop();
   }
 #endif
   quit_function(lua);

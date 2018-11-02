@@ -56,5 +56,5 @@
 #endif
 
 void lua_main_activity_load(int argc, char* argv[]);
-void lua_main_loop(void *data);
+void lua_main_loop(void);
 

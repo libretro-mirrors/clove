@@ -1,17 +1,17 @@
 version 0.7.2 
 =============
 
-* fixed:  newImageFont is not broke anymore.
-
-* modify: changed the structure of folders.
-* modify: Lua can be enabled or disabled at compile time.
-
+* added: Lua can be enabled or disabled at compile time.
+* added: build system for web!
 * added: more C flags for compilation.
 * added: CLove can be compiled as shared or static library.
 * added: 'set' function to batch.c. Allows for changing the structure of an entity which is part of the batch.
 * added: love.system.setClipboardText(text)
 * added: love.system.getClipboardText()
 * added: love.system.getProcessorCount()
+
+* fixed:  newImageFont is not broke anymore.
+* modify: changed the structure of folders.
 
 version 0.7.1 22.07.2017:
 =============

@@ -115,10 +115,10 @@ static int l_geometry_vertex(lua_State* state) {
           // copy the key so that lua_tostring does not modify the original
           lua_pushvalue(state, -2);
           // stack now contains: -1 => key; -2 => value; -3 => key; -4 => table
-          const char *key = lua_tostring(state, -1);
+          //const char *key = lua_tostring(state, -1);
           const char * value = lua_tostring(state, -2);
           int v = atoi(value);
-          int i = atoi(key);
+          //int i = atoi(key);
 
           //Put the key and the value of the table into an array
           moduleData.vertices[_i] = v; // second insert the value of the key
@@ -144,7 +144,7 @@ static int l_geometry_vertex(lua_State* state) {
 }
 
 static int l_geometry_setLineWidth(lua_State* state) {
-  float width = l_tools_toNumberOrError(state, 1);
+  //float width = l_tools_toNumberOrError(state, 1);
   //graphics_geometry_setLineWidth(width);
   return 1;
 }

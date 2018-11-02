@@ -3,7 +3,7 @@
 CLove
 =====
 CLove is a simple, easy to learn and use 2D game framework tested on
-Mac/Linux/PC, made in C with OpenGLES 2 which uses Lua as scripting language.
+Mac/Linux/Windows/Web, made in C with OpenGLES 2 which uses Lua as scripting language.
 
 How to build
 ============
@@ -21,17 +21,27 @@ On Windows:
 - Download DX SDK 2010 only if you get errors from SDL when building: http://www.microsoft.com/en-us/download/details.aspx?id=6812
 - After you have succesfuly build CLove go into src/3rdparty directory and copy: SDL2, openal .dll in the same directory where clove.exe is.
 
+
 On Linux and OS X:
 - Download and install cmake,gcc,g++(optional git)(on OSX you can install these using brew)
-- Make a new directory inside CLove, eg: build. Go there and call: cmake ../ &&
-  make
+- Go inside CLove/ and call ./build_linux.sh or ./build_osx.sh 
 - If you have problems building on Linux(Debian based) install:
 sudo apt-get install freeglut3 freeglut3-dev libglew1.5 libglew1.5-dev
 libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libasound2-dev
 libaudio-dev libesd0-dev libpulse-dev libroar-dev
 
-Use:
-cmake ../ -DUSE_PHYSFS=OFF to use native functions for filesystem.
+
+For Web: 
+- Install emscripten, add it to your path.
+- Run ./build_web.sh 
+- For testing you have the following options: 
+    1. Copy generated files into /var/www/html/ and run localhost (you must have installed apache2)
+    1. Open a terminal and run: python3 -m http.server . Run index.html and go to localhost:8000
+
+
+NOTE:
+Inside the build scripts you can disable/enable Lua and Physfs.
+When you want to release a project you must modify build_web.sh to preload your files.
 
 Features
 ========
@@ -39,7 +49,7 @@ Features
 - Can be used as a shared or static library.
 - Native C/C++ support.
 - Easy to learn and use api.
-- Cross platform.
+- Cross platform (Linux, MacOS, Web and Windows).
 - Custom package format.
 - Powerful Batch system.
 - Image loading and drawing.
@@ -59,9 +69,7 @@ Features
 
 Planned work
 ============
-1. Physics system
 1. Networking for Windows
-1. Web build system
 1. Android
 
 Examples (see examples folder)

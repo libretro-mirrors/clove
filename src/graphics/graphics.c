@@ -9,12 +9,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "../3rdparty/SDL2/include/SDL.h"
-
-#ifdef __EMSCRIPTEN__
-#include "../3rdparty/glew/include/GL/glew.h"
-#endif
-
 #include "../include/graphics.h"
 #include "../include/gl.h"
 #include "../include/utils.h"
@@ -58,14 +52,12 @@ static struct {
     image_ImageData* icon;
 } moduleData;
 
-#ifdef CLOVE_DESKTOP
 SDL_Window* graphics_getWindow(void) {
     if (moduleData.hasWindow)
         return moduleData.window;
 
     return NULL;
 }
-#endif
 
 static void graphics_init_window(int width, int height)
 {

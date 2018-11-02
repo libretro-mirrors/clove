@@ -13,14 +13,15 @@
 #define DEFAULT_SAMPLER "tex"
 
 /********* 2d default shader ************/
-
-static GLchar const *defaultVertexSource2d =
+static GLchar const defaultVertexSource2d[] =
 "vec4 position(mat4 transform_projection, vec4 vertex_position) {\n"
 "  return transform_projection * vertex_position;\n"
 "}\n";
 
 static GLchar const vertexHeader2d[] =
+#ifndef CLOVE_WEB
 "#version 120\n"
+#endif
 "uniform   mat4 projection;\n"
 "uniform   mat4 view;\n"
 "uniform   mat4 model;\n"
@@ -36,19 +37,23 @@ static GLchar const vertexHeader2d[] =
 
 static GLchar const vertexFooter2d[] =
 "void main() {\n"
-"  gl_Position = position(projection * view * model,vec4(vPos * size, 1.0f, 1.0f));\n"
+"  gl_Position = position(projection * view * model, vec4(vPos * size, 1.0, 1.0));\n"
 "  fUV = vUV * textureRect[1] + textureRect[0];\n"
 "  fColor = vColor;\n"
 "}\n";
 
-static GLchar const *defaultFragmentSource2d =
+static GLchar const defaultFragmentSource2d[] =
 "vec4 effect( vec4 color, Image texture, vec2 texture_coords, vec2 screen_coords ) {\n"
 "  return Texel(texture, texture_coords) * color;\n"
 "}\n";
 
 static GLchar const fragmentHeader2d[] =
+#ifndef CLOVE_WEB
 "#version 120\n"
-//"precision mediump float;\n"
+#endif
+#ifdef CLOVE_WEB
+"precision mediump float;\n"
+#endif
 "#define Image sampler2D\n"
 "#define Texel texture2D\n"
 "#define extern uniform\n"
@@ -60,7 +65,7 @@ static GLchar const fragmentHeader2d[] =
 
 static GLchar const fragmentFooter2d[] =
 "void main() {\n"
-"  gl_FragColor = effect(color * fColor, tex, fUV, vec2(0.0f, 0.0f));\n"
+"  gl_FragColor = effect(color * fColor, tex, fUV, vec2(0.0, 0.0));\n"
 "}\n";
 
 
