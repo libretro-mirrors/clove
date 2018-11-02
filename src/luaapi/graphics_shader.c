@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lauxlib.h"
 #include "../3rdparty/slre/slre.h"
 
@@ -339,3 +342,4 @@ void l_graphics_shader_register(lua_State *state) {
   slre_compile(&moduleData.vertexShaderDetectRegex, vertexShaderDetectRegexSrc);
 }
 
+#endif //USE_LUA

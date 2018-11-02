@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lualib.h"
 
 #include "love.h"
@@ -34,3 +37,5 @@ int l_love_register(lua_State* state) {
 
   return 0;
 }
+
+#endif

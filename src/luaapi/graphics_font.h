@@ -1,12 +1,14 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #pragma once
+
+#ifdef USE_LUA
 
 #include <stdbool.h>
 
@@ -19,3 +21,5 @@ int l_graphics_newFont(lua_State* state);
 
 bool l_graphics_isFont(lua_State* state, int index);
 graphics_Font* l_graphics_toFont(lua_State* state, int index);
+
+#endif

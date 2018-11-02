@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lauxlib.h"
 #include "../3rdparty/lua/lualib.h"
 #include "../3rdparty/lua/lua.h"
@@ -30,3 +32,5 @@ void l_graphics_image_register(lua_State* state);
 bool l_graphics_isImage(lua_State* state, int index);
 l_graphics_Image* l_graphics_toImage(lua_State* state, int index);
 int l_graphics_newImage(lua_State* state);
+
+#endif

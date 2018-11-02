@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include "include/lua_mainactivity.h"
 
 #ifdef CLOVE_WEB
@@ -304,9 +306,12 @@ void lua_main_activity_load(int argc, char* argv[]) {
   //TODO find a way to quit(love.event.quit) love on web?
   emscripten_set_main_loop(main_loop, 60, 1);
 #else
-  while (l_event_running())
+  while (l_event_running()) {
     lua_main_loop(&mainLoopData);
+  }
 #endif
   quit_function(lua);
   main_clean(lua);
 }
+
+#endif //USE_LUA

@@ -30,7 +30,7 @@ typedef struct {
 } vec3;
 
 vec3 vec3_new(float x, float y, float z);
-vec3 vec3_newv(vec3 a);
+vec3 vec3_newv();
 vec3 v3_add   (vec3 a, vec3 b);
 vec3 v3_adds  (vec3 a, float s);
 vec3 v3_sub   (vec3 a, vec3 b);

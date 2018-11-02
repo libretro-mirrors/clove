@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
@@ -180,3 +182,5 @@ int l_no_game(lua_State* state, love_Config *config) {
 
   return 0;
 }
+
+#endif // USE LUA

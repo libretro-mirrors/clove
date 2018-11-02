@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include <string.h>
 #include <stdbool.h>
 
@@ -200,3 +202,5 @@ void l_tools_pushEnum(lua_State* state, int value, l_tools_Enum const* values);
 #else
 # define l_assertType(state, index, func)
 #endif
+
+#endif //USE_LUA

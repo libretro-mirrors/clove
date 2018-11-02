@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include "../include/system.h"
 #include "../include/system.h"
 #include "tools.h"
@@ -59,3 +61,5 @@ int l_system_register(lua_State* state) {
   l_tools_registerModule(state, "system", regFuncs);
   return 0;
 }
+
+#endif

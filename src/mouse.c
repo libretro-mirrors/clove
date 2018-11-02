@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "3rdparty/SDL2/include/SDL.h"
 
 #include <stdio.h>
@@ -120,3 +123,5 @@ void mouse_setX(int x) {
 void mouse_setY(int y) {
         SDL_WarpMouseInWindow(graphics_getWindow(), moduleData.x, y);
 }
+
+#endif

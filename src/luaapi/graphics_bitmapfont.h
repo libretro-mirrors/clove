@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include <stdbool.h>
 
 #include "../3rdparty/lua/lua.h"
@@ -19,3 +21,5 @@ int l_graphics_newBitmapFont(lua_State* state);
 
 bool l_graphics_isBitmapFont(lua_State* state, int index);
 graphics_BitmapFont* l_graphics_toBitmapFont(lua_State* state, int index);
+
+#endif

@@ -1,12 +1,14 @@
 /*
 #   clove
 #
-#   Copyright (C) 2017 Muresan Vlad
+#   Copyright (C) 2017-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "graphics_mesh.h"
+
+#ifdef USE_LUA
 
 static struct {
     int meshMT;
@@ -191,3 +193,5 @@ void l_graphics_mesh_register(lua_State* state) {
 
 l_checkTypeFn(l_graphics_isMesh, moduleData.meshMT)
 l_toTypeFn(l_graphics_toMesh, l_graphics_Mesh)
+
+#endif

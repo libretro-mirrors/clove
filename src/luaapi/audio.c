@@ -9,7 +9,8 @@
 
 #include "tools.h"
 #include "audio.h"
-#include "../3rdparty/lua/lua.h"
+
+#ifdef USE_LUA
 
 static struct {
   int audioDataMT;
@@ -277,3 +278,5 @@ int l_audio_register(lua_State *state) {
   moduleData.audioDataMT = l_tools_makeTypeMetatable(state, SourceMetatableFuncs);
   return 1;
 }
+
+#endif //USE_LUA

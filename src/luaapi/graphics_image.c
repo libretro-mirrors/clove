@@ -1,12 +1,14 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "graphics_image.h"
+
+#ifdef USE_LUA
 
 static struct {
     int imageMT;
@@ -224,5 +226,7 @@ void l_graphics_image_register(lua_State* state) {
     moduleData.imageMT  = l_tools_makeTypeMetatable(state, imageMetatableFuncs);
 }
 
-    l_checkTypeFn(l_graphics_isImage, moduleData.imageMT)
+l_checkTypeFn(l_graphics_isImage, moduleData.imageMT)
 l_toTypeFn(l_graphics_toImage, l_graphics_Image)
+
+#endif //USE_LUA

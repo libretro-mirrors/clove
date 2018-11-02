@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include "include/system.h"
 
 #include "3rdparty/SDL2/include/SDL.h"
@@ -75,3 +77,5 @@ system_PowerState system_getPowerInfo() {
   };
   return powerState;
 }
+
+#endif

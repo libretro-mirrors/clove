@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -81,7 +84,7 @@ static const char* convertFromButton(int v) {
      if (v == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
         return "dpleft";
      if (v == SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
-        return "dpright"; 
+        return "dpright";
     return "";
 }
 
@@ -100,7 +103,7 @@ static int l_joystick_isDown(lua_State* state) {
     return 1;
 }
 
-void l_joystick_pressed(int id, int button) { 
+void l_joystick_pressed(int id, int button) {
   lua_getglobal(moduleData.luaState, "love");
   lua_pushstring(moduleData.luaState, "joystickpressed");
   lua_rawget(moduleData.luaState, -2);
@@ -109,7 +112,7 @@ void l_joystick_pressed(int id, int button) {
   lua_call(moduleData.luaState, 2, 0);
 }
 
-void l_joystick_released(int id, int button) { 
+void l_joystick_released(int id, int button) {
   lua_getglobal(moduleData.luaState, "love");
   lua_pushstring(moduleData.luaState, "joystickreleased");
   lua_rawget(moduleData.luaState, -2);
@@ -168,7 +171,7 @@ static int fromCharHatToInt(const char* v) {
         return SDL_HAT_RIGHTUP;
     if (strncmp(v, "u", 1) == 0)
         return SDL_HAT_UP;
-    
+
     return SDL_HAT_CENTERED;
 }
 
@@ -229,9 +232,9 @@ static int l_joystick_getGamepadAxis(lua_State *state) {
   int id = lua_tointeger(state, 1);
   float get_axis = returnGamepadAxis(lua_tostring(state, 2));
   joystick_Joystick* js = joystick_get(id);
-  
+
   float return_axis = joystick_getGamepadAxis(js, get_axis);
-  
+
   lua_pushboolean(state, get_axis == return_axis);
   return 1;
 }
@@ -256,3 +259,4 @@ void l_joystick_register(lua_State* state) {
     l_tools_registerModule(state, "joystick", regFuncs);
 }
 
+#endif

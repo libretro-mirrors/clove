@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include <stdbool.h>
 
 #include "../3rdparty/lua/lua.h"
@@ -27,3 +29,5 @@ void l_graphics_mesh_register(lua_State* state);
 bool l_graphics_isMesh(lua_State* state, int index);
 l_graphics_Mesh* l_graphics_toMesh(lua_State* state, int index);
 int l_graphics_newMesh(lua_State* state);
+
+#endif

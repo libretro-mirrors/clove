@@ -127,9 +127,10 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
     moduleData.y = SDL_WINDOWPOS_CENTERED;
     moduleData.title = "CLove: Untitled window";
 
-    moduleData.w_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (resizable)
-        moduleData.w_flags = (SDL_WindowFlags)(moduleData.w_flags | SDL_WINDOW_RESIZABLE);
+	moduleData.w_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	if (resizable) {
+		moduleData.w_flags = (SDL_WindowFlags)(moduleData.w_flags | SDL_WINDOW_RESIZABLE);
+	}
 
 	if (moduleData.hasWindow)
 	{

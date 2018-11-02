@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lua.h"
 #include "../include/image.h"
 
@@ -27,3 +29,4 @@ static const l_tools_Enum l_graphics_FilterMode[] = {
   {NULL, 0}
 };
 
+#endif

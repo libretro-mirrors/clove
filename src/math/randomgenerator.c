@@ -52,8 +52,8 @@ void RandomGenerator_getState(RandomGenerator *r, char *dst) {
 
 
 int RandomGenerator_setState(RandomGenerator *r, const char *src) {
-  uint64_t n;
-  /*int res = sscanf(src, "0x%" PRIx64, &n);
+  /*uint64_t n;
+  int res = sscanf(src, "0x%" PRIx64, &n);
   if (res != 1) {
     return -1;
   }

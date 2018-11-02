@@ -7,9 +7,12 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #ifdef EMSCRIPTEN
 # include <emscripten.h>
 #endif
+
 
 #include "../3rdparty/lua/lua.h"
 
@@ -44,3 +47,5 @@ int errorhandler(lua_State *state) {
   lua_concat(state, 4*count+2);
   return 1;
 }
+
+#endif

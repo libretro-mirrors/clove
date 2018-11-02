@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include "graphics_geometry.h"
 #include "tools.h"
 
@@ -172,3 +174,5 @@ static luaL_Reg const geometryFuncs[] = {
 void l_graphics_geometry_register(lua_State* state) {
   l_tools_registerFuncsInModule(state, "graphics", geometryFuncs);
 }
+
+#endif //USE_LUA

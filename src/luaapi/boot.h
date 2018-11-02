@@ -9,9 +9,13 @@
 
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lualib.h"
 
 #include "../include/love_config.h"
 
 int l_boot(lua_State* state, love_Config *config);
 int l_no_game(lua_State* state, love_Config *config);
+
+#endif

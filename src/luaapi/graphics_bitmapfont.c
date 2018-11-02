@@ -6,6 +6,8 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lauxlib.h"
 #include "graphics_bitmapfont.h"
 
@@ -187,3 +189,4 @@ void l_graphics_bitmapfont_register(lua_State* state)
 l_checkTypeFn(l_graphics_isBitmapFont, moduleData.mt)
 l_toTypeFn(l_graphics_toBitmapFont, graphics_BitmapFont)
 
+#endif // USE_LUA

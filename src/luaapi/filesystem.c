@@ -6,6 +6,8 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+#ifdef USE_LUA
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -301,3 +303,5 @@ int l_filesystem_register(lua_State* state) {
 	l_tools_registerModule(state, "filesystem", regFuncs);
 	return 0;
 }
+
+#endif // USE_LUA

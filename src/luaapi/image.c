@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lauxlib.h"
 
 #include "image.h"
@@ -37,7 +40,7 @@ int l_image_newImageData(lua_State* state) {
             return lua_error(state);
         }
     } else if(s1type == LUA_TNUMBER && lua_type(state, 2) == LUA_TNUMBER) {
-        image_ImageData_new_with_size(moduleData.imageData, lua_tointeger(state, 1), lua_tointeger(state, 2));
+        image_ImageData_new_with_size(moduleData.imageData, lua_tointeger(state, 1), lua_tointeger(state, 2), luaL_optinteger(state, 2, 4));
     } else {
         lua_pushstring(state, "need filename or size for imagedata");
         return lua_error(state);
@@ -219,4 +222,4 @@ int l_image_register(lua_State* state) {
     return 0;
 }
 
-
+#endif //USE_LUA

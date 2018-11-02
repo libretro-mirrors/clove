@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lauxlib.h"
 
 #include "graphics_font.h"
@@ -304,3 +306,5 @@ void l_graphics_font_register(lua_State* state) {
 
 l_checkTypeFn(l_graphics_isFont, moduleData.fontMT)
 l_toTypeFn(l_graphics_toFont, graphics_Font)
+
+#endif //USE_LUA

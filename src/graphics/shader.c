@@ -92,8 +92,8 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
 bool graphics_Shader_compileAndAttachShader(graphics_Shader *shader, GLenum shaderType, char const* code) {
     GLchar const* header;
     GLchar const* footer;
-    int headerlen;
-    int footerlen;
+    int headerlen = 0;
+    int footerlen = 0;
     switch(shaderType) {
     case GL_VERTEX_SHADER:
             header = vertexHeader2d;
@@ -107,6 +107,8 @@ bool graphics_Shader_compileAndAttachShader(graphics_Shader *shader, GLenum shad
             footer = fragmentFooter2d;
             footerlen = sizeof(fragmentFooter2d) - 1;
             break;
+	default:
+			return false;
     }
     int codelen = strlen(code);
     GLchar *combinedCode = malloc(headerlen + footerlen + codelen + 1);

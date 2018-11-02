@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "graphics_quad.h"
 #include "tools.h"
 
@@ -80,3 +83,5 @@ void l_graphics_quad_register(lua_State* state) {
   l_tools_registerFuncsInModule(state, "graphics", quadFreeFuncs);
   moduleData.quadMT   = l_tools_makeTypeMetatable(state, quadMetatableFuncs);
 }
+
+#endif // USE_LUA

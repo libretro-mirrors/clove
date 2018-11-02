@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "keyboard.h"
 #include "tools.h"
 
@@ -103,3 +106,5 @@ void l_keyboard_textInput(char const* text) {
   lua_pushstring(moduleData.luaState, text);
   lua_call(moduleData.luaState, 1, 0);
 }
+
+#endif

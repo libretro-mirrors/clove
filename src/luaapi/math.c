@@ -6,6 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "tools.h"
 #include "math.h"
 
@@ -119,3 +122,5 @@ static luaL_Reg const mathFreeFuncs[] = {
 void l_math_register(lua_State* state) {
   l_tools_registerModule(state, "math", mathFreeFuncs);
 }
+
+#endif

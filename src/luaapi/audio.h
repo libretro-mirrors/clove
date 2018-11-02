@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lua.h"
 
 #include "../include/audio.h"
@@ -17,3 +19,5 @@
 int l_audio_register(lua_State *state);
 bool l_audio_isStaticSource(lua_State* state, int index);
 bool l_audio_isStreamSource(lua_State* state, int index);
+
+#endif

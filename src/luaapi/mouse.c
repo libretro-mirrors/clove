@@ -1,11 +1,14 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
+
 #include "tools.h"
 
 #include "../include/mouse.h"
@@ -155,3 +158,5 @@ void l_mouse_wheelmoved(int y) {
     lua_call(moduleData.luaState, 1, 0);
     lua_settop(moduleData.luaState, lua_gettop(moduleData.luaState));
 }
+
+#endif

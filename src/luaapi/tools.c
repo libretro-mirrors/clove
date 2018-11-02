@@ -1,11 +1,13 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
+
+#ifdef USE_LUA
 #include "../3rdparty/lua/lauxlib.h"
 
 #include <string.h>
@@ -79,3 +81,5 @@ extern inline void l_tools_checkUserData(lua_State* state, int index);
 extern inline char const* l_tools_toStringOrError(lua_State* state, int index);
 extern inline char const* l_tools_toStringOrErrorPlusMsg(lua_State* state, int index, const char* msg);
 extern inline int l_tools_toEnumOrError(lua_State* state, int index, l_tools_Enum const* values);
+
+#endif

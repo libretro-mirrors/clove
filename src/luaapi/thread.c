@@ -7,6 +7,8 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -84,3 +86,4 @@ void l_thread_register(lua_State* state) {
     l_tools_registerModule(state, "thread", regFuncs);
 }
 
+#endif

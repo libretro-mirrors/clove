@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lua.h"
 #include "../3rdparty/lua/lauxlib.h"
 
@@ -16,7 +18,8 @@ typedef struct {
     int data;
     int res;
     lua_State* L;
-} thread_Data; 
+} thread_Data;
 
 void l_thread_register(lua_State* state);
 
+#endif

@@ -38,16 +38,16 @@ void filesystem_init(char* argv0, int stats) {
 #elif CLOVE_WINDOWS
 	moduleData.os = "windows";
 #elif CLOVE_ANDROID
-    moduleData.os = "android";
+	moduleData.os = "android";
 #elif CLOVE_WEB
-    moduleData.os = "web";
+	moduleData.os = "web";
 #else
 	moduleData.os = "This OS is not supported";
 #endif
 
 	#ifdef USE_PHYSFS
-		if (!PHYSFS_init(argv0))
-			clove_error(PHYSFS_getLastError());
+	if (!PHYSFS_init(argv0))
+		clove_error(PHYSFS_getLastError());
 	#endif
 
 }
@@ -97,16 +97,16 @@ int filesystem_equals(const char* a, const char* b, int l) {
 int filesystem_exists(const char* name)
 {
 	#ifndef USE_PHYSFS
-		FILE* file = fopen(name,"r");
-		if(!file){
-			return 0;
-		}
+	FILE* file = fopen(name,"r");
+	if(!file){
+		return 0;
+	}
 
-		fclose(file);
-		return 1;
+	fclose(file);
+	return 1;
 
 	#else
-		return PHYSFS_exists(name);
+	return PHYSFS_exists(name);
 	#endif
 
 }
@@ -116,35 +116,35 @@ int filesystem_write(const char* name, const char* data)
 
 	#ifdef USE_PHYSFS
 
-		PHYSFS_File* file;
-		file = PHYSFS_openWrite(name);
-		if(! file)
-			clove_error(PHYSFS_getLastError());
+	PHYSFS_File* file;
+	file = PHYSFS_openWrite(name);
+	if(! file)
+		clove_error(PHYSFS_getLastError());
 
 
-		int write_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
-		if (write_size == -1)
-			clove_error(PHYSFS_getLastError());
+	int write_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
+	if (write_size == -1)
+		clove_error(PHYSFS_getLastError());
 
-		PHYSFS_close(file);
+	PHYSFS_close(file);
 
-		return write_size;
+	return write_size;
 
 	#else
-		FILE* file = fopen(name, "w");
-		if(!file){
-			clove_error("%s No file named %s",name,"%s creating one");
-			return -1;
-		}
+	FILE* file = fopen(name, "w");
+	if(!file){
+		clove_error("%s No file named %s",name,"%s creating one");
+		return -1;
+	}
 
-		fseek(file,0,SEEK_END);
-		long size = ftell(file);
-		rewind(file);
+	fseek(file,0,SEEK_END);
+	long size = ftell(file);
+	rewind(file);
 
-		fprintf(file, data);
-		fclose(file);
+	fprintf(file, data);
+	fclose(file);
 
-		return size;
+	return size;
 	#endif
 }
 
@@ -152,31 +152,31 @@ int filesystem_append(const char* name, const char* data) {
 
 	#ifdef USE_PHYSFS
 
-		PHYSFS_File* file;
-		file = PHYSFS_openAppend(name);
-		if(! file)
-			clove_error(PHYSFS_getLastError());
+	PHYSFS_File* file;
+	file = PHYSFS_openAppend(name);
+	if(! file)
+		clove_error(PHYSFS_getLastError());
 
-		int append_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
-		if (append_size == -1)
-			clove_error(PHYSFS_getLastError());
+	int append_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
+	if (append_size == -1)
+		clove_error(PHYSFS_getLastError());
 
-		PHYSFS_close(file);
+	PHYSFS_close(file);
 
-		return append_size;
+	return append_size;
 
 	#else
 
-		FILE* file = fopen(name, "a");
+	FILE* file = fopen(name, "a");
 
-		fseek(file,0,SEEK_END);
-		long size = ftell(file);
-		rewind(file);
+	fseek(file,0,SEEK_END);
+	long size = ftell(file);
+	rewind(file);
 
-		fprintf(file, data);
-		fclose(file);
+	fprintf(file, data);
+	fclose(file);
 
-		return size;
+	return size;
 	#endif
 
 }
@@ -202,7 +202,7 @@ const char* filesystem_getCurrentDirectory() {
  * default is 0
  */
 int filesystem_isFile(const char* file, int mode) {
-//TODO Look into this
+	//TODO Look into this
 #ifndef CLOVE_WEB
 	if (access(file, mode) != -1)
 		return 0;
@@ -214,34 +214,34 @@ int filesystem_read(char const* filename, char** output) {
 
 	#ifdef USE_PHYSFS
 
-		PHYSFS_File* file;
-		file = PHYSFS_openRead(filename);
-		int size = PHYSFS_fileLength(file);
+	PHYSFS_File* file;
+	file = PHYSFS_openRead(filename);
+	int size = PHYSFS_fileLength(file);
 
-		*output = malloc(size + 1);
+	*output = malloc(size + 1);
 
-		int len_read = PHYSFS_read(file, *output, 1, PHYSFS_fileLength(file));
-		(*output)[size] = '\n';
+	int len_read = PHYSFS_read(file, *output, 1, PHYSFS_fileLength(file));
+	(*output)[size] = '\n';
 
-		PHYSFS_close(file);
+	PHYSFS_close(file);
 
-		return size;
+	return size;
 
 	#else
-		FILE* infile = fopen(filename, "r");
-		if(!infile) {
-			return -1;
-		}
+	FILE* infile = fopen(filename, "r");
+	if(!infile) {
+		return -1;
+	}
 
-		fseek(infile, 0, SEEK_END);
-		long size = ftell(infile);
-		rewind(infile);
+	fseek(infile, 0, SEEK_END);
+	long size = ftell(infile);
+	rewind(infile);
 
-		*output = malloc(size+1);
-		fread(*output, size, 1, infile);
-		fclose(infile);
-		(*output)[size] = 0;
-		return size;
+	*output = malloc(size+1);
+	fread(*output, size, 1, infile);
+	fclose(infile);
+	(*output)[size] = 0;
+	return size;
 
 	#endif
 }
@@ -250,46 +250,46 @@ bool filesystem_mkDir(const char* path)
 {
 	#ifdef USE_PHYSFS
 
-		return PHYSFS_mkdir(path) != 0;
+	return PHYSFS_mkdir(path) != 0;
 
 	#else
 
-		clove_error("mkDir feature is supported by enabling physfs.");
-		return false;
+	clove_error("mkDir feature is supported by enabling physfs.");
+	return false;
 	#endif
 }
 
 bool filesystem_isDir(const char* dir)
 {
 	#ifdef USE_PHYSFS
-		return PHYSFS_isDirectory(dir) != 0;
+	return PHYSFS_isDirectory(dir) != 0;
 	#else
 
-		clove_error("isDir feature is supported by enabling physfs.");
-		return false;
+	clove_error("isDir feature is supported by enabling physfs.");
+	return false;
 	#endif
 }
 
 void filesystem_setSource(const char* source, const char* dir)
 {
 	#ifdef USE_PHYSFS
-		if (! PHYSFS_mount(source, dir, 1))
-		{
-			clove_error("couldn't mount file:");
-			clove_error(source);
+	if (! PHYSFS_mount(source, dir, 1))
+	{
+		clove_error("couldn't mount file:");
+		clove_error(source);
 
-		}
-		moduleData.source = source;
+	}
+	moduleData.source = source;
 	#else
-		clove_error("setSource works only with physfs!");
+	clove_error("setSource works only with physfs!");
 	#endif
 }
 
 const char* filesystem_getSource() {
 	#ifdef USE_PHYSFS
-		return moduleData.source != NULL ? moduleData.source : SDL_GetBasePath();
+	return moduleData.source != NULL ? moduleData.source : SDL_GetBasePath();
 	#else
-		return SDL_GetBasePath();
+	return SDL_GetBasePath();
 	#endif
 }
 
@@ -334,49 +334,49 @@ bool filesystem_mount(const char* path, const char* mountPoint, int appendToPath
 {
 
 	#ifdef USE_PHYSFS
-		return PHYSFS_mount(path, mountPoint, appendToPath) != 0;
+	return PHYSFS_mount(path, mountPoint, appendToPath) != 0;
 	#else
-		clove_error("mouting feature is supported by enabling physfs.");
-		return false;
+	clove_error("mouting feature is supported by enabling physfs.");
+	return false;
 	#endif
 }
 
 bool filesystem_unmount(const char* path)
 {
 	#ifdef USE_PHYSFS
-		const char* getMountPoint = PHYSFS_getMountPoint(path);
-		if (!getMountPoint)
-		{
-			clove_error("no mouting point for:");
-			clove_error(path);
+	const char* getMountPoint = PHYSFS_getMountPoint(path);
+	if (!getMountPoint)
+	{
+		clove_error("no mouting point for:");
+		clove_error(path);
 
-			return false;
-		}
-		return PHYSFS_removeFromSearchPath(path) != 0;
+		return false;
+	}
+	return PHYSFS_removeFromSearchPath(path) != 0;
 	#else
 
-		clove_error("unmouting feature is supported by enabling physfs.");
-		return false;
+	clove_error("unmouting feature is supported by enabling physfs.");
+	return false;
 	#endif
 }
 
 char** filesystem_enumerate(const char* path)
 {
 	#ifdef USE_PHYSFS
-		return PHYSFS_enumerateFiles(path);
+	return PHYSFS_enumerateFiles(path);
 	#else
-		clove_error("enumerate feature is supported by enabling physfs.");
-		return NULL;
+	clove_error("enumerate feature is supported by enabling physfs.");
+	return NULL;
 	#endif
 }
 
 const char* filesystem_getUsrDir()
 {
 	#ifdef USE_PHYSFS
-		return PHYSFS_getUserDir();
+	return PHYSFS_getUserDir();
 	#else
-		clove_error("getUsrDir feature is supported by enabling physfs.");
-		return NULL;
+	clove_error("getUsrDir feature is supported by enabling physfs.");
+	return NULL;
 	#endif
 }
 

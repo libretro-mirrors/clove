@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include <stdbool.h>
 
 #include "../3rdparty/lua/lua.h"
@@ -17,3 +19,5 @@ bool l_event_running();
 
 bool l_running;
 float swap_At;
+
+#endif

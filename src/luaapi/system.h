@@ -8,6 +8,10 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lua.h"
 
 int l_system_register(lua_State* state);
+
+#endif

@@ -6,8 +6,9 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
-
 #pragma once
+
+#ifdef USE_LUA
 
 #include "../3rdparty/lua/lua.h"
 
@@ -23,3 +24,5 @@ void l_joystick_register(lua_State* state);
 
 void l_joystick_pressed(int id, int button);
 void l_joystick_released(int id, int button);
+
+#endif

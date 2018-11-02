@@ -12,14 +12,17 @@
 #endif
 
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "include/utils.h"
 
 extern "C" {
-#include "include/lua_mainactivity.h"
+	#include "include/lua_mainactivity.h"
 }
 
 int main(int argc, char* argv[]) {
-  lua_main_activity_load(argc, argv);
+  #ifdef USE_LUA
+	lua_main_activity_load(argc, argv);
+  #endif
   return 0;
 }

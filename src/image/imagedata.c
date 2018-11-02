@@ -19,24 +19,24 @@
 
 void image_ImageData_new_with_filename(image_ImageData *dst, char const* filename) {
   int n;
-  dst->surface = stbi_load(filename, &dst->w, &dst->h, &n, n == 1 ? STBI_grey : n == 2 ? STBI_grey_alpha : n == 3 ? STBI_rgb : n == 4 ? STBI_rgb_alpha : STBI_default);
+  dst->surface = stbi_load(filename, &dst->w, &dst->h, &n, STBI_default);//n == 1 ? STBI_grey : n == 2 ? STBI_grey_alpha : n == 3 ? STBI_rgb : n == 4 ? STBI_rgb_alpha : STBI_default);
   dst->c = n == 1 ? STBI_grey : n == 2 ? STBI_grey_alpha : n == 3 ? STBI_rgb : n == 4 ? STBI_rgb_alpha : STBI_default;
   dst->path = filename;
 
-  if(!dst->surface){  //image could not be loaded
+  if(!dst->surface) {
       clove_error("%s %s\n", "Error: Could not open image: ", filename);
       return;
     }
   dst->pixels = (pixel*) dst->surface;
 }
 
-void image_ImageData_new_with_size(image_ImageData *dst, int width, int height) {
-  dst->surface = malloc(sizeof(unsigned char) * width * height * 4);
+void image_ImageData_new_with_size(image_ImageData *dst, int width, int height, int num_channels) {
+  dst->surface = malloc(sizeof(unsigned char) * width * height * num_channels);
   dst->w = width;
   dst->h = height;
-  dst->c = 4; //RGBA ftw ^_^ //TODO: add extra param for choosing num of channels?
+  dst->c = num_channels;
   dst->path = "no path.";
-  memset(dst->surface, 0, sizeof(unsigned char) * width * height * 4);
+  memset(dst->surface, 0, sizeof(unsigned char) * width * height * dst->c);
   dst->pixels = (pixel*) dst->surface;
 }
 

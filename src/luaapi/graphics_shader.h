@@ -8,6 +8,8 @@
 */
 #pragma once
 
+#ifdef USE_LUA
+
 #include "../3rdparty/lua/lua.h"
 
 #include "../include/shader.h"
@@ -21,3 +23,5 @@ typedef struct {
 void l_graphics_shader_register(lua_State *state);
 bool l_graphics_isShader(lua_State* state, int index);
 l_graphics_Shader* l_graphics_toShader(lua_State* state, int index);
+
+#endif

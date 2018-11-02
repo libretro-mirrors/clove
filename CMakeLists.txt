@@ -12,12 +12,20 @@ cmake_minimum_required(VERSION 2.8)
 project(clove)
 
 option(USE_PHYSFS "Build Clove using Physfs for filesystem?" ON)
+option(USE_LUA "Build CLove using Lua as scripting language" ON)
+
 option(STATIC_LIB "Builds CLove as a static library" ON)
 option(DYNAMIC_LIB "Builds CLove as a shared library" OFF)
 
 if (USE_PHYSFS)
     ADD_DEFINITIONS(-DUSE_PHYSFS=1)
+	message(STATUS, "Using Physfs")
 endif(USE_PHYSFS)
+
+if (USE_LUA)
+	ADD_DEFINITIONS("-DUSE_LUA=1")
+	message(STATUS, "Using Lua")
+endif(USE_LUA)
 
 IF(WIN32)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MOE_BUILD_FLAGS} -static-libgcc")
@@ -35,7 +43,7 @@ ENDIF()
 IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
 set(MTCL_BUILD_FLAGS "")
-set(CMAKE_C_FLAGS " -std=gnu99 -static-libgcc ${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
+set(CMAKE_C_FLAGS " -std=gnu99 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
 set(CMAKE_C_FLAGS_DEBUG "  -std=gnu99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE " -std=gnu99 ${CMAKE_C_FLAGS_RELEASE} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl -static-libstdc++")
@@ -57,7 +65,7 @@ if (APPLE)
     find_library(FOUNDATION_LIB Foundation)
     find_library(IOKIT_LIB IOKit)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX") #test -static-libgcc on OSX
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -Wall -Wvla -O3 -DOSX -static-libgcc")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX
 	-static-libstdc++")
@@ -195,14 +203,16 @@ add_subdirectory(src/3rdparty/openal-soft)
 set(OPENAL_INCLUDE_DIR src/3rdparty/openal-soft/include/)
 
 #lua
-add_subdirectory(src/3rdparty/lua)
-set(LUA_INCLUDE_DIR src/3rdparty/lua/)
-set(LUA_LIBRARIES lua)
+if (USE_LUA)
+	add_subdirectory(src/3rdparty/lua)
+	set(LUA_INCLUDE_DIR src/3rdparty/lua/)
+	set(LUA_LIBRARIES lua)
+endif(USE_LUA)
 
 #glew
-add_subdirectory(src/3rdparty/glew/build/cmake/)
+add_subdirectory(src/3rdparty/glew/)
 include_directories(src/3rdparty/glew/include/GL)
-set(GLEW_LIBRARIES glew)
+set(GLEW_LIBRARIES libglew_static)
 
 #sdl2
 add_subdirectory(src/3rdparty/SDL2/)
@@ -232,62 +242,36 @@ include_directories(src/3rdparty/freetype/include)
 
 
 if(WIN32)
-    if (USE_PHYSFS)
+
 	target_link_libraries(clove ws2_32.lib
-	    ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	    ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	    ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES}
-	    ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES}
-	    #${CHIPMUNK_LIBRARIES}
-	    )
-    else()
-	target_link_libraries(clove ws2_32.lib
-	    ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	    ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	    ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES}
-	    #${CHIPMUNK_LIBRARIES}
-	    )
-    endif(USE_PHYSFS)
+	${SDL_LIBRARIES} ${GLEW_LIBRARIES}
+	${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
+	${FREETYPE_LIBRARIES})
+
+	if (USE_PHYSFS)
+		target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
+	endif(USE_PHYSFS)
+
+	if (USE_LUA)
+		target_link_libraries(clove ${LUA_LIBRARIES})
+	endif(USE_LUA)
+
+else()
+	target_link_libraries(clove
+	${SDL_LIBRARIES} ${GLEW_LIBRARIES}
+	${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
+   	${FREETYPE_LIBRARIES})
+	#${CHIPMUNK_LIBRARIES})
+
+	if (USE_PHYSFS)
+		target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
+	endif(USE_PHYSFS)
+
+	if (USE_LUA)
+		target_link_libraries(clove ${LUA_LIBRARIES})
+	endif(USE_LUA)
 
 endif(WIN32)
-
-if(APPLE)
-    if (USE_PHYSFS)
-	target_link_libraries(clove
-	    ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	    ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	    ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES}
-	    ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES}
-	    #${CHIPMUNK_LIBRARIES}
-	    )
-    else()
-	target_link_libraries(clove
-	    ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	    ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	    ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES}
-	    #${CHIPMUNK_LIBRARIES}
-	    )
-    endif(USE_PHYSFS)
-endif()
-
-if(UNIX AND NOT APPLE)
-    if (USE_PHYSFS)
-	target_link_libraries(clove
-	    ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	    ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	    ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES}
-	    ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES}
-	    #${CHIPMUNK_LIBRARIES}
-	    )
-    else()
-	target_link_libraries(clove
-	    ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	    ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	    ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES}
-	    #${CHIPMUNK_LIBRARIES}
-	    )
-    endif(USE_PHYSFS)
-endif()
 
 if(ANDROID)
     target_link_libraries(clove

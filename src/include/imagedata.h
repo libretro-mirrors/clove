@@ -28,7 +28,8 @@ typedef struct {
 
 char const* image_error(void);
 
-void image_ImageData_new_with_size(image_ImageData *dst, int width, int height);
+void image_ImageData_new_with_size(image_ImageData *dst, int width, int height,
+		int num_channels);
 
 void image_ImageData_new_with_filename(image_ImageData *dst, char const* filename);
 

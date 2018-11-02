@@ -24,11 +24,11 @@ static struct {
     ALuint unqueueBuffer[6];
 } moduleData;
 
-static const char* get_filename_ext(const char *filename) {
+/*static const char* get_filename_ext(const char *filename) {
     const char *dot = strrchr(filename, '.');
     if(!dot || dot == filename) return "";
     return dot+1;
-}
+}*/
 
 void audio_StreamInit() {
     moduleData.playingStreamCount = 0;

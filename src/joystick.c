@@ -7,6 +7,7 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
+#ifdef USE_LUA
 #include "include/joystick.h"
 #include "luaapi/joystick.h"
 
@@ -128,5 +129,4 @@ float joystick_getGamepadAxis(joystick_Joystick* joystick, int axis) {
     return SDL_GameControllerGetAxis(joystick->controller, (SDL_GameControllerAxis) axis) / 32767.0f;
 }
 
-
-
+#endif //USE_LUA
