@@ -1,5 +1,7 @@
 #!/bin/sh
 
+#NOTE: NOT WORKING!
+
 #Creates the lib used by android to make the .apk
 mkdir -p build_android &&
 cd build_android &&

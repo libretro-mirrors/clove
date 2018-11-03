@@ -74,22 +74,13 @@ void graphics_Image_refresh(graphics_Image *img, image_ImageData const *data) {
 	GLint internalFormat;
 
 #ifndef CLOVE_WEB
-	switch (image_ImageData_getChannels((image_ImageData*)data)) //we do not change "data" so it's safe to cast it.
+	switch (image_ImageData_getChannels((image_ImageData*)data))
 	{
-
-		/*
-		 * Note:
-		 * When it comes to grey and grey + alpha
-		 * you might have to do something in the shaders
-		 * too in order to have them look good.
-		 * Idk because I haven't tested :P.
-		 */
-
-		case 1: //grey
+		case 1: // red only
 			format = GL_RED;
 			internalFormat = GL_RED;
 			break;
-		case 2: //grey + alpha
+		case 2: //red + green
 			format = GL_RG;
 			internalFormat = GL_RG;
 			break;
@@ -108,13 +99,30 @@ void graphics_Image_refresh(graphics_Image *img, image_ImageData const *data) {
 			break;
 	}
 #else
-    if (image_ImageData_getChannels((image_ImageData*)data) == 4) {
-        format = GL_RGBA;
-        internalFormat = GL_RGBA;
-    } else {
-        format = GL_ALPHA;
-        internalFormat = GL_ALPHA;
-    }
+	switch (image_ImageData_getChannels((image_ImageData*)data))
+	{
+		case 1: // alpha only
+			format = GL_ALPHA;
+			internalFormat = GL_ALPHA;
+			break;
+		case 2: // greyscale
+			format = GL_LUMINANCE_ALPHA;
+			internalFormat = GL_LUMINANCE_ALPHA;
+			break;
+		case 3:
+			format = GL_RGB;
+			internalFormat = GL_RGB;
+			break;
+		case 4:
+			format = GL_RGBA;
+			internalFormat=GL_RGBA;
+			break;
+
+		default:
+			format = GL_RGBA;
+			internalFormat = GL_RGBA;
+			break;
+	}
 #endif
 
 	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, data->w, data->h, 0, format, GL_UNSIGNED_BYTE, data->surface);

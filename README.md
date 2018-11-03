@@ -33,7 +33,8 @@ libaudio-dev libesd0-dev libpulse-dev libroar-dev
 
 For Web: 
 - Install emscripten(1.38.15 (commit 7a0e27441eda6cb0e3f1210e6837cae4b080ab4c)) and add it to your path.
-- Run ./build_web.sh 
+- Run ./build_web.sh .When it's done you will have "clove.bc" and other files. The .bc file is used 
+for linking with your C/C++ programs, the rest is used for Lua.
 - For testing you have the following options: 
     1. Copy generated files into /var/www/html/ and run localhost (you must have installed apache2)
     1. Open a terminal and run: python3 -m http.server . Run index.html and go to localhost:8000
