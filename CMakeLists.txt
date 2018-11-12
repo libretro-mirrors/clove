@@ -148,7 +148,7 @@ FILE(
 set(clove_package "clove")
 set(clove_creator "Muresan Vlad")
 set(clove_copyright "Copyright (c) 2015-2018, ${clove_creator}.")
-message(clove_copyright)
+message(${clove_copyright})
 
 if (STATIC_LIB)
     add_library(love STATIC ${SOURCE_FILES})
@@ -178,8 +178,6 @@ if (ANDROID)
 
 endif()
 
-INCLUDE_DIRECTORIES(src/3rdparty/stb)
-
 #chipmunk2d
 #add_subdirectory(src/3rdparty/Chipmunk2D)
 #set(CHIPMUNK_INCLUDE_DIR src/3rdparty/Chipmunk2D/include)
@@ -195,7 +193,8 @@ endif(USE_PHYSFS)
 
 #freetype
 add_subdirectory(src/3rdparty/freetype)
-set(FREETYPE_INCLUDE_DIR src/3rdparty/freetype/include)
+include_directories(src/3rdparty/freetype/include)
+set(FREETYPE_LIBRARIES freetype)
 
 #openal
 add_subdirectory(src/3rdparty/openal-soft)
@@ -209,9 +208,9 @@ if (USE_LUA)
 endif(USE_LUA)
 
 #glew
-add_subdirectory(src/3rdparty/glew/build/cmake/)
-include_directories(src/3rdparty/glew/include/GL)
-set(GLEW_LIBRARIES glew_s)
+add_subdirectory(src/3rdparty/glew/)
+set(GLEW_INCLUDE_DIR src/3rdparty/glew/include/GL/)
+set(GLEW_LIBRARIES libglew_static)
 
 #sdl2
 add_subdirectory(src/3rdparty/SDL2/)
@@ -234,10 +233,6 @@ endif()
 add_definitions(-DAL_LIBTYPE_STATIC)
 add_definitions(-DFT2_BUILD_LIBRARY)
 add_definitions(-DSDL2)
-
-#freetype
-set(FREETYPE_LIBRARIES freetype)
-include_directories(src/3rdparty/freetype/include)
 
 
 if(WIN32)

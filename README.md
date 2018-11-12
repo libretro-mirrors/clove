@@ -108,6 +108,13 @@ end
 ```
 
 
+Contact
+-------
+
+Freenode: murii
+Email: muresanvladmihail@gmail.com or murii@tilde.team
+
+
 CLove pictures
 -----------------------------
 

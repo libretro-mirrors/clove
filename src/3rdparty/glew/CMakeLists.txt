@@ -9,11 +9,10 @@ SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib )
 SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
-OPTION( glew-cmake_BUILD_SHARED "Build the shared glew library" OFF )
+OPTION( glew-cmake_BUILD_SHARED "Build the shared glew library" ON )
 OPTION( glew-cmake_BUILD_STATIC "Build the static glew library" ON )
 OPTION( glew-cmake_BUILD_SINGLE_CONTEXT "Build the single context glew library" ON )
 OPTION( glew-cmake_BUILD_MULTI_CONTEXT "Build the multi context glew library" ON )
-
 
 SET( LIBGLEW_SRCS ${SRC_DIR}/glew.c )
 
@@ -40,8 +39,9 @@ ELSE(  )
 	SET( PLATFORM_SPECIFIC_LIBRARIES X11 dl Xext )
 ENDIF(  )
 
-IF ( glew-cmake_BUILD_STATIC )
-	IF ( glew-cmake_BUILD_SINGLE_CONTEXT )
+#IF ( glew-cmake_BUILD_STATIC )
+#	message(FATAL_ERROR "YO!")
+#	IF ( glew-cmake_BUILD_SINGLE_CONTEXT )
 		ADD_LIBRARY( libglew_static STATIC ${LIBGLEW_SRCS} )
 
 		SET_TARGET_PROPERTIES( libglew_static PROPERTIES
@@ -50,7 +50,7 @@ IF ( glew-cmake_BUILD_STATIC )
 		TARGET_INCLUDE_DIRECTORIES( libglew_static PUBLIC ${INCLUDE_DIR} )
 		TARGET_LINK_LIBRARIES( libglew_static ${GL_LIBRARY} ${PLATFORM_SPECIFIC_LIBRARIES} )
 		INSTALL( TARGETS libglew_static DESTINATION lib )
-	ENDIF (  )
+#	ENDIF (  )
 
 	IF ( glew-cmake_BUILD_MULTI_CONTEXT )
 		ADD_LIBRARY( libglewmx_static STATIC ${LIBGLEW_SRCS} )
@@ -63,7 +63,7 @@ IF ( glew-cmake_BUILD_STATIC )
 		TARGET_LINK_LIBRARIES( libglewmx_static ${GL_LIBRARY} ${PLATFORM_SPECIFIC_LIBRARIES} )
 		INSTALL( TARGETS libglewmx_static DESTINATION lib )
 	ENDIF (  )
-ENDIF (  )
+#ENDIF (  )
 
 IF ( glew-cmake_BUILD_SHARED )
 	IF ( glew-cmake_BUILD_SINGLE_CONTEXT )
