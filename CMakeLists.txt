@@ -36,12 +36,14 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
 set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++") #-static test this
 FIND_PACKAGE(OpenGL REQUIRED)
+SET(OPENAL_LIBRARY "OpenAL32")
 set(MTCL_BUILD_FLAGS "")
 set(OS_SPECIFIC_LIBRARIES)
 ENDIF()
 
 IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
+SET(OPENAL_LIBRARY "openal")
 set(MTCL_BUILD_FLAGS "")
 set(CMAKE_C_FLAGS " -std=gnu99 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
 set(CMAKE_C_FLAGS_DEBUG "  -std=gnu99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
@@ -64,6 +66,7 @@ if (APPLE)
     find_library(CORE_SERVICES_LIB CoreServices)
     find_library(FOUNDATION_LIB Foundation)
     find_library(IOKIT_LIB IOKit)
+	FIND_LIBRARY(OPENAL_LIBRARY OpenAL)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -Wall -Wvla -O3 -DOSX -static-libgcc")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
@@ -230,7 +233,6 @@ endif()
     set(OPENAL_LIBRARIES OpenAL)
 
 
-add_definitions(-DAL_LIBTYPE_STATIC)
 add_definitions(-DFT2_BUILD_LIBRARY)
 add_definitions(-DSDL2)
 
