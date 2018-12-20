@@ -43,7 +43,6 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 	fseek(file,0,SEEK_SET);
 
 	ALshort *readBuffer = malloc(size - 44);
-	printf("%lu\n",sizeof(readBuffer));
 	struct wavfile header;
 
 	if ( fread(&header,sizeof(header),1,file) < 1 ) {
