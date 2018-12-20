@@ -11,7 +11,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> // for memcmp
 #include <stdint.h> // for int16_t and int32_t
 
 struct wavfile
@@ -39,29 +38,38 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 		return 0;
 	}
 
-	audio_wav_DecoderData* data = malloc(sizeof(audio_wav_DecoderData));
 	fseek(file,0,SEEK_END);
-	data->size = ftell(file);
+	long size = ftell(file);
 	fseek(file,0,SEEK_SET);
 
-	data->readBuffer = malloc(data->size - 44);
+	ALshort *readBuffer = malloc(size - 44);
+	printf("%lu\n",sizeof(readBuffer));
 	struct wavfile header;
 
 	if ( fread(&header,sizeof(header),1,file) < 1 ) {
 		clove_error("Can't read input file header %s\n", filename);
+		fclose(file);
+		return 0;
+	}
+	header.id[4] = '\0';
+
+	if (strcmp(header.id, "RIFF") != 0) {
+		clove_error("File: %s is not of type 'RIFF'!\n", filename);
+		fclose(file);
 		return 0;
 	}
 
 	fseek(file, 44, SEEK_SET);
-	fread(data->readBuffer,1,data->size - 44, file);
+	fread(readBuffer,1,size - 44, file);
 	fseek(file,0,SEEK_SET);
 
+	int samplerate = 0;
 	fseek(file, 24, SEEK_SET);
-	fread(&data->samplerate, 1, 4, file);
+	fread(&samplerate, 1, 4, file);
 	fseek(file, 0, SEEK_SET);
 
 	int format;
-	if (header.format == 8){
+	if (header.format == 8) {
 		switch(header.channels){
 			case 1:
 				format = AL_FORMAT_MONO8;
@@ -70,8 +78,7 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 				format = AL_FORMAT_STEREO8;
 				break;
 		}
-	}
-	if (header.format == 16) {
+	} else if (header.format == 16) {
 		switch(header.channels){
 			case 1:
 				format = AL_FORMAT_MONO16;
@@ -80,8 +87,7 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 				format = AL_FORMAT_STEREO16;
 				break;
 		}
-	}
-	if (header.format == 18) {
+	} else {
 		switch(header.channels){
 			case 1:
 				format = AL_FORMAT_MONO8;
@@ -93,8 +99,7 @@ int audio_wav_load(unsigned int buffer, char const * filename) {
 	}
 
 
-	alBufferData(buffer, format,  data->readBuffer, header.totallength, data->samplerate);
-	free(data);
-
+	alBufferData(buffer, format, readBuffer, header.totallength, samplerate);
+	fclose(file);
 	return 1;
 }

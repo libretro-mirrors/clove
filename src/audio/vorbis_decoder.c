@@ -13,6 +13,7 @@
 #include "../include/vorbis_decoder.h"
 #include "../include/utils.h"
 
+#include "../3rdparty/openal/include/AL/al.h"
 
 int audio_vorbis_load(ALuint buffer, char const *filename) {
   short *data;
