@@ -54,6 +54,7 @@ Features
 - Cross platform (Linux, MacOS, Web and Windows).
 - Custom package format.
 - Powerful Batch system.
+- Powerful Particle system.
 - Image loading and drawing.
 - Image creation from scratch or from a template & save(png,bmp,tga).
 - Meshes.
@@ -71,7 +72,7 @@ Features
 
 Planned work
 ============
-1. Networking for Windows
+1. Fix/Improve Threads module and Networking overall(plus support for Windows)
 1. Android
 
 Examples (see examples folder)

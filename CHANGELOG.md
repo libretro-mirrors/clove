@@ -1,9 +1,10 @@
-version 0.7.2 
+version 0.8.0
 =============
-
+* added: misc math utilities.
+* added: Very powerful particle system.
 * added: Lua can be enabled or disabled at compile time.
-* added: build system for web!
-* added: more C flags for compilation.
+* added: Build system for web!
+* added: More C flags for compilation.
 * added: CLove can be compiled as shared or static library.
 * added: 'set' function to batch.c. Allows for changing the structure of an entity which is part of the batch.
 * added: love.system.setClipboardText(text)
@@ -11,10 +12,10 @@ version 0.7.2
 * added: love.system.getProcessorCount()
 
 * fixed:  newImageFont is not broke anymore.
-* modify: changed the structure of folders.
+* modify: Changed the structure of folders, enabling the usage of the framework as a library.
 
 version 0.7.1 22.07.2017:
-=============
+========================
 
 * internally: added Zlib
 * modify: love.filesystem.read to support Physfs
@@ -46,7 +47,7 @@ it takes the full length of the strings.
 * added: love.filesystem.require("file.lua"). Acts like require even in packaging mode
 
 version 0.7.0 04.03.2017:
-=====
+=======================
 
 * added: native which lets you code your games in C or C++ !
 * added: love.graphics.newMesh
@@ -61,7 +62,7 @@ version 0.7.0 04.03.2017:
 
 
 version 0.6.3 29.01.2017:
-==========
+========================
 
 * added full joystick support. The API is different than Love's !
 * added love.filesystem.getSaveDirectory(optional: game, optional: company)
@@ -74,7 +75,7 @@ version 0.6.3 29.01.2017:
 * fixed: love.mouse.isDown()
 
 version 0.6.2 12.01.2017:
-=====
+========================
 
 * added No game screen
 * added love.window.getDesktopDimensions()
