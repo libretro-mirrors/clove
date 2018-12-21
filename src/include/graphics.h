@@ -26,6 +26,13 @@
  */
 void graphics_init(int width, int height, bool resizable, bool stats, bool show);
 
+typedef struct {
+  float red;
+  float green;
+  float blue;
+  float alpha;
+} graphics_Color;
+
 typedef enum {
     graphics_BlendMode_additive,
     graphics_BlendMode_alpha,

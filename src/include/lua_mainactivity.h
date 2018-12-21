@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2017 Muresan Vlad
+#   Copyright (C) 2017-2018 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -39,6 +39,7 @@
 
 #include "utils.h"
 #include "graphics.h"
+#include "particlesystem.h"
 #include "matrixstack.h"
 #include "filesystem.h"
 #include "audio.h"

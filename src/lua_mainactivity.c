@@ -244,6 +244,8 @@ void lua_main_activity_load(int argc, char* argv[]) {
 
   l_boot(lua, &config);
 
+  graphics_particlesystem_init();
+
   audio_init(config.window.stats);
   filesystem_setIdentity(config.window.identity);
 

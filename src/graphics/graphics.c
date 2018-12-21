@@ -20,13 +20,6 @@
 #include "../include/shader.h"
 #include "../include/geometry.h"
 
-typedef struct {
-    float red;
-    float green;
-    float blue;
-    float alpha;
-} graphics_Color;
-
 static struct {
     SDL_Window* window;
     SDL_GLContext context;
