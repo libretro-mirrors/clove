@@ -9,10 +9,11 @@
 
 /* History:
  *
- * Wednesday 10 may 2017 - added the possibity to choose between ipv4 or ipv6 (for real)
- * Monday 8 may 2017 - added the possiblity to choose between ipv4 and ipv6 + small changes
- * Tuesday 3 Jan 2017 - net_send_data accepts len as third param, added a bit more doc (1.0.1)
- * Mon 2 Jan 2017 - first real commit (1.0)
+ * 22 april 2018 - added C++ compatibility
+ * 10 may 2017 - added the possibity to choose between ipv4 or ipv6 (for real)
+ * 8 may 2017 - added the possiblity to choose between ipv4 and ipv6 + small changes
+ * 3 Jan 2017 - net_send_data accepts len as third param, added a bit more doc (1.0.1)
+ * 2 Jan 2017 - first real commit (1.0)
  */
 
 #include "../include/net.h"
@@ -20,7 +21,7 @@
 // non OS idependent functions
 
 const char* net_getVersion() {
-    return "1.0.4";
+    return "1.0.3";
 }
 
 const char* net_getSystem() {
