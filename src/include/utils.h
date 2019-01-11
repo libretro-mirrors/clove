@@ -56,6 +56,4 @@ void clove_error(const char* format, ...);
 # 	define CLOVE_GL 11
 #endif
 
-char* util_concatenate(const char* first, const char* second);
-
 #endif

@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -10,8 +10,24 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 #include "../3rdparty/CMath/cmath.h"
 
+#define LOVE_PI 3.141592653589793238462643383279502884L
+#define LOVE_PI2 (2 * LOVE_PI)
+
+inline void normalizeInPlace(float *x, float *y) {
+  float a = *x;
+  float b = *y;
+  float li = sqrt(a*a+b*b);
+  if(li == 0.0f) {
+    return;
+  }
+
+  li = 1.0f / li;
+  *x *= li;
+  *y *= li;
+}
 
 void m4x4_newTransform3d(mat4x4 *out, vec3 pos, float angle, vec3 axis, vec3 scale,
                          float ox, float oy, float kx, float ky);

@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -10,7 +10,7 @@
 #include <tgmath.h>
 #include <stdlib.h>
 
-#include "../include/util.h"
+#include "../include/vector.h"
 #include "../include/geometry.h"
 #include "../include/graphics.h"
 #include "../include/shader.h"
@@ -26,6 +26,8 @@ static struct {
     uint16_t *index;
     graphics_Shader plainColorShader;
     float lineWidth;
+	graphics_Quad quad;
+	mat4x4 tr;
 } moduleData;
 
 void graphics_geometry_init(void) {
@@ -49,6 +51,7 @@ void graphics_geometry_init(void) {
             "}\n");
 
     moduleData.lineWidth = 1.0f;
+	moduleData.quad = (graphics_Quad){0.0f, 0.0f, 1.0f, 1.0f};
 }
 
 void graphics_geometry_free () {
@@ -75,26 +78,6 @@ static void growBuffers(float vertices, uint16_t indices) {
     }
 }
 
-static void drawBuffer(uint16_t indices, GLenum type) {
-    glBindBuffer(GL_ARRAY_BUFFER, moduleData.dataVBO);
-    glBufferData(GL_ARRAY_BUFFER, moduleData.currentDataSize, moduleData.data, GL_STREAM_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, moduleData.currentIndexSize, moduleData.index, GL_STREAM_DRAW);
-
-    graphics_Shader *shader = graphics_getShader();
-    graphics_setShader(&moduleData.plainColorShader);
-
-    mat4x4 tr;
-    m4x4_newIdentity(&tr);
-    graphics_Quad quad = {0.0f, 0.0f, 1.0f, 1.0f};
-
-    graphics_drawArray(&quad, &tr, moduleData.dataIBO, indices,
-            type, GL_UNSIGNED_SHORT, graphics_getColor(), 1, 1);
-
-    graphics_setShader(shader);
-}
-
 static void drawBufferSpecial(uint16_t indices,
         float x, float y,
         float r,
@@ -110,12 +93,28 @@ static void drawBufferSpecial(uint16_t indices,
     graphics_Shader *shader = graphics_getShader();
     graphics_setShader(&moduleData.plainColorShader);
 
-    mat4x4 tr;
-    m4x4_newTransform2d(&tr,x,y,r,sx,sy,ox,oy,0,0);
-    graphics_Quad quad = {0,0,1,1};
+    m4x4_newTransform2d(&moduleData.tr, x, y, r, sx, sy, ox, oy, 0.0f, 0.0f);
 
-    graphics_drawArray(&quad, &tr, moduleData.dataIBO, indices,
+    graphics_drawArray(&moduleData.quad, &moduleData.tr, moduleData.dataIBO, indices,
             type, GL_UNSIGNED_SHORT, graphics_getColor(), w, h);
+
+    graphics_setShader(shader);
+}
+
+static void drawBuffer(uint16_t indices, GLenum type) {
+    glBindBuffer(GL_ARRAY_BUFFER, moduleData.dataVBO);
+    glBufferData(GL_ARRAY_BUFFER, moduleData.currentDataSize, moduleData.data, GL_STREAM_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, moduleData.currentIndexSize, moduleData.index, GL_STREAM_DRAW);
+
+    graphics_Shader *shader = graphics_getShader();
+    graphics_setShader(&moduleData.plainColorShader);
+
+    m4x4_newIdentity(&moduleData.tr);
+
+    graphics_drawArray(&moduleData.quad, &moduleData.tr, moduleData.dataIBO, indices, type,
+	GL_UNSIGNED_SHORT, graphics_getColor(), 1.0f, 1.0f);
 
     graphics_setShader(shader);
 }
@@ -149,7 +148,7 @@ void graphics_geometry_lineCircle(float x, float y, float radius, int segments, 
 void graphics_geometry_fillCircle(float x, float y, float radius, int segments, float r, float sx, float sy, float ox, float oy) {
     growBuffers(segments+1, segments+2);
 
-    float step = 2*LOVE_PI / segments;
+    float step = LOVE_PI2 / segments;
     float ang = 0;
     float* buf = moduleData.data;
 
@@ -188,9 +187,8 @@ void graphics_geometry_rectangle(bool filled,
         float sx, float sy,
         float ox, float oy) {
 
-    int num_vertices = 32;
     int num_indices = 6;
-    growBuffers(num_vertices, num_indices);
+    growBuffers(32, num_indices);
 
     bool special = rotation != 0 || sx != 1 || sy != 1;
 
@@ -329,15 +327,3 @@ void graphics_geometry_vertex(bool filled, float x, float y, int vertices[], int
     else
         drawBuffer(count,GL_LINE_STRIP);
 }
-
-
-
-
-
-
-
-
-
-
-
-
