@@ -1,5 +1,5 @@
-version 0.8.0
-=============
+version 0.8.0 not yet released
+========================
 * added: misc math utilities.
 * added: Very powerful particle system.
 * added: Lua can be enabled or disabled at compile time.

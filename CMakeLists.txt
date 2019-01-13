@@ -1,7 +1,7 @@
 #
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -150,7 +150,7 @@ FILE(
 
 set(clove_package "clove")
 set(clove_creator "Muresan Vlad")
-set(clove_copyright "Copyright (c) 2015-2018, ${clove_creator}.")
+set(clove_copyright "Copyright (c) 2015-2019, ${clove_creator}.")
 message(${clove_copyright})
 
 if (STATIC_LIB)

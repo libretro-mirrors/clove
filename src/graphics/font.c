@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #   Big thanks to Florian Kesseler
 #
 #   This project is free software; you can redistribute it and/or modify it
@@ -173,9 +173,9 @@ int graphics_Font_new(graphics_Font *dst, char const* filename, int ptsize) {
     }
     if (error != 0) {
         if ( error == FT_Err_Unknown_File_Format )
-            clove_error("%s \n","Error, the font file could be opened and read");
+            clove_error("Error, unknown font format: %s\n");
         else
-            clove_error("%s \n", "Error, the font file could not be opened or read");
+            clove_error("Error, the font file: %s, could not be opened or read\n");
     }
 
     FT_Set_Pixel_Sizes(dst->face, 0, ptsize);

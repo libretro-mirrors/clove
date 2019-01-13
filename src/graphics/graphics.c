@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -57,8 +57,10 @@ static void graphics_init_window(int width, int height)
     glewExperimental = true;
     GLenum res = glewInit();
 
-    if(res != GLEW_OK)
-        clove_error("Error: Could not init glew!");
+    if(res != GLEW_OK) {
+        clove_error("Error: Could not init glew!\n");
+		return;
+	}
 
     glViewport(0, 0, width, height);
 
@@ -90,8 +92,10 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
 
     moduleData.hasWindow = show;
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         clove_error("Error: Could not init SDL video \n");
+		return;
+	}
 
     moduleData.isCreated = false;
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, 0);
@@ -121,22 +125,25 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
 	{
 		moduleData.window = SDL_CreateWindow(moduleData.title, moduleData.x, moduleData.y, width, height, moduleData.w_flags);
 
-		if(!moduleData.window)
-			clove_error("Error: Could not create window :O");
+		if(!moduleData.window) {
+			clove_error("Error: Could not create window :O\n");
+			return;
+		}
 
 		moduleData.context = SDL_GL_CreateContext(moduleData.window);
-		if(!moduleData.context)
-			clove_error("Error: Could not create window context!");
+		if(!moduleData.context) {
+			clove_error("Error: Could not create window context!\n");
+		}
 
 		//moduleData.surface = SDL_GetWindowSurface(moduleData.window);
 		SDL_GL_SetSwapInterval(1); //limit FPS to 60, this may not work on all drivers
 
 		if (stats > 0) {
-			printf("Debug: Sdl version: %d.%d.%d \n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
-			printf("Debug: OpenGL version: %s \n", glGetString(GL_VERSION));
-			printf("Debug: GLSL version %s \n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-			printf("Debug: Vendor: %s\n", glGetString(GL_VENDOR));
-			printf("Debug: Renderer: %s\n", glGetString(GL_RENDERER));
+			printf("Sdl version: %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+			printf("OpenGL version: %s\n", glGetString(GL_VERSION));
+			printf("GLSL version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+			printf("Vendor: %s\n", glGetString(GL_VENDOR));
+			printf("Renderer: %s\n", glGetString(GL_RENDERER));
 		}
 
 		graphics_init_window(width, height);

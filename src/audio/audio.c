@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -23,10 +23,11 @@ void audio_init(int stats) {
 	moduleData.context = alcCreateContext(moduleData.device, NULL);
 	if(!alcMakeContextCurrent(moduleData.context)) {
 		clove_error("%s \n", "Failed to initialite audio context");
+        return;
 	}
 	audio_StreamInit();
 	if (stats > 0)
-		clove_error("%s %s \n ", "Debug: OpenAL version: ", alGetString(AL_VERSION));
+		clove_error("OpenAL version: %s\n", alGetString(AL_VERSION));
 }
 
 void audio_setVolume(double value){
