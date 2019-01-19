@@ -13,6 +13,7 @@ version 0.8.0 not yet released
 
 * fixed:  newImageFont is not broke anymore.
 * modify: Changed the structure of folders, enabling the usage of the framework as a library.
+*removed: C++ support
 
 version 0.7.1 22.07.2017:
 ========================

@@ -28,13 +28,13 @@ if (USE_LUA)
 endif(USE_LUA)
 
 IF(WIN32)
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MOE_BUILD_FLAGS} -static-libgcc")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MOE_BUILD_FLAGS}")
 set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /EHsc /GR /FC /DWIN32 /D_MBCS")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D__Debug__")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
-set(CMAKE_EXE_LINKER_FLAGS "-static-libgcc -static-libstdc++") #-static test this
+set(CMAKE_EXE_LINKER_FLAGS "")
 FIND_PACKAGE(OpenGL REQUIRED)
 SET(OPENAL_LIBRARY "OpenAL32")
 set(MTCL_BUILD_FLAGS "")
@@ -44,11 +44,10 @@ ENDIF()
 IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
 SET(OPENAL_LIBRARY "openal")
-set(MTCL_BUILD_FLAGS "")
-set(CMAKE_C_FLAGS " -std=gnu99 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
-set(CMAKE_C_FLAGS_DEBUG "  -std=gnu99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
-set(CMAKE_C_FLAGS_RELEASE " -std=gnu99 ${CMAKE_C_FLAGS_RELEASE} -O3")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl -static-libstdc++")
+set(CMAKE_C_FLAGS " -std=gnu99 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} -fPIC -DLINUX -ldl")
+set(CMAKE_C_FLAGS_DEBUG "  -std=c99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
+set(CMAKE_C_FLAGS_RELEASE " -std=c99 ${CMAKE_C_FLAGS_RELEASE} -O3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 set(CMAKE_SHARED_LINKER_FLAGS "-ldl -Wl,-rpath=$ORIGIN,--as-needed,--allow-multiple-definition,--build-id")
@@ -68,10 +67,9 @@ if (APPLE)
     find_library(IOKIT_LIB IOKit)
 	FIND_LIBRARY(OPENAL_LIBRARY OpenAL)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -Wall -Wvla -O3 -DOSX -static-libgcc")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -Wall -Wvla -O3 -DOSX")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX
-	-static-libstdc++")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__Debug__")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl")
     set(OS_SPECIFIC_LIBRARIES ${COCOA_LIB} ${CORE_SERVICES_LIB} ${FOUNDATION_LIB} ${IOKIT_LIB})
@@ -200,8 +198,8 @@ include_directories(src/3rdparty/freetype/include)
 set(FREETYPE_LIBRARIES freetype)
 
 #openal
-add_subdirectory(src/3rdparty/openal-soft)
-set(OPENAL_INCLUDE_DIR src/3rdparty/openal-soft/include/)
+add_subdirectory(src/3rdparty/openal)
+set(OPENAL_INCLUDE_DIR src/3rdparty/openal/include/)
 
 #lua
 if (USE_LUA)
@@ -229,8 +227,9 @@ endif(USE_PHYSFS)
 
 if(WIN32)
     set(OPENAL_LIBRARIES "OpenAL32")
+else()
+    set(OPENAL_LIBRARIES openal)
 endif()
-    set(OPENAL_LIBRARIES OpenAL)
 
 
 add_definitions(-DFT2_BUILD_LIBRARY)
@@ -255,8 +254,8 @@ if(WIN32)
 else()
 	target_link_libraries(clove
 	${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-   	${FREETYPE_LIBRARIES})
+	${OPENGL_LIBRARIES}
+   	${FREETYPE_LIBRARIES} ${OPENAL_LIBRARIES})
 	#${CHIPMUNK_LIBRARIES})
 
 	if (USE_PHYSFS)

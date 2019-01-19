@@ -25,10 +25,7 @@ macro(MESSAGE_WARN _TEXT)
 endmacro()
 
 macro(MESSAGE_ERROR _TEXT)
-    # This comment line will most likely blow up the whole
-    # SDL at a certain point but otherwhise we're forced to install dx sdx june 2010 on
-    # windows
-    # message(FATAL_ERROR "*** ERROR: ${_TEXT}")
+  message(FATAL_ERROR "*** ERROR: ${_TEXT}")
 endmacro()
 
 macro(MESSAGE_BOOL_OPTION _NAME _VALUE)
@@ -69,7 +66,7 @@ endmacro()
 
 macro(CHECK_OBJC_SOURCE_COMPILES SOURCE VAR)
   set(PREV_REQUIRED_DEFS "${CMAKE_REQUIRED_DEFINITIONS}")
-  set(CMAKE_REQUIRED_DEFINITIONS "-ObjC ${PREV_REQUIRED_DEFS}")
+  set(CMAKE_REQUIRED_DEFINITIONS "-x objective-c ${PREV_REQUIRED_DEFS}")
   CHECK_C_SOURCE_COMPILES(${SOURCE} ${VAR})
   set(CMAKE_REQUIRED_DEFINITIONS "${PREV_REQUIRED_DEFS}")
 endmacro()

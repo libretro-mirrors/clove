@@ -68,7 +68,7 @@ void mouse_mousemoved(int x, int y) {
 }
 
 void mouse_mousepressed(int x, int y, int button) {
-    if (button == SDL_BUTTON_WHEEL_UP || button == SDL_BUTTON_WHEEL_DOWN) {
+    if (button == SDL_MOUSEBUTTONUP || button == SDL_MOUSEBUTTONDOWN) {
         l_mouse_pressed(moduleData.x, moduleData.y, button);
         mouse_mousemoved(moduleData.x, moduleData.y);
     }else{

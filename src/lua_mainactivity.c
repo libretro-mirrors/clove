@@ -159,7 +159,7 @@ void lua_main_loop(void) {
       switch(event.wheel.type) {
         case SDL_MOUSEWHEEL:
           mouse_mousewheel(event.wheel.y);
-          int _what = event.wheel.y == 1 ? SDL_BUTTON_WHEEL_UP : SDL_BUTTON_WHEEL_DOWN;
+          int _what = event.wheel.y == 1 ? SDL_MOUSEBUTTONUP : SDL_MOUSEBUTTONDOWN;
           mouse_mousepressed(event.button.x, event.button.y,
                              _what);
           mouse_setButton(event.button.button);
