@@ -407,9 +407,19 @@ int graphics_setFullscreen(int value, const char* mode){
 #ifndef CLOVE_WEB
     if (moduleData.hasWindow)
     {
-        if ((strncmp(mode,"desktop", 7) == 0) && value == 1)
-            SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-
+		if (value == 1) {
+			if (strcmp(mode, "desktop") == 0)
+				SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+			else if (strcmp(mode, "fullscreen") == 0) {
+				SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN);
+			}
+			else {
+				clove_error("Unknown fullscreen type: %s, use: 'desktop' or 'fullscreen'\n", mode);
+				return 0;
+			}
+		} else {
+			SDL_SetWindowFullscreen(moduleData.window, 0);
+		}
         return 1;
     }
 #endif

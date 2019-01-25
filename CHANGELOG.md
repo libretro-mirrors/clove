@@ -11,7 +11,8 @@ version 0.8.0 not yet released
 * added: love.system.getClipboardText()
 * added: love.system.getProcessorCount()
 
-* fixed:  newImageFont is not broke anymore.
+* fixed: graphics_setFullscreen
+* fixed: newImageFont is not broke anymore.
 * modify: Changed the structure of folders, enabling the usage of the framework as a library.
 *removed: C++ support
 
