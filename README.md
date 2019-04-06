@@ -25,10 +25,11 @@ On Windows:
 On Linux and OS X:
 - Download and install cmake,gcc,g++(optional git)(on OSX you can install these using brew)
 - Go inside CLove/ and call ./build_linux.sh or ./build_osx.sh 
-- If you have problems building on Linux(Debian based) install:
+- On Debian based you must have install:
 sudo apt-get install freeglut3 freeglut3-dev libglew1.5 libglew1.5-dev
 libglu1-mesa libglu1-mesa-dev libgl1-mesa-glx libgl1-mesa-dev libasound2-dev
 libaudio-dev libesd0-dev libpulse-dev libroar-dev
+- On Redhat: mesa-libGL mesa-libGL-devel and stable/devel versions of mesa glu
 
 
 For Web: 

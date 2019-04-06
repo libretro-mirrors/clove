@@ -12,7 +12,8 @@ cmake_minimum_required(VERSION 2.8)
 project(clove)
 
 option(USE_PHYSFS "Build Clove using Physfs for filesystem?" ON)
-option(USE_LUA "Build CLove using Lua as scripting language" ON)
+option(USE_LUA "Build CLove using Lua as scripting language" OFF)
+option(USE_FH "Build CLove using FH as scripting language" ON)
 
 option(STATIC_LIB "Builds CLove as a static library" ON)
 option(DYNAMIC_LIB "Builds CLove as a shared library" OFF)
@@ -25,7 +26,16 @@ endif(USE_PHYSFS)
 if (USE_LUA)
 	ADD_DEFINITIONS("-DUSE_LUA=1")
 	message(STATUS, "Using Lua")
+    else()
+        ADD_DEFINITIONS("-DUSE_LUA=0")
 endif(USE_LUA)
+
+if (USE_FH)
+        ADD_DEFINITIONS("-DUSE_FH=1")
+        message(STATUS, "Using FH")
+    else()
+        ADD_DEFINITIONS("-DUSE_FH=0")
+endif(USE_FH)
 
 IF(WIN32)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MOE_BUILD_FLAGS}")
@@ -137,6 +147,11 @@ FILE(
     src/3rdparty/slre/*.h
     src/3rdparty/CMath/*.h
     src/3rdparty/CMath/*.c
+    #FH
+    src/3rdparty/FH/src/*.c
+    src/3rdparty/FH/src/*.h
+    src/3rdparty/FH/src/map/*.c
+    src/3rdparty/FH/src/map/*.h
     )
 #TODO
 #I do not think we're allowed by ndk to have a main.cpp file

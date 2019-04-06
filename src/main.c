@@ -14,12 +14,19 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "include/utils.h"
-#include "include/lua_mainactivity.h"
+#ifdef USE_LUA
+//#include "include/lua_mainactivity.h"
+#endif
+#ifdef USE_FH
+#include "include/fh_mainactivity.h"
+#endif
 
 int main(int argc, char* argv[]) {
   #ifdef USE_LUA
-	lua_main_activity_load(argc, argv);
+    //lua_main_activity_load(argc, argv);
+  #endif
+  #ifdef USE_FH
+    fh_main_activity_load(argc, argv);
   #endif
   return 0;
 }
