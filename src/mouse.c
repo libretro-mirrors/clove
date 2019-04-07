@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -16,7 +16,10 @@
 #include <string.h>
 
 #include "include/utils.h"
+
+#ifdef USE_LUA
 #include "luaapi/mouse.h"
+#endif
 
 extern SDL_Window* graphics_getWindow(void);
 
@@ -34,22 +37,24 @@ void mouse_setButton(int button) {
 
 static int buttonEnum(const char *str) {
     int res = 0;
-    if (strncmp (str,"l",1) == 0)
+    if (strcmp (str, "l") == 0)
         res = SDL_BUTTON_LEFT;
-    if (strncmp (str,"r",1) == 0)
+    else if (strcmp (str, "r") == 0)
         res = SDL_BUTTON_RIGHT;
-    if (strncmp (str,"m",1) == 0)
+    else if (strcmp (str, "m") == 0)
         res = SDL_BUTTON_MIDDLE;
-    if (strncmp (str,"x1",2) == 0)
+    else if (strcmp (str, "x1") == 0)
         res = SDL_BUTTON_X1;
-    if (strncmp (str,"x2",2) == 0)
+    else if (strcmp (str, "x2") == 0)
         res = SDL_BUTTON_X2;
     return res;
 }
 
 void mouse_mousewheel(int y) {
     moduleData.wheel = y;
+#ifdef USE_LUA
     l_mouse_wheelmoved(moduleData.wheel);
+#endif
 }
 
 int mouse_getwheel() {
@@ -69,17 +74,23 @@ void mouse_mousemoved(int x, int y) {
 
 void mouse_mousepressed(int x, int y, int button) {
     if (button == SDL_MOUSEBUTTONUP || button == SDL_MOUSEBUTTONDOWN) {
+#ifdef USE_LUA
         l_mouse_pressed(moduleData.x, moduleData.y, button);
+#endif
         mouse_mousemoved(moduleData.x, moduleData.y);
-    }else{
+    } else {
+#ifdef USE_LUA
         l_mouse_pressed(x, y, button);
+#endif
         mouse_mousemoved(x, y);
     }
 }
 
 void mouse_mousereleased(int x, int y, int button) {
     mouse_mousemoved(x, y);
+#ifdef USE_LUA
     l_mouse_released(x, y, button);
+#endif
 }
 
 void mouse_getPosition(int *x, int *y) {
@@ -108,7 +119,7 @@ int mouse_getY(void) {
 }
 
 void mouse_setPosition(int x, int y) {
-        SDL_WarpMouseInWindow(graphics_getWindow(), x, y);
+    SDL_WarpMouseInWindow(graphics_getWindow(), x, y);
 }
 
 void mouse_setVisible(int b) {
@@ -117,11 +128,11 @@ void mouse_setVisible(int b) {
 }
 
 void mouse_setX(int x) {
-        SDL_WarpMouseInWindow(graphics_getWindow(), x, moduleData.y);
+    SDL_WarpMouseInWindow(graphics_getWindow(), x, moduleData.y);
 }
 
 void mouse_setY(int y) {
-        SDL_WarpMouseInWindow(graphics_getWindow(), moduleData.x, y);
+    SDL_WarpMouseInWindow(graphics_getWindow(), moduleData.x, y);
 }
 
 #endif

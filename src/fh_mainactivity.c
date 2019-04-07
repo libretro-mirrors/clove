@@ -9,23 +9,40 @@
 
 #include "include/fh_mainactivity.h"
 
+/*
+ * TODO:
+ * 1) make use of macro "USE_NATIVE"
+ * 2) make use of clove_error from utils.h
+ */
+
+#include "fhapi/keyboard.h"
+#include "fhapi/mouse.h"
 
 typedef struct {
-    int running;
+    bool running;
+    bool called_quit;
     struct fh_program *prog;
     struct fh_value delta;
+    struct fh_value focus;
 } MainLoopData;
 
 MainLoopData loopData;
 
 static void quit_function(void) {
-    if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) < 0)
-        return;
+    if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) < 0) {
+        clove_error("Errro: %s\n", fh_get_error(loopData.prog));
+    }
+}
+
+
+static void focus_function(void) {
+    loopData.focus.data.b = graphics_hasFocus();
+    fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL);
 }
 
 
 static void main_clean(void) {
-  joystick_close();
+  //joystick_close();
   graphics_destroyWindow();
   filesystem_free();
   fh_free_program(loopData.prog);
@@ -34,7 +51,7 @@ static void main_clean(void) {
 
 void fh_main_loop(void) {
     timer_step();
-    //love_focus(loopData.luaState);
+    focus_function();
     matrixstack_origin();
     loopData.delta.data.num = (double)timer_getDelta();
     fh_call_function(loopData.prog, "love_update", &loopData.delta, 1, NULL);
@@ -67,36 +84,36 @@ void fh_main_loop(void) {
         }
         switch(event.wheel.type) {
         case SDL_MOUSEWHEEL:
-            //mouse_mousewheel(event.wheel.y);
-            //int _what = event.wheel.y == 1 ? SDL_MOUSEBUTTONUP : SDL_MOUSEBUTTONDOWN;
-            //mouse_mousepressed(event.button.x, event.button.y,
-              //                 _what);
-            //mouse_setButton(event.button.button);
+            /*mouse_mousewheel(event.wheel.y);
+            int _what = event.wheel.y == 1 ? SDL_MOUSEBUTTONUP : SDL_MOUSEBUTTONDOWN;
+            mouse_mousepressed(event.button.x, event.button.y, _what);
+            mouse_setButton(event.button.button);*/
             break;
         default:
             break;
         }
         switch(event.type) {
         case SDL_KEYDOWN:
-            //keyboard_keypressed(event.key.keysym.sym);
+            keyboard_keypressed(event.key.keysym.sym);
             break;
         case SDL_KEYUP:
-            //keyboard_keyreleased(event.key.keysym.sym);
+            keyboard_keyreleased(event.key.keysym.sym);
             break;
         case SDL_TEXTINPUT:
-            //keyboard_textInput(event.text.text);
+            keyboard_textInput(event.text.text);
             break;
         case SDL_MOUSEMOTION:
-            //mouse_mousemoved(event.motion.x, event.motion.y);
+            /*mouse_mousemoved(event.motion.x, event.motion.y);*/
             break;
         case SDL_MOUSEBUTTONDOWN:
-            //mouse_mousepressed(event.button.x, event.button.y, event.button.button);
-            //mouse_setButton(event.button.button);
+            /*
+            mouse_mousepressed(event.button.x, event.button.y, event.button.button);
+            mouse_setButton(event.button.button);*/
             break;
         case SDL_MOUSEBUTTONUP:
-            //mouse_mousereleased(event.button.x, event.button.y,
-             //                   event.button.button);
-           // mouse_setButton(0);
+            /*mouse_mousereleased(event.button.x, event.button.y,
+                                event.button.button);
+            mouse_setButton(0);*/
             break;
         case SDL_JOYDEVICEADDED:
            // joystick_added(event.jdevice.which);
@@ -114,8 +131,9 @@ void fh_main_loop(void) {
             break;
 #ifdef CLOVE_DESKTOP
         case SDL_QUIT:
+            loopData.called_quit = true;
             quit_function();
-            loopData.running = 0;
+            loopData.running = false;
             break;
 #endif
         }
@@ -124,7 +142,8 @@ void fh_main_loop(void) {
 }
 
 void fh_main_activity_load(int argc, char* argv[]) {
-    loopData.running = 1;
+    loopData.running = true;
+    loopData.called_quit = false;
     loopData.prog = fh_new_program();
     if (! loopData.prog) {
         printf("ERROR: out of memory for FH\n");
@@ -132,7 +151,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     }
 
     keyboard_init();
-    joystick_init();
+    //joystick_init();
     timer_init();
 
     //love_Config config;
@@ -177,6 +196,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
         printf("%s %s %d.%d.%d \n", "CLove version - ",
                version->codename,version->major,version->minor,version->revision);
 
+    fh_keyboard_register(loopData.prog);
     int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
     if (ret < 0) {
         printf("ERROR: %s\n", fh_get_error(loopData.prog));
@@ -184,6 +204,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     }
 
     loopData.delta = fh_new_number(1);
+    loopData.focus = fh_new_bool(true);
 
 #ifdef CLOVE_WEB
     emscripten_set_main_loop(lua_main_loop, 60, 1);
@@ -192,6 +213,8 @@ void fh_main_activity_load(int argc, char* argv[]) {
         fh_main_loop();
     }
 #endif
-    quit_function();
+    if (!loopData.called_quit) {
+        quit_function();
+    }
     main_clean();
 }

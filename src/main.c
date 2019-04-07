@@ -15,6 +15,7 @@
 #include <stdio.h>
 
 #ifdef USE_LUA
+#undef USE_LUA
 //#include "include/lua_mainactivity.h"
 #endif
 #ifdef USE_FH
@@ -23,7 +24,8 @@
 
 int main(int argc, char* argv[]) {
   #ifdef USE_LUA
-    //lua_main_activity_load(argc, argv);
+    puts("Still using Lua???");
+   // lua_main_activity_load(argc, argv);
   #endif
   #ifdef USE_FH
     fh_main_activity_load(argc, argv);

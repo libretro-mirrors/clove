@@ -24,16 +24,16 @@ if (USE_PHYSFS)
 endif(USE_PHYSFS)
 
 if (USE_LUA)
-	ADD_DEFINITIONS("-DUSE_LUA=1")
-	message(STATUS, "Using Lua")
-    else()
+        #ADD_DEFINITIONS("-DUSE_LUA=1")
+        #message(STATUS, "Using Lua")
+else()
         ADD_DEFINITIONS("-DUSE_LUA=0")
 endif(USE_LUA)
 
 if (USE_FH)
         ADD_DEFINITIONS("-DUSE_FH=1")
         message(STATUS, "Using FH")
-    else()
+else()
         ADD_DEFINITIONS("-DUSE_FH=0")
 endif(USE_FH)
 
@@ -121,6 +121,8 @@ FILE(
     src/image/*.c
     src/luaapi/*.h
     src/luaapi/*.c
+    src/fhapi/*.h
+    src/fhapi/*.c
     src/tools/*.c
     src/tools/*.h
     src/math/*.h
@@ -218,9 +220,9 @@ set(OPENAL_INCLUDE_DIR src/3rdparty/openal/include/)
 
 #lua
 if (USE_LUA)
-	add_subdirectory(src/3rdparty/lua)
-	set(LUA_INCLUDE_DIR src/3rdparty/lua/)
-	set(LUA_LIBRARIES lua)
+        #add_subdirectory(src/3rdparty/lua)
+        #set(LUA_INCLUDE_DIR src/3rdparty/lua/)
+        #set(LUA_LIBRARIES lua)
 endif(USE_LUA)
 
 #glew
@@ -263,7 +265,7 @@ if(WIN32)
 	endif(USE_PHYSFS)
 
 	if (USE_LUA)
-		target_link_libraries(clove ${LUA_LIBRARIES})
+                #target_link_libraries(clove ${LUA_LIBRARIES})
 	endif(USE_LUA)
 
 else()
@@ -278,7 +280,7 @@ else()
 	endif(USE_PHYSFS)
 
 	if (USE_LUA)
-		target_link_libraries(clove ${LUA_LIBRARIES})
+                #target_link_libraries(clove ${LUA_LIBRARIES})
 	endif(USE_LUA)
 
 endif(WIN32)
