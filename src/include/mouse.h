@@ -23,3 +23,5 @@ void mouse_setVisible(int b);
 void mouse_setX(int x);
 void mouse_setY(int y);
 void mouse_setButton(int button);
+const char *mouse_button_to_str(int x);
+

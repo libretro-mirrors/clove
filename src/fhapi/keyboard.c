@@ -54,7 +54,7 @@ int fh_keyboard_keyreleased(SDL_Keycode key) {
     arr->items[1] = keyAsNumber;
 
     if (fh_call_function(moduleData.prog, "love_keyreleased", &args, 1, NULL) < 0) {
-        return fh_set_error("ERROR: %s\n", fh_get_error(moduleData.prog));
+        return fh_set_error("ERROR: %s\n", "%s", fh_get_error(moduleData.prog));
     }
     return 0;
 }
@@ -80,9 +80,46 @@ static int fn_love_keyboard_isDown(struct fh_program *prog, struct fh_value *ret
     return 0;
 }
 
+int fn_love_keyboard_setKeyRepeat(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args != 1) {
+        return fh_set_error(prog, "Expected one argument of type boolean, got %s", fh_type_to_str(prog, args[0].type));
+    }
+    moduleData.keyRepeat = fh_get_bool(&args[0]);
+    return 0;
+}
+
+int fn_love_keyboard_hasKeyRepeat(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    *ret = fh_new_bool(moduleData.keyRepeat);
+    return 0;
+}
+
+int fn_love_keyboard_setTextInput(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args != 1) {
+        return fh_set_error(prog, "Expected one argument of type boolean, got %s", fh_type_to_str(prog, args[0].type));
+    }
+    if(fh_get_bool(&args[0])) {
+        keyboard_startText();
+    } else {
+        keyboard_stopText();
+    }
+    return 0;
+}
+
+int fn_love_keyboard_hasTextInput(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    UNUSED(args);
+    *ret = fh_new_bool(keyboard_isTextEnabled());
+    return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_keyboard_isDown),
+    DEF_FN(love_keyboard_setKeyRepeat),
+    DEF_FN(love_keyboard_hasKeyRepeat),
+    DEF_FN(love_keyboard_setTextInput),
+    DEF_FN(love_keyboard_hasTextInput),
 };
 
 void fh_keyboard_register(struct fh_program *prog) {

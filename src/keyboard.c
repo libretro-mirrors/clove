@@ -229,6 +229,7 @@ static int normalizeKeyCode(int key) {
 }
 
 void keyboard_init(void) {
+    moduleData.textActive = false;
     moduleData.numKeys = 0;
     for(int i = 0; i < sizeof(keynames) / sizeof(KeyName); ++i) {
         int key = normalizeKeyCode(keynames[i].keycode);

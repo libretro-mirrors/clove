@@ -101,40 +101,13 @@ void l_mouse_register(lua_State* state) {
     l_tools_registerModule(state, "mouse", regFuncs);
 }
 
-static const char *buttonStr(int x) {
-    switch (x) {
-        case SDL_BUTTON_LEFT:
-            return "l";
-            break;
-        case SDL_BUTTON_RIGHT:
-            return "r";
-            break;
-        case SDL_BUTTON_MIDDLE:
-            return "m";
-            break;
-        case SDL_MOUSEBUTTONUP:
-            return "wu";
-            break;
-        case SDL_MOUSEBUTTONDOWN:
-            return "wd";
-            break;
-        case SDL_BUTTON_X1:
-            return "x1";
-            break;
-        case SDL_BUTTON_X2:
-            return "x2";
-            break;
-    }
-    return "?";
-}
-
 void l_mouse_pressed(int x, int y, int button){
     lua_getglobal(moduleData.luaState, "love");
     lua_pushstring(moduleData.luaState, "mousepressed");
     lua_rawget(moduleData.luaState, -2);
     lua_pushinteger(moduleData.luaState, x);
     lua_pushinteger(moduleData.luaState, y);
-    lua_pushstring(moduleData.luaState, buttonStr(button));
+    lua_pushstring(moduleData.luaState, mouse_button_to_str(button));
     lua_call(moduleData.luaState, 3, 0);
     lua_settop(moduleData.luaState, lua_gettop(moduleData.luaState));
 }
@@ -145,7 +118,7 @@ void l_mouse_released(int x, int y, int button){
     lua_rawget(moduleData.luaState, -2);
     lua_pushinteger(moduleData.luaState, x);
     lua_pushinteger(moduleData.luaState, y);
-    lua_pushstring(moduleData.luaState, buttonStr(button));
+    lua_pushstring(moduleData.luaState, mouse_button_to_str(button));
     lua_call(moduleData.luaState, 3, 0);
     lua_settop(moduleData.luaState, lua_gettop(moduleData.luaState));
 }

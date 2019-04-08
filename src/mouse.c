@@ -7,8 +7,6 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-#ifdef USE_LUA
-
 #include "3rdparty/SDL2/include/SDL.h"
 
 #include <stdio.h>
@@ -19,6 +17,9 @@
 
 #ifdef USE_LUA
 #include "luaapi/mouse.h"
+#endif
+#ifdef USE_FH
+#include "fhapi/mouse.h"
 #endif
 
 extern SDL_Window* graphics_getWindow(void);
@@ -33,6 +34,26 @@ static struct {
 
 void mouse_setButton(int button) {
     moduleData.button = button;
+}
+
+const char *mouse_button_to_str(int x) {
+    switch (x) {
+        case SDL_BUTTON_LEFT:
+            return "l";
+        case SDL_BUTTON_RIGHT:
+            return "r";
+        case SDL_BUTTON_MIDDLE:
+            return "m";
+        case SDL_MOUSEBUTTONUP:
+            return "wu";
+        case SDL_MOUSEBUTTONDOWN:
+            return "wd";
+        case SDL_BUTTON_X1:
+            return "x1";
+        case SDL_BUTTON_X2:
+            return "x2";
+    }
+    return "?";
 }
 
 static int buttonEnum(const char *str) {
@@ -54,6 +75,9 @@ void mouse_mousewheel(int y) {
     moduleData.wheel = y;
 #ifdef USE_LUA
     l_mouse_wheelmoved(moduleData.wheel);
+#endif
+#ifdef USE_FH
+    fh_mouse_wheelmoved(moduleData.wheel);
 #endif
 }
 
@@ -77,10 +101,16 @@ void mouse_mousepressed(int x, int y, int button) {
 #ifdef USE_LUA
         l_mouse_pressed(moduleData.x, moduleData.y, button);
 #endif
+#ifdef USE_FH
+        fh_mouse_pressed(moduleData.x, moduleData.y, button);
+#endif
         mouse_mousemoved(moduleData.x, moduleData.y);
     } else {
 #ifdef USE_LUA
         l_mouse_pressed(x, y, button);
+#endif
+#ifdef USE_FH
+        fh_mouse_pressed(x, y, button);
 #endif
         mouse_mousemoved(x, y);
     }
@@ -90,6 +120,9 @@ void mouse_mousereleased(int x, int y, int button) {
     mouse_mousemoved(x, y);
 #ifdef USE_LUA
     l_mouse_released(x, y, button);
+#endif
+#ifdef USE_FH
+    fh_mouse_released(x, y, button);
 #endif
 }
 
@@ -134,5 +167,3 @@ void mouse_setX(int x) {
 void mouse_setY(int y) {
     SDL_WarpMouseInWindow(graphics_getWindow(), moduleData.x, y);
 }
-
-#endif

@@ -12,7 +12,6 @@
 /*
  * TODO:
  * 1) make use of macro "USE_NATIVE"
- * 2) make use of clove_error from utils.h
  */
 
 #include "fhapi/keyboard.h"
@@ -37,7 +36,9 @@ static void quit_function(void) {
 
 static void focus_function(void) {
     loopData.focus.data.b = graphics_hasFocus();
-    fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL);
+    if (fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL) < 0) {
+        clove_error("Errro: %s\n", fh_get_error(loopData.prog));
+    }
 }
 
 
@@ -84,10 +85,10 @@ void fh_main_loop(void) {
         }
         switch(event.wheel.type) {
         case SDL_MOUSEWHEEL:
-            /*mouse_mousewheel(event.wheel.y);
+            mouse_mousewheel(event.wheel.y);
             int _what = event.wheel.y == 1 ? SDL_MOUSEBUTTONUP : SDL_MOUSEBUTTONDOWN;
             mouse_mousepressed(event.button.x, event.button.y, _what);
-            mouse_setButton(event.button.button);*/
+            mouse_setButton(event.button.button);
             break;
         default:
             break;
@@ -103,17 +104,16 @@ void fh_main_loop(void) {
             keyboard_textInput(event.text.text);
             break;
         case SDL_MOUSEMOTION:
-            /*mouse_mousemoved(event.motion.x, event.motion.y);*/
+            mouse_mousemoved(event.motion.x, event.motion.y);
             break;
         case SDL_MOUSEBUTTONDOWN:
-            /*
             mouse_mousepressed(event.button.x, event.button.y, event.button.button);
-            mouse_setButton(event.button.button);*/
+            mouse_setButton(event.button.button);
             break;
         case SDL_MOUSEBUTTONUP:
-            /*mouse_mousereleased(event.button.x, event.button.y,
+            mouse_mousereleased(event.button.x, event.button.y,
                                 event.button.button);
-            mouse_setButton(0);*/
+            mouse_setButton(0);
             break;
         case SDL_JOYDEVICEADDED:
            // joystick_added(event.jdevice.which);
@@ -197,6 +197,8 @@ void fh_main_activity_load(int argc, char* argv[]) {
                version->codename,version->major,version->minor,version->revision);
 
     fh_keyboard_register(loopData.prog);
+    fh_mouse_register(loopData.prog);
+
     int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
     if (ret < 0) {
         printf("ERROR: %s\n", fh_get_error(loopData.prog));
