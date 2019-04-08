@@ -99,6 +99,7 @@ static int fn_love_mouse_getPosition(struct fh_program *prog, struct fh_value *r
 }
 
 static int fn_love_mouse_getX(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args)  {
+    UNUSED(prog);
     UNUSED(args);
     UNUSED(n_args);
     *ret = fh_new_number(mouse_getX());
@@ -107,6 +108,7 @@ static int fn_love_mouse_getX(struct fh_program *prog, struct fh_value *ret, str
 
 
 static int fn_love_mouse_getY(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
     UNUSED(args);
     UNUSED(n_args);
     *ret = fh_new_number(mouse_getY());
@@ -114,6 +116,7 @@ static int fn_love_mouse_getY(struct fh_program *prog, struct fh_value *ret, str
 }
 
 static int fn_love_mouse_setPosition(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args)  {
+    UNUSED(ret);
     if (n_args != 2) {
         return fh_set_error(prog, "Expected 2 arguments, got: %d\n", n_args);
     }
@@ -130,6 +133,7 @@ static int fn_love_mouse_setPosition(struct fh_program *prog, struct fh_value *r
 }
 
 static int fn_love_mouse_isVisible(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args)  {
+    UNUSED(prog);
     UNUSED(args);
     UNUSED(n_args);
     *ret = fh_new_bool(mouse_isVisible());

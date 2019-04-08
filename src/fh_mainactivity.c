@@ -16,6 +16,8 @@
 
 #include "fhapi/keyboard.h"
 #include "fhapi/mouse.h"
+#include "fhapi/joystick.h"
+#include "fhapi/timer.h"
 
 typedef struct {
     bool running;
@@ -25,7 +27,7 @@ typedef struct {
     struct fh_value focus;
 } MainLoopData;
 
-MainLoopData loopData;
+static MainLoopData loopData;
 
 static void quit_function(void) {
     if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) < 0) {
@@ -43,7 +45,7 @@ static void focus_function(void) {
 
 
 static void main_clean(void) {
-  //joystick_close();
+  joystick_close();
   graphics_destroyWindow();
   filesystem_free();
   fh_free_program(loopData.prog);
@@ -116,18 +118,18 @@ void fh_main_loop(void) {
             mouse_setButton(0);
             break;
         case SDL_JOYDEVICEADDED:
-           // joystick_added(event.jdevice.which);
+            joystick_added(event.jdevice.which);
             break;
         case SDL_JOYDEVICEREMOVED:
-           // joystick_remove(event.jdevice.which);
+            joystick_remove(event.jdevice.which);
             break;
         case SDL_JOYAXISMOTION:
             break;
         case SDL_JOYBUTTONDOWN:
-           // joystick_buttonDown(event.jbutton.which, event.jbutton.button, event.jbutton.state);
+            joystick_buttonDown(event.jbutton.which, event.jbutton.button, event.jbutton.state);
             break;
         case SDL_JOYBUTTONUP:
-          //  joystick_buttonUp(event.jbutton.which, event.jbutton.button, event.jbutton.state);
+            joystick_buttonUp(event.jbutton.which, event.jbutton.button, event.jbutton.state);
             break;
 #ifdef CLOVE_DESKTOP
         case SDL_QUIT:
@@ -146,12 +148,12 @@ void fh_main_activity_load(int argc, char* argv[]) {
     loopData.called_quit = false;
     loopData.prog = fh_new_program();
     if (! loopData.prog) {
-        printf("ERROR: out of memory for FH\n");
+        clove_error("ERROR: out of memory for FH\n");
         return;
     }
 
     keyboard_init();
-    //joystick_init();
+    joystick_init();
     timer_init();
 
     //love_Config config;
@@ -198,6 +200,9 @@ void fh_main_activity_load(int argc, char* argv[]) {
 
     fh_keyboard_register(loopData.prog);
     fh_mouse_register(loopData.prog);
+    fh_joystick_register(loopData.prog);
+    fh_timer_register(loopData.prog);
+
 
     int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
     if (ret < 0) {

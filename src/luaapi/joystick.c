@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -12,7 +12,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "../joystick.h"
+
 #include "joystick.h"
+#include "tools.h"
 
 static struct {
     lua_State* luaState;
@@ -20,80 +23,13 @@ static struct {
     int joystickDataMT;
 } moduleData;
 
-static int convertToButton(const char* v) {
-    if (strncmp("a", v, 1) == 0)
-        return SDL_CONTROLLER_BUTTON_A;
-    if (strncmp("b", v, 1) == 0)
-        return SDL_CONTROLLER_BUTTON_B;
-    if (strncmp("x", v, 1) == 0)
-        return SDL_CONTROLLER_BUTTON_X;
-    if (strncmp("y", v, 1) == 0)
-        return SDL_CONTROLLER_BUTTON_Y;
-    if (strncmp("back", v, 4) == 0)
-        return SDL_CONTROLLER_BUTTON_BACK;
-    if (strncmp("guide", v, 5) == 0)
-        return SDL_CONTROLLER_BUTTON_GUIDE;
-    if (strncmp("start", v, 5) == 0)
-        return SDL_CONTROLLER_BUTTON_START;
-    if (strncmp("leftstick", v, 9) == 0)
-        return SDL_CONTROLLER_BUTTON_LEFTSTICK;
-    if (strncmp("rightstick", v, 10) == 0)
-        return SDL_CONTROLLER_BUTTON_RIGHTSTICK;
-    if (strncmp("leftshoulder", v, 12) == 0)
-        return SDL_CONTROLLER_BUTTON_LEFTSHOULDER;
-    if (strncmp("rightshoulder", v, 13) == 0)
-        return SDL_CONTROLLER_BUTTON_RIGHTSHOULDER;
-    if (strncmp("dpup", v, 4) == 0)
-        return SDL_CONTROLLER_BUTTON_DPAD_UP;
-    if (strncmp("dpdown", v, 6) == 0)
-        return SDL_CONTROLLER_BUTTON_DPAD_DOWN;
-    if (strncmp("dpleft", v, 6) == 0)
-        return SDL_CONTROLLER_BUTTON_DPAD_LEFT;
-    if (strncmp("dpright", v, 7) == 0)
-        return SDL_CONTROLLER_BUTTON_DPAD_RIGHT;
-    return 0;
-}
-
-static const char* convertFromButton(int v) {
-    if (v == SDL_CONTROLLER_BUTTON_A)
-        return "a";
-     if (v == SDL_CONTROLLER_BUTTON_B)
-        return "b";
-     if (v == SDL_CONTROLLER_BUTTON_X)
-        return "x";
-     if (v == SDL_CONTROLLER_BUTTON_Y)
-        return "y";
-     if (v == SDL_CONTROLLER_BUTTON_BACK)
-        return "back";
-     if (v == SDL_CONTROLLER_BUTTON_GUIDE)
-        return "guide";
-     if (v == SDL_CONTROLLER_BUTTON_START)
-        return "start";
-     if (v == SDL_CONTROLLER_BUTTON_LEFTSTICK)
-        return "leftstick";
-     if (v == SDL_CONTROLLER_BUTTON_RIGHTSTICK)
-        return "rightstick";
-     if (v == SDL_CONTROLLER_BUTTON_LEFTSHOULDER)
-        return "leftshoulder";
-     if (v == SDL_CONTROLLER_BUTTON_RIGHTSHOULDER)
-        return "rightshoulder";
-     if (v == SDL_CONTROLLER_BUTTON_DPAD_UP)
-        return "dpup";
-     if (v == SDL_CONTROLLER_BUTTON_DPAD_DOWN)
-        return "dpdown";
-     if (v == SDL_CONTROLLER_BUTTON_DPAD_LEFT)
-        return "dpleft";
-     if (v == SDL_CONTROLLER_BUTTON_DPAD_RIGHT)
-        return "dpright";
-    return "";
-}
 
 static int l_joystick_isDown(lua_State* state) {
     int id = lua_tointeger(state, 1);
     int top = lua_gettop(state);
     bool any = false;
     for (int i = 1; i < top; i++) {
-        int button = convertToButton(lua_tostring(state, i + 1));
+        int button = convert_str_to_button(lua_tostring(state, i + 1));
         joystick_Joystick* js = joystick_get(id);
         any = joystick_isDown(js, button);
         if (any)
@@ -108,7 +44,7 @@ void l_joystick_pressed(int id, int button) {
   lua_pushstring(moduleData.luaState, "joystickpressed");
   lua_rawget(moduleData.luaState, -2);
   lua_pushinteger(moduleData.luaState, id);
-  lua_pushstring(moduleData.luaState, convertFromButton(button));
+  lua_pushstring(moduleData.luaState, joystick_convert_button_to_str(button));
   lua_call(moduleData.luaState, 2, 0);
 }
 
@@ -117,7 +53,7 @@ void l_joystick_released(int id, int button) {
   lua_pushstring(moduleData.luaState, "joystickreleased");
   lua_rawget(moduleData.luaState, -2);
   lua_pushinteger(moduleData.luaState, id);
-  lua_pushstring(moduleData.luaState, convertFromButton(button));
+  lua_pushstring(moduleData.luaState, joystick_convert_button_to_str(button));
   lua_call(moduleData.luaState, 2, 0);
 }
 

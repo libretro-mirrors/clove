@@ -37,7 +37,7 @@ int fh_keyboard_keypressed(SDL_Keycode key, bool repeat) {
     arr->items[2] = isrepeat;
 
     if (fh_call_function(moduleData.prog, "love_keypressed", &args, 1, NULL) < 0) {
-        return fh_set_error("ERROR: %s\n", fh_get_error(moduleData.prog));
+        return fh_set_error(moduleData.prog, "ERROR: %s\n", fh_get_error(moduleData.prog));
     }
     return 0;
 }
@@ -54,7 +54,7 @@ int fh_keyboard_keyreleased(SDL_Keycode key) {
     arr->items[1] = keyAsNumber;
 
     if (fh_call_function(moduleData.prog, "love_keyreleased", &args, 1, NULL) < 0) {
-        return fh_set_error("ERROR: %s\n", "%s", fh_get_error(moduleData.prog));
+        return fh_set_error(moduleData.prog, "ERROR: %s\n", "%s", fh_get_error(moduleData.prog));
     }
     return 0;
 }
@@ -62,7 +62,7 @@ int fh_keyboard_keyreleased(SDL_Keycode key) {
 int fh_keyboard_textInput(char const* text) {
     struct fh_value textObj = fh_new_string(moduleData.prog, text);
     if (fh_call_function(moduleData.prog, "love_textinput", &textObj, 1, NULL) < 0) {
-        return fh_set_error("ERROR: %s\n", fh_get_error(moduleData.prog));
+        return fh_set_error(moduleData.prog, "ERROR: %s\n", fh_get_error(moduleData.prog));
     }
     return 0;
 }
