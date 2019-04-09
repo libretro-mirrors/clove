@@ -6,8 +6,6 @@
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
-#pragma once
-
 #include "keyboard.h"
 
 #include "../include/keyboard.h"
@@ -54,7 +52,7 @@ int fh_keyboard_keyreleased(SDL_Keycode key) {
     arr->items[1] = keyAsNumber;
 
     if (fh_call_function(moduleData.prog, "love_keyreleased", &args, 1, NULL) < 0) {
-        return fh_set_error(moduleData.prog, "ERROR: %s\n", "%s", fh_get_error(moduleData.prog));
+        return fh_set_error(moduleData.prog, "ERROR: %s\n", fh_get_error(moduleData.prog));
     }
     return 0;
 }
@@ -70,8 +68,11 @@ int fh_keyboard_textInput(char const* text) {
 static int fn_love_keyboard_isDown(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
     bool any = false;
     for(int i = 0; i < n_args; ++i) {
+        if (!fh_is_string(&args[i]))
+            return fh_set_error(prog, "Expected string value, got: %s\n", fh_type_to_str(prog, args[i].type));
+
         any = any || keyboard_ispressed(
-                    keyboard_getKeycode(fh_tools_toStringOrError(prog, args, i)));
+                    keyboard_getKeycode(GET_VAL_STRING_DATA(&args[i])));
         if(any)
             break;
     }

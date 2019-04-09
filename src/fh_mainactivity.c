@@ -18,9 +18,9 @@
 #include "fhapi/mouse.h"
 #include "fhapi/joystick.h"
 #include "fhapi/timer.h"
+#include "fhapi/graphics_geometry.h"
 
 typedef struct {
-    bool running;
     bool called_quit;
     struct fh_program *prog;
     struct fh_value delta;
@@ -135,7 +135,7 @@ void fh_main_loop(void) {
         case SDL_QUIT:
             loopData.called_quit = true;
             quit_function();
-            loopData.running = false;
+            clove_running = false;
             break;
 #endif
         }
@@ -144,7 +144,7 @@ void fh_main_loop(void) {
 }
 
 void fh_main_activity_load(int argc, char* argv[]) {
-    loopData.running = true;
+    clove_running = true;
     loopData.called_quit = false;
     loopData.prog = fh_new_program();
     if (! loopData.prog) {
@@ -181,7 +181,6 @@ void fh_main_activity_load(int argc, char* argv[]) {
         graphics_setVsync(1/*config.window.vsync*/);
         graphics_setPosition(-1,-1/*config.window.x, config.window.y*/);
     }
-    loopData.running = 1;
 
     FILE* icon = fopen("icon.png", "r");
     if (icon)
@@ -202,6 +201,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_mouse_register(loopData.prog);
     fh_joystick_register(loopData.prog);
     fh_timer_register(loopData.prog);
+    fh_graphics_geometry_register(loopData.prog);
 
 
     int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
@@ -216,7 +216,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
 #ifdef CLOVE_WEB
     emscripten_set_main_loop(lua_main_loop, 60, 1);
 #else
-    while (loopData.running) {
+    while (clove_running) {
         fh_main_loop();
     }
 #endif

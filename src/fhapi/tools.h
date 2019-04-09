@@ -8,16 +8,10 @@
 */
 #pragma once
 
-#ifdef USE_FH
 #include "../3rdparty/FH/src/fh.h"
 #include "../3rdparty/FH/src/value.h"
 
-inline char const *fh_tools_toStringOrError(struct fh_program *prog, struct fh_value *args, int index)
-{
-    if (!fh_is_string(&args[index])){
-        fh_set_error(prog, "Expected string value, got %s", fh_type_to_str(prog, args[index].type));
-        return "";
-    }
-    return GET_VAL_STRING_DATA(&args[index]);
-}
-#endif
+#include "../include/utils.h"
+
+char const *fh_tools_toStringOrError(struct fh_program *prog, struct fh_value *args, int index);
+double fh_tools_toNumberOrError(struct fh_program *prog, struct fh_value *args, int index);

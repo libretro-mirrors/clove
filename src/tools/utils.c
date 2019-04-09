@@ -13,10 +13,11 @@
 #include <stdio.h>
 
 
-void clove_error(const char* format, ...)
+int clove_error(const char* format, ...)
 {
   va_list argptr;
   va_start(argptr, format);
   vfprintf(stderr, format, argptr);
   va_end(argptr);
+  return -1;
 }

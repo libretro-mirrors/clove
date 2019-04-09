@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -9,16 +9,16 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
+#include <stdbool.h>
 
 #define SAFE_FREE(o) {  if (o) { free(o); o = NULL; } }
 
 #define CLOVE_DEBUG(x) { printf("CLove Debug: %s %s %s %s %s \n", x , " at line " __LINE__, " in file  ", __FILE__ ); }
 
-void clove_error(const char* format, ...);
+int clove_error(const char* format, ...);
 
+/* Used in the main loop in FH and Lua(to be done) activities*/
+bool clove_running;
 
 #ifndef USE_NATIVE
     #define USE_NATIVE 100
