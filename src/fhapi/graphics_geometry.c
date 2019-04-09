@@ -35,7 +35,9 @@ static int fn_love_geometry_circle(struct fh_program *prog,
         graphics_geometry_fillCircle(x, y, radius, segments, rotation, sx, sy, ox, oy);
     else {
         clove_running = false;
-        return fh_print_error(prog, "Expected 'line' or 'fill' as input type!\n");
+        char buffer[512];
+        fh_get_src_loc(prog, buffer, 512);
+        return clove_error("Error at %s expected 'line' or 'fill' as input type!\n", buffer);
     }
 
     return 1;
@@ -61,7 +63,9 @@ static int fn_love_geometry_rectangle(struct fh_program *prog,
         graphics_geometry_rectangle(true, x, y, w, h, rotation, sx, sy, ox, oy);
     else {
         clove_running = false;
-        return fh_print_error(prog, "Expected 'line' or 'fill' as input type!\n");
+        char buffer[512];
+        fh_get_src_loc(prog, buffer, 512);
+        return clove_error("Error at %s expected 'line' or 'fill' as input type!\n", buffer);
     }
 
     return 1;
