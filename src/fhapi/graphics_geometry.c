@@ -132,12 +132,33 @@ static int fn_love_geometry_vertex(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_geometry_setLineWidth(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    float width = fh_get_number_err(prog, args, 0);
+    if (width == -1 && !fh_running)
+        return fh_set_error(prog, "Expected number as first argument");
+
+    graphics_geometry_setLineWidth(width);
+
+    return 0;
+}
+
+static int fn_love_geometry_getLineWidth(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    *ret = fh_new_number(graphics_geometry_getLineWidth());
+    return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_geometry_circle),
     DEF_FN(love_geometry_rectangle),
     DEF_FN(love_geometry_points),
     DEF_FN(love_geometry_vertex),
+    DEF_FN(love_geometry_setLineWidth),
+    DEF_FN(love_geometry_getLineWidth),
 };
 
 void fh_graphics_geometry_register(struct fh_program *prog) {

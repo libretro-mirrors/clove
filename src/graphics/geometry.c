@@ -90,6 +90,8 @@ static void drawBufferSpecial(uint32_t indices,
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, moduleData.currentIndexSize, moduleData.index, GL_STREAM_DRAW);
 
+    glLineWidth(moduleData.lineWidth);
+
     graphics_Shader *shader = graphics_getShader();
     graphics_setShader(&moduleData.plainColorShader);
 
@@ -99,6 +101,8 @@ static void drawBufferSpecial(uint32_t indices,
                        type, GL_UNSIGNED_INT, graphics_getColor(), w, h);
 
     graphics_setShader(shader);
+
+    glLineWidth(1.0f);
 }
 
 static void drawBuffer(uint32_t indices, GLenum type) {
@@ -107,6 +111,8 @@ static void drawBuffer(uint32_t indices, GLenum type) {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, moduleData.currentIndexSize, moduleData.index, GL_STREAM_DRAW);
+
+    glLineWidth(moduleData.lineWidth);
 
     graphics_Shader *shader = graphics_getShader();
     graphics_setShader(&moduleData.plainColorShader);
@@ -117,6 +123,8 @@ static void drawBuffer(uint32_t indices, GLenum type) {
                        type, GL_UNSIGNED_INT, graphics_getColor(), 1.0f, 1.0f);
 
     graphics_setShader(shader);
+
+    glLineWidth(1.0f);
 }
 
 void graphics_geometry_lineCircle(float x, float y, float radius, uint32_t segments, float r, float sx, float sy, float ox, float oy) {
@@ -327,4 +335,13 @@ void graphics_geometry_vertex(bool filled, float x, float y, int vertices[], uin
         drawBuffer(count,GL_TRIANGLE_FAN);
     else
         drawBuffer(count,GL_LINE_STRIP);
+}
+
+
+void graphics_geometry_setLineWidth(float width) {
+    moduleData.lineWidth = width;
+}
+
+float graphics_geometry_getLineWidth() {
+    return moduleData.lineWidth;
 }
