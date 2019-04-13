@@ -48,7 +48,7 @@ When you want to release a project you must modify build_web.sh to preload your 
 
 Features
 ========
-- Lua.
+- Scripting languages like: FH and Lua
 - Can be used as a shared or static library.
 - Native C/C++ support.
 - Easy to learn and use api.
@@ -73,6 +73,7 @@ Features
 
 Planned work
 ============
+1. The project can be cleaned a bit more
 1. Fix/Improve Threads module and Networking overall(plus support for Windows)
 1. Android
 

@@ -144,13 +144,13 @@ static int l_geometry_vertex(lua_State* state) {
 }
 
 static int l_geometry_setLineWidth(lua_State* state) {
-  //float width = l_tools_toNumberOrError(state, 1);
-  //graphics_geometry_setLineWidth(width);
+  float width = l_tools_toNumberOrError(state, 1);
+  graphics_geometry_setLineWidth(width);
   return 1;
 }
 
 static int l_geometry_getLineWidth(lua_State* state) {
-  //lua_pushnumber(state, graphics_geometry_getLineWidth());
+  lua_pushnumber(state, graphics_geometry_getLineWidth());
   return 1;
 }
 

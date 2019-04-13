@@ -1,0 +1,56 @@
+function love_joystick_pressed(j) {
+    println(j);
+}
+
+
+function love_mousepressed(m) {
+
+#   println("Pressing the mouse: ", m);
+}
+
+function love_mousereleased(m) {
+#   println("Releasing the mouse: ", m);
+}
+
+function love_wheelmoved(y) {
+#println("Wheel moved: ", y);
+}
+
+function love_textinput(text) { 
+}
+
+function love_keypressed(key) {
+}
+
+function love_keyreleased(key) {
+}
+
+function love_quit() {
+    println("Love is quitting!");
+}
+
+function love_focus(focused) {
+#println("Is it focused? ", focused);
+}
+
+function love_update(dt) {
+
+    
+#println("FPS: ", love_timer_getFPS());
+#println(love_timer_getDelta());
+
+}
+
+function love_draw() {
+    love_geometry_circle("line", 220, 220, 16);
+
+    love_geometry_rectangle("line", 150, 150, 32);
+    love_geometry_rectangle("line", 190, 150, 32);
+    
+    love_geometry_points(50, 50);
+    love_geometry_vertex("fill", 350, 350, [100, 200, 100]);
+    love_geometry_vertex("line", 350, 50, [100, 200, 100]);
+}
+
+function main() {
+}
