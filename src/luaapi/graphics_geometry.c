@@ -155,14 +155,14 @@ static int l_geometry_getLineWidth(lua_State* state) {
 }
 
 static int l_geometry_gcGeometry(lua_State* state) {
-  graphics_geometry_free();
+  //graphics_geometry_free();
   return 0;
 }
 
 static luaL_Reg const geometryFuncs[] = {
-  {"__gc",         l_geometry_gcGeometry},
+  //{"__gc",         l_geometry_gcGeometry},
   {"points",       l_geometry_points},
-  {"point",       l_geometry_points},
+  {"point",        l_geometry_points},
   {"vertex",       l_geometry_vertex},
   {"rectangle",    l_geometry_rectangle},
   {"circle",       l_geometry_circle},

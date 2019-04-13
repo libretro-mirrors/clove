@@ -20,6 +20,8 @@
 #include "fhapi/timer.h"
 #include "fhapi/graphics_geometry.h"
 
+#include "include/geometry.h"
+
 typedef struct {
     bool called_quit;
     struct fh_program *prog;
@@ -30,7 +32,7 @@ typedef struct {
 static MainLoopData loopData;
 
 static void quit_function(void) {
-    if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) < 0) {
+    if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) == -2) {
         clove_error("Errro: %s\n", fh_get_error(loopData.prog));
     }
 }
@@ -38,7 +40,7 @@ static void quit_function(void) {
 
 static void focus_function(void) {
     loopData.focus.data.b = graphics_hasFocus();
-    if (fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL) < 0) {
+    if (fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL) == -2) {
         clove_error("Errro: %s\n", fh_get_error(loopData.prog));
     }
 }
@@ -46,6 +48,7 @@ static void focus_function(void) {
 
 static void main_clean(void) {
   joystick_close();
+  graphics_geometry_free();
   graphics_destroyWindow();
   filesystem_free();
   fh_free_program(loopData.prog);
@@ -57,11 +60,16 @@ void fh_main_loop(void) {
     focus_function();
     matrixstack_origin();
     loopData.delta.data.num = (double)timer_getDelta();
-    fh_call_function(loopData.prog, "love_update", &loopData.delta, 1, NULL);
+
+    if (fh_call_function(loopData.prog, "love_update", &loopData.delta, 1, NULL) == -2) {
+        return;
+    }
 
     graphics_clear();
 
-    fh_call_function(loopData.prog, "love_draw", NULL, 0, NULL);
+    if (fh_call_function(loopData.prog, "love_draw", NULL, 0, NULL) == -2) {
+        return;
+    }
 
     graphics_swap();
 
@@ -148,7 +156,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     loopData.called_quit = false;
     loopData.prog = fh_new_program();
     if (! loopData.prog) {
-        clove_error("ERROR: out of memory for FH\n");
+        clove_error("ERROR: out of memory for initializing language FH\n");
         return;
     }
 
@@ -206,7 +214,8 @@ void fh_main_activity_load(int argc, char* argv[]) {
 
     int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
     if (ret < 0) {
-        printf("ERROR: %s\n", fh_get_error(loopData.prog));
+        clove_error("ERROR: %s\n", fh_get_error(loopData.prog));
+        main_clean();
         return;
     }
 
@@ -216,10 +225,26 @@ void fh_main_activity_load(int argc, char* argv[]) {
 #ifdef CLOVE_WEB
     emscripten_set_main_loop(lua_main_loop, 60, 1);
 #else
-    while (clove_running) {
+    while (clove_running && fh_running) {
         fh_main_loop();
     }
 #endif
+
+    /*
+     * The logic:
+     * When you set an error in FH the boolean "fh_running" will be set automatically to
+     * 'false' meaning CLove will stop from running. If that's the case then we want to
+     * print the error made because of FH!
+     *
+     * NOTE:
+     * When the error happened because of CLove (not FH) then fh_running will be still set to
+     * its default value, 'true', and the "if" from below won't be called but we will still
+     * get the errors because of 'clove_error' function called in the errornous function.
+     */
+    if (!fh_running) {
+        clove_error("ERROR: %s\n", fh_get_error(loopData.prog));
+    }
+
     if (!loopData.called_quit) {
         quit_function();
     }
