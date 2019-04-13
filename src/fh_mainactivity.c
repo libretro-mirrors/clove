@@ -19,6 +19,8 @@
 #include "fhapi/joystick.h"
 #include "fhapi/timer.h"
 #include "fhapi/graphics_geometry.h"
+#include "fhapi/image.h"
+#include "fhapi/graphics.h"
 
 #include "include/geometry.h"
 
@@ -32,7 +34,7 @@ typedef struct {
 static MainLoopData loopData;
 
 static void quit_function(void) {
-    if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) == -2) {
+    if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) < 0) {
         clove_error("Errro: %s\n", fh_get_error(loopData.prog));
     }
 }
@@ -210,6 +212,8 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_joystick_register(loopData.prog);
     fh_timer_register(loopData.prog);
     fh_graphics_geometry_register(loopData.prog);
+    fh_image_register(loopData.prog);
+    fh_graphics_register(loopData.prog);
 
 
     int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
@@ -221,6 +225,10 @@ void fh_main_activity_load(int argc, char* argv[]) {
 
     loopData.delta = fh_new_number(1);
     loopData.focus = fh_new_bool(true);
+
+    if (fh_call_function(loopData.prog, "love_load", NULL, 0, NULL) < 0) {
+        clove_error("Errro: %s\n", fh_get_error(loopData.prog));
+    }
 
 #ifdef CLOVE_WEB
     emscripten_set_main_loop(lua_main_loop, 60, 1);

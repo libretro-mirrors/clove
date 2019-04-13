@@ -10,12 +10,4 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#include "../include/imagedata.h"
-#include "../include/image.h"
-
-typedef struct {
-    image_ImageData *data;
-    graphics_Image *img;
-} fh_image_t;
-
-void fh_image_register(struct fh_program *prog);
+void fh_graphics_register(struct fh_program *prog);

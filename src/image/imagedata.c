@@ -35,8 +35,8 @@ void image_ImageData_new_with_size(image_ImageData *dst, int width, int height, 
   dst->w = width;
   dst->h = height;
   dst->c = num_channels;
-  dst->path = "no path.";
-  memset(dst->surface, 0, sizeof(unsigned char) * width * height * dst->c);
+  dst->path = "";
+  memset(dst->surface, 255, sizeof(unsigned char) * width * height * num_channels);
   dst->pixels = (pixel*) dst->surface;
 }
 
