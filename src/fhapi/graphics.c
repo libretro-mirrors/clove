@@ -44,13 +44,26 @@ static const graphics_Quad defaultQuad = {
 static int fn_love_graphics_drawImage(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
 
-    fh_image_t *img = fh_get_c_obj(&args[0]);
+    if (!fh_is_c_obj(&args[0]) || n_args < 3)
+        return fh_set_error(prog, "Expected image, batch, mesh or particle and x, y coordonate");
+
+    struct fh_c_obj *o = fh_get_c_obj(&args[0]);
 
     double x = fh_get_number_err(prog, args, 1);
     double y = fh_get_number_err(prog, args, 2);
-    double r = fh_get_number(&args[3]);
+    double r = fh_optnumber(args[3], 0);
+    double sx = fh_optnumber(args[4], 1);
+    double sy = fh_optnumber(args[5], sx);
+    double ox = fh_optnumber(args[6], 0);
+    double oy = fh_optnumber(args[7], ox);
+    double kx = fh_optnumber(args[8], 0);
+    double ky = fh_optnumber(args[9], kx);
 
-    graphics_Image_draw(img->img, &defaultQuad, x, y, r, 1, 1, 0, 0, 0, 0);
+    if (o->type == FH_IMAGE_TYPE) {
+        fh_image_t *image = o->ptr;
+        graphics_Image_draw(image->img, &defaultQuad, x, y, r, sx, sy, ox, oy, kx, ky);
+    } else
+        return fh_set_error(prog, "Expected image, batch, mesh or particle as argument 1");
 
     return 0;
 }

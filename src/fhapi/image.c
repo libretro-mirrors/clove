@@ -47,23 +47,26 @@ static int fn_love_graphics_newImage(struct fh_program *prog,
     }
 
     graphics_Image_new_with_ImageData(data->img, data->data);
-    *ret = fh_new_c_obj(prog, data, onFree);
-
+    *ret = fh_new_c_obj(prog, data, onFree, FH_IMAGE_TYPE);
     return 0;
 }
 
 static int fn_love_image_getWidth(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj(&args[0]))
+        return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj(&args[0]);
+    image_ImageData *img = fh_get_c_obj_value(&args[0]);
     *ret = fh_new_number(image_ImageData_getWidth(img));
     return 0;
 }
 
 static int fn_love_image_getHeight(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj(&args[0]))
+        return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj(&args[0]);
+    image_ImageData *img = fh_get_c_obj_value(&args[0]);
 
     *ret = fh_new_number(image_ImageData_getHeight(img));
     return 0;
@@ -71,8 +74,10 @@ static int fn_love_image_getHeight(struct fh_program *prog,
 
 static int fn_love_image_getPath(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj(&args[0]))
+        return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj(&args[0]);
+    image_ImageData *img = fh_get_c_obj_value(&args[0]);
 
     *ret = fh_new_string(prog, image_ImageData_getPath(img));
     return 0;
@@ -80,8 +85,10 @@ static int fn_love_image_getPath(struct fh_program *prog,
 
 static int fn_love_image_getChannels(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj(&args[0]))
+        return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj(&args[0]);
+    image_ImageData *img = fh_get_c_obj_value(&args[0]);
 
     *ret = fh_new_number(image_ImageData_getChannels(img));
     return 0;
