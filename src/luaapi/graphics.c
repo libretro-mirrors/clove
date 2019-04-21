@@ -32,7 +32,7 @@
 #include "graphics_window.h"
 
 static int l_graphics_getBackgroundColor(lua_State* state) {
-	float * colors = graphics_getBackgroundColor();
+    float *colors = graphics_getBackgroundColor();
 
 	for(int i = 0; i < 4; ++i) {
 		lua_pushnumber(state, (int)(colors[i] * 255));
