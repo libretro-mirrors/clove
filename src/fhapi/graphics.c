@@ -105,7 +105,7 @@ static int fn_love_graphics_pop(struct fh_program *prog,
 }
 
 static int fn_love_graphics_translate(struct fh_program *prog,
-                                struct fh_value *ret, struct fh_value *args, int n_args) {
+                                      struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_number(&args[0]) || !fh_is_number(&args[1]))
         return fh_set_error(prog, "Expected at least 2 numbers as arguments\n");
 
@@ -118,7 +118,7 @@ static int fn_love_graphics_translate(struct fh_program *prog,
 }
 
 static int fn_love_graphics_scale(struct fh_program *prog,
-                                struct fh_value *ret, struct fh_value *args, int n_args) {
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_number(&args[0]) || !fh_is_number(&args[1]))
         return fh_set_error(prog, "Expected at least 2 numbers as arguments\n");
 
@@ -132,7 +132,7 @@ static int fn_love_graphics_scale(struct fh_program *prog,
 
 
 static int fn_love_graphics_rotate(struct fh_program *prog,
-                                struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_number(&args[0]) )
         return fh_set_error(prog, "Expected number as argument\n");
 
@@ -143,7 +143,7 @@ static int fn_love_graphics_rotate(struct fh_program *prog,
 }
 
 static int fn_love_graphics_origin(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     matrixstack_origin();
     return 0;
 }
@@ -154,7 +154,7 @@ static int fn_love_graphics_shear(struct fh_program *prog,
 }
 
 static int fn_love_graphics_setColorMask(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
     if (fh_is_null(&args[0])) {
         graphics_setColorMask(true, true, true, true);
         return 0;
@@ -177,7 +177,7 @@ static int fn_love_graphics_setColorMask(struct fh_program *prog,
 }
 
 static int fn_love_graphics_getColorMask(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
     bool r, g, b, a;
     graphics_getColorMask(&r, &g, &b, &a);
 
@@ -195,13 +195,13 @@ static int fn_love_graphics_getColorMask(struct fh_program *prog,
 }
 
 static int fn_love_graphics_getWidth(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                     struct fh_value *ret, struct fh_value *args, int n_args) {
     *ret = fh_new_number(graphics_getWidth());
     return 0;
 }
 
 static int fn_love_graphics_getHeight(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                      struct fh_value *ret, struct fh_value *args, int n_args) {
     *ret = fh_new_number(graphics_getHeight());
     return 0;
 }
@@ -212,68 +212,111 @@ static int fn_love_graphics_reset(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_graphics_setBlendMode(struct fh_program *prog,
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args != 1) {
+        return fh_set_error(prog, "Expected one argument of type string");
+    }
 
-/* TODO
-static const l_tools_Enum l_graphics_BlendMode[] = {
-    {"additive",       graphics_BlendMode_additive},
-    {"alpha",          graphics_BlendMode_alpha},
-    {"subtractive",    graphics_BlendMode_subtractive},
-    {"multiplicative", graphics_BlendMode_multiplicative},
-    {"premultiplied",  graphics_BlendMode_premultiplied},
-    {"replace",        graphics_BlendMode_replace},
-    {"screen",         graphics_BlendMode_screen},
-    {NULL, 0}
-};
-
-static int l_graphics_setBlendMode(lua_State* state) {
-    graphics_BlendMode mode = l_tools_toEnumOrError(state, 1, l_graphics_BlendMode);
+    graphics_BlendMode mode;
+    const char *blendType = fh_get_string(&args[0]);
+    if (strcmp(blendType, "additive") == 0) {
+        mode = graphics_BlendMode_additive;
+    } else if (strcmp(blendType, "alpha") == 0) {
+        mode = graphics_BlendMode_alpha;
+    } else if (strcmp(blendType, "subtract") == 0) {
+        mode = graphics_BlendMode_subtractive;
+    } else if (strcmp(blendType, "multiplicative") == 0) {
+        mode = graphics_BlendMode_multiplicative;
+    } else if (strcmp(blendType, "premultiplied") == 0) {
+        mode = graphics_BlendMode_premultiplied;
+    } else if (strcmp(blendType, "replace") == 0) {
+        mode = graphics_BlendMode_replace;
+    } else if (strcmp(blendType, "screen") == 0) {
+        mode = graphics_BlendMode_screen;
+    } else {
+        return fh_set_error(prog, "Invalid argument");
+    }
     graphics_setBlendMode(mode);
     return 0;
 }
 
-static int l_graphics_getBlendMode(lua_State* state) {
-    l_tools_pushEnum(state, graphics_getBlendMode(), l_graphics_BlendMode);
-    return 1;
+static int fn_love_graphics_getBlendMode(struct fh_program *prog,
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
+    graphics_BlendMode mode = graphics_getBlendMode();
+    switch (mode) {
+    case graphics_BlendMode_additive:
+        *ret = fh_new_string(prog, "additive");
+        break;
+    case graphics_BlendMode_alpha:
+        *ret = fh_new_string(prog, "alpha");
+        break;
+    case graphics_BlendMode_subtractive:
+        *ret = fh_new_string(prog, "subtract");
+        break;
+    case graphics_BlendMode_multiplicative:
+        *ret = fh_new_string(prog, "multiplicative");
+        break;
+    case graphics_BlendMode_premultiplied:
+        *ret = fh_new_string(prog, "premultiplied");
+        break;
+    case graphics_BlendMode_replace:
+        *ret = fh_new_string(prog, "replace");
+        break;
+    case graphics_BlendMode_screen:
+        *ret = fh_new_string(prog, "screen");
+        break;
+    }
+    return 0;
 }
 
-static int l_graphics_setScissor(lua_State* state) {
-    if(lua_isnone(state, 1)) {
+static int fn_love_graphics_setScissor(struct fh_program *prog,
+                                       struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if(n_args == 0) {
         graphics_clearScissor();
         return 0;
     } else {
-        for(int i = 2; i < 5; ++i) {
-            if(lua_isnone(state, i)) {
-                lua_pushstring(state, "illegal paramters");
-                return lua_error(state);
+        for(int i = 0; i < 4; ++i) {
+            if(!fh_is_number(&args[i])) {
+                return fh_set_error(prog, "illegal parameter");
             }
         }
     }
 
-    int x = l_tools_toNumberOrError(state, 1);
-    int y = l_tools_toNumberOrError(state, 2);
-    int w = l_tools_toNumberOrError(state, 3);
-    int h = l_tools_toNumberOrError(state, 4);
+    int x = fh_get_number(&args[0]);
+    int y = fh_get_number(&args[1]);
+    int w = fh_get_number(&args[2]);
+    int h = fh_get_number(&args[3]);
 
-    graphics_setScissor(x,y,w,h);
+    graphics_setScissor(x, y, w, h);
 
     return 0;
 }
 
-static int l_graphics_getScissor(lua_State* state) {
-    int x,y,w,h;
+static int fn_love_graphics_getScissor(struct fh_program *prog,
+                                       struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    int x, y, w, h;
     bool scissor = graphics_getScissor(&x, &y, &w, &h);
+
     if(!scissor) {
         return 0;
     }
 
-    lua_pushinteger(state, x);
-    lua_pushinteger(state, y);
-    lua_pushinteger(state, w);
-    lua_pushinteger(state, h);
+    struct fh_value array = fh_new_array(prog);
+    fh_grow_array(prog, &array, 4);
 
-    return 4;
+    struct fh_array *arr = GET_VAL_ARRAY(&array);
+    arr->items[0] = fh_new_number(x);
+    arr->items[1] = fh_new_number(y);
+    arr->items[2] = fh_new_number(w);
+    arr->items[3] = fh_new_number(h);
+
+    *ret = array;
+
+    return 0;
 }
-*/
 
 static const graphics_Quad defaultQuad = {
     .x = 0.0f,
@@ -328,6 +371,10 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_origin),
     DEF_FN(love_graphics_rotate),
     DEF_FN(love_graphics_scale),
+    DEF_FN(love_graphics_setBlendMode),
+    DEF_FN(love_graphics_getBlendMode),
+    DEF_FN(love_graphics_setScissor),
+    DEF_FN(love_graphics_getScissor),
     DEF_FN(love_graphics_translate),
 };
 void fh_graphics_register(struct fh_program *prog) {
