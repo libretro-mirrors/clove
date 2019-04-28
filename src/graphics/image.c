@@ -158,8 +158,8 @@ void graphics_Image_draw(graphics_Image const* image, graphics_Quad const* quad,
 		float x, float y, float r, float sx, float sy,
 		float ox, float oy, float kx, float ky) {
 
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(imageVertices), imageVertices, GL_DYNAMIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(imageData), imageData);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(imageData), imageData, GL_STATIC_DRAW);
+    //glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(imageData), imageData);
 	m4x4_newTransform2d(&image->tr2d, x, y, r, sx, sy, ox, oy, kx, ky);
 
 

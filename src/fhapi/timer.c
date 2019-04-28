@@ -63,6 +63,5 @@ static const struct fh_named_c_func c_funcs[] = {
 };
 
 void fh_timer_register(struct fh_program* prog) {
-
     fh_add_c_funcs(prog, c_funcs, sizeof(c_funcs)/sizeof(c_funcs[0]));
 }

@@ -7,8 +7,7 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include <stdlib.h>
-#include <tgmath.h>
-#include <stdlib.h>
+#include <math.h>
 
 #include "../include/vector.h"
 #include "../include/geometry.h"
@@ -39,11 +38,11 @@ void graphics_geometry_init(void) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), 0);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), 0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(2*sizeof(float)));
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (void*)(2*sizeof(GLfloat)));
     glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 8*sizeof(float), (void*)(4*sizeof(float)));
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 8*sizeof(GLfloat), (void*)(4*sizeof(GLfloat)));
 
     graphics_Shader_new(&moduleData.plainColorShader, NULL,
                         "vec4 effect(vec4 color, Image texture, vec2 texture_coords, vec2 screen_cords ) {\n"
@@ -52,6 +51,9 @@ void graphics_geometry_init(void) {
 
     moduleData.lineWidth = 1.0f;
     moduleData.quad = (graphics_Quad){0.0f, 0.0f, 1.0f, 1.0f};
+
+    moduleData.currentDataSize = 0;
+    moduleData.currentIndexSize = 0;
 }
 
 void graphics_geometry_free () {
@@ -62,15 +64,15 @@ void graphics_geometry_free () {
     graphics_Shader_free(&moduleData.plainColorShader);
 }
 
-static void growBuffers(uint32_t vertices, uint32_t indices) {
-    uint32_t datasize = vertices * 8 * sizeof(float);
+static void growBuffers(int vertices, int indices) {
+    int datasize = vertices * 8 * sizeof(GLfloat);
     if(moduleData.currentDataSize < datasize) {
         free(moduleData.data);
         moduleData.data = (float*)malloc(datasize);
         moduleData.currentDataSize = datasize;
     }
 
-    uint32_t indexsize = indices * sizeof(uint32_t);
+    int indexsize = indices * sizeof(uint32_t);
     if(moduleData.currentIndexSize < indexsize) {
         free(moduleData.index);
         moduleData.index = (uint32_t*)malloc(indexsize);
@@ -79,16 +81,17 @@ static void growBuffers(uint32_t vertices, uint32_t indices) {
 }
 
 static void drawBufferSpecial(uint32_t indices,
+                              int vertices,
                               float x, float y,
                               float r,
                               float w, float h,
                               float sx, float sy,
                               float ox, float oy, GLenum type) {
     glBindBuffer(GL_ARRAY_BUFFER, moduleData.dataVBO);
-    glBufferData(GL_ARRAY_BUFFER, moduleData.currentDataSize, moduleData.data, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices*sizeof(float)*8, moduleData.data, GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, moduleData.currentIndexSize, moduleData.index, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices*sizeof(uint32_t)*8, moduleData.index, GL_STREAM_DRAW);
 
     glLineWidth(moduleData.lineWidth);
 
@@ -105,12 +108,12 @@ static void drawBufferSpecial(uint32_t indices,
     glLineWidth(1.0f);
 }
 
-static void drawBuffer(uint32_t indices, GLenum type) {
+static void drawBuffer(uint32_t indices, int vertices, GLenum type) {
     glBindBuffer(GL_ARRAY_BUFFER, moduleData.dataVBO);
-    glBufferData(GL_ARRAY_BUFFER, moduleData.currentDataSize, moduleData.data, GL_STREAM_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, vertices*8*sizeof(float), moduleData.data, GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, moduleData.currentIndexSize, moduleData.index, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices*sizeof(uint32_t), moduleData.index, GL_STREAM_DRAW);
 
     glLineWidth(moduleData.lineWidth);
 
@@ -123,7 +126,6 @@ static void drawBuffer(uint32_t indices, GLenum type) {
                        type, GL_UNSIGNED_INT, graphics_getColor(), 1.0f, 1.0f);
 
     graphics_setShader(shader);
-
     glLineWidth(1.0f);
 }
 
@@ -132,25 +134,24 @@ void graphics_geometry_lineCircle(float x, float y, float radius, uint32_t segme
 
     float step = LOVE_PI2 / segments;
     float ang = 0;
-    float* buf = moduleData.data;
 
     moduleData.index[0] = 1;
     moduleData.index[segments+1] = 1;
     for(uint32_t i = 0; i < segments; ++i, ang -= step) {
-        buf[8*(i+1)+0] = sin(ang) * radius;
-        buf[8*(i+1)+1] = cos(ang) * radius;
+        moduleData.data[8*(i+1)+0] = sinf(ang) * radius;
+        moduleData.data[8*(i+1)+1] = cosf(ang) * radius;
 
-        buf[8*(i+1)+2] = 0.0f;
-        buf[8*(i+1)+3] = 0.0f;
+        moduleData.data[8*(i+1)+2] = 0.0f;
+        moduleData.data[8*(i+1)+3] = 0.0f;
 
-        buf[8*(i+1)+4] = 1.0f;
-        buf[8*(i+1)+5] = 1.0f;
-        buf[8*(i+1)+6] = 1.0f;
-        buf[8*(i+1)+7] = 1.0f;
+        moduleData.data[8*(i+1)+4] = 1.0f;
+        moduleData.data[8*(i+1)+5] = 1.0f;
+        moduleData.data[8*(i+1)+6] = 1.0f;
+        moduleData.data[8*(i+1)+7] = 1.0f;
         moduleData.index[i+1] = i+1;
     }
 
-    drawBufferSpecial(segments+2,x, y, r, 1, 1, sx, sy, ox, oy, GL_LINE_STRIP);
+    drawBufferSpecial(segments+2, segments+1, x, y, r, 1, 1, sx, sy, ox, oy, GL_LINE_STRIP);
 }
 
 void graphics_geometry_fillCircle(float x, float y, float radius, uint32_t segments, float r, float sx, float sy, float ox, float oy) {
@@ -158,34 +159,33 @@ void graphics_geometry_fillCircle(float x, float y, float radius, uint32_t segme
 
     float step = LOVE_PI2 / segments;
     float ang = 0;
-    float* buf = moduleData.data;
 
-    buf[0] = 1.0f;
-    buf[1] = 1.0f;
-    buf[2] = 0.0f;
-    buf[3] = 0.0f;
-    buf[4] = 1.0f;
-    buf[5] = 1.0f;
-    buf[6] = 1.0f;
-    buf[7] = 1.0f;
+    moduleData.data[0] = 1.0f;
+    moduleData.data[1] = 1.0f;
+    moduleData.data[2] = 0.0f;
+    moduleData.data[3] = 0.0f;
+    moduleData.data[4] = 1.0f;
+    moduleData.data[5] = 1.0f;
+    moduleData.data[6] = 1.0f;
+    moduleData.data[7] = 1.0f;
 
     moduleData.index[0] = 0;
     moduleData.index[segments+1] = 1;
     for(uint32_t i = 0; i < segments; ++i, ang -= step) {
-        buf[8*(i+1)+0] = sin(ang) * radius;
-        buf[8*(i+1)+1] = cos(ang) * radius;
+        moduleData.data[8*(i+1)+0] = sin(ang) * radius;
+        moduleData.data[8*(i+1)+1] = cos(ang) * radius;
 
-        buf[8*(i+1)+2] = 0.0f;
-        buf[8*(i+1)+3] = 0.0f;
+        moduleData.data[8*(i+1)+2] = 0.0f;
+        moduleData.data[8*(i+1)+3] = 0.0f;
 
-        buf[8*(i+1)+4] = 1.0f;
-        buf[8*(i+1)+5] = 1.0f;
-        buf[8*(i+1)+6] = 1.0f;
-        buf[8*(i+1)+7] = 1.0f;
+        moduleData.data[8*(i+1)+4] = 1.0f;
+        moduleData.data[8*(i+1)+5] = 1.0f;
+        moduleData.data[8*(i+1)+6] = 1.0f;
+        moduleData.data[8*(i+1)+7] = 1.0f;
         moduleData.index[i+1] = i+1;
     }
 
-    drawBufferSpecial(segments+2, x, y, r, 1, 1, sx, sy, ox, oy, GL_TRIANGLE_FAN);
+    drawBufferSpecial(segments+2, segments+1, x, y, r, 1, 1, sx, sy, ox, oy, GL_TRIANGLE_FAN);
 }
 
 void graphics_geometry_rectangle(bool filled,
@@ -195,12 +195,9 @@ void graphics_geometry_rectangle(bool filled,
                                  float sx, float sy,
                                  float ox, float oy) {
 
-    uint32_t num_indices = 6;
-    growBuffers(32, num_indices);
+    growBuffers(32, 6);
 
     bool special = rotation != 0.0f || sx != 1.0f || sy != 1.0f;
-
-    float *buf = moduleData.data;
 
     /*
      * What is commented with 0,1,2,3 represent the declaration of the shape for this rectangle
@@ -208,66 +205,66 @@ void graphics_geometry_rectangle(bool filled,
      */
 
     if(!special) {
-        buf[0] = x + w * sx; //0
-        buf[1] = y;
+        moduleData.data[0] = x + w * sx; //0
+        moduleData.data[1] = y;
 
-        buf[8] = x; //1
-        buf[9] = y;
+        moduleData.data[8] = x; //1
+        moduleData.data[9] = y;
 
-        buf[16] = x; //2
-        buf[17] = y + h * sy;
+        moduleData.data[16] = x; //2
+        moduleData.data[17] = y + h * sy;
 
-        buf[24] = x + w * sx; //3
-        buf[25] = y + h * sy;
+        moduleData.data[24] = x + w * sx; //3
+        moduleData.data[25] = y + h * sy;
 
     }else {
         /* For more info see image.c -> imageData[]
          * these are vertices */
-        buf[0] = 0.0f; //0
-        buf[1] = 0.0f;
+        moduleData.data[0] = 0.0f; //0
+        moduleData.data[1] = 0.0f;
 
-        buf[8] = 1.0f; // 1
-        buf[9] = 0.0f;
+        moduleData.data[8] = 1.0f; // 1
+        moduleData.data[9] = 0.0f;
 
-        buf[16] = 1.0f; // 2
-        buf[17] = 1.0f;
+        moduleData.data[16] = 1.0f; // 2
+        moduleData.data[17] = 1.0f;
 
-        buf[24] = 0.0f; // 3
-        buf[25] = 1.0f;
+        moduleData.data[24] = 0.0f; // 3
+        moduleData.data[25] = 1.0f;
     }
 
     //these grouped by 2 are text coords
-    buf[2] = 0.0f;
-    buf[3] = 0.0f;
+    moduleData.data[2] = 0.0f;
+    moduleData.data[3] = 0.0f;
 
     //these grouped by 4 are colors
-    buf[4] = 1.0f;
-    buf[5] = 1.0f;
-    buf[6] = 1.0f;
-    buf[7] = 1.0f;
+    moduleData.data[4] = 1.0f;
+    moduleData.data[5] = 1.0f;
+    moduleData.data[6] = 1.0f;
+    moduleData.data[7] = 1.0f;
 
-    buf[10] = 1.0f;
-    buf[11] = 0.0f;
+    moduleData.data[10] = 1.0f;
+    moduleData.data[11] = 0.0f;
 
-    buf[12] = 1.0f;
-    buf[13] = 1.0f;
-    buf[14] = 1.0f;
-    buf[15] = 1.0f;
+    moduleData.data[12] = 1.0f;
+    moduleData.data[13] = 1.0f;
+    moduleData.data[14] = 1.0f;
+    moduleData.data[15] = 1.0f;
 
-    buf[18] = 0.0f;
-    buf[19] = 1.0f;
+    moduleData.data[18] = 0.0f;
+    moduleData.data[19] = 1.0f;
 
-    buf[20] = 1.0f;
-    buf[21] = 1.0f;
-    buf[22] = 1.0f;
-    buf[23] = 1.0f;
+    moduleData.data[20] = 1.0f;
+    moduleData.data[21] = 1.0f;
+    moduleData.data[22] = 1.0f;
+    moduleData.data[23] = 1.0f;
 
-    buf[26] = 1.0f;
-    buf[27] = 1.0f;
-    buf[28] = 1.0f;
-    buf[29] = 1.0f;
-    buf[30] = 1.0f;
-    buf[31] = 1.0f;
+    moduleData.data[26] = 1.0f;
+    moduleData.data[27] = 1.0f;
+    moduleData.data[28] = 1.0f;
+    moduleData.data[29] = 1.0f;
+    moduleData.data[30] = 1.0f;
+    moduleData.data[31] = 1.0f;
 
     if (filled) {
         moduleData.index[0] = 0;
@@ -278,9 +275,9 @@ void graphics_geometry_rectangle(bool filled,
         moduleData.index[5] = 3;
 
         if (special)
-            drawBufferSpecial(num_indices, x, y, rotation, w, h, sx, sy, ox, oy, GL_TRIANGLES);
+            drawBufferSpecial(6, 32, x, y, rotation, w, h, sx, sy, ox, oy, GL_TRIANGLES);
         else
-            drawBuffer(num_indices, GL_TRIANGLES);
+            drawBuffer(6, 32, GL_TRIANGLES);
 
     }else {
         moduleData.index[0] = 0;
@@ -292,49 +289,45 @@ void graphics_geometry_rectangle(bool filled,
         moduleData.index[6] = 2;
 
         if (special)
-            drawBufferSpecial(num_indices, x, y, rotation, w, h, sx, sy, ox, oy, GL_LINE_STRIP);
+            drawBufferSpecial(6, 32, x, y, rotation, w, h, sx, sy, ox, oy, GL_LINE_STRIP);
         else
-            drawBuffer(num_indices, GL_LINE_STRIP);
+            drawBuffer(6, 32, GL_LINE_STRIP);
     }
 }
 
 
 void graphics_geometry_points(float x, float y) {
     growBuffers(8, 1);
-    float* buf = moduleData.data;
-    buf[0] = x;
-    buf[1] = y;
-    buf[2] = 0.0f;
-    buf[3] = 0.0f;
-    buf[4] = 1.0f;
-    buf[5] = 1.0f;
-    buf[6] = 1.0f;
-    buf[7] = 1.0f;
+
+    moduleData.data[0] = x;
+    moduleData.data[1] = y;
+    moduleData.data[2] = 0.0f;
+    moduleData.data[3] = 0.0f;
+    moduleData.data[4] = 1.0f;
+    moduleData.data[5] = 1.0f;
+    moduleData.data[6] = 1.0f;
+    moduleData.data[7] = 1.0f;
 
     moduleData.index[0] = 0;
-    drawBuffer(1, GL_POINTS);
+    drawBuffer(1, 8, GL_POINTS);
 }
 
-void graphics_geometry_vertex(bool filled, float x, float y, int vertices[], uint32_t count) {
+void graphics_geometry_vertex(bool filled, int vertices[], uint32_t count) {
     growBuffers(count, count);
-    float* buf = moduleData.data;
 
     for(uint32_t i = 0; i < count; i++) {
-        buf[8*i+0] = x + vertices[i];
-        buf[8*i+1] = y + vertices[i+1];
-        buf[8*i+2] = 0.0f;
-        buf[8*i+3] = 0.0f;
-        buf[8*i+4] = 1.0f;
-        buf[8*i+5] = 1.0f;
-        buf[8*i+6] = 1.0f;
-        buf[8*i+7] = 1.0f;
+        moduleData.data[8*i+0] = vertices[2*i];
+        moduleData.data[8*i+1] = vertices[2*i+1];
+        moduleData.data[8*i+2] = 0.0f;
+        moduleData.data[8*i+3] = 0.0f;
+        moduleData.data[8*i+4] = 1.0f;
+        moduleData.data[8*i+5] = 1.0f;
+        moduleData.data[8*i+6] = 1.0f;
+        moduleData.data[8*i+7] = 1.0f;
         moduleData.index[i] = i;
     }
 
-    if (filled)
-        drawBuffer(count,GL_TRIANGLE_FAN);
-    else
-        drawBuffer(count,GL_LINE_STRIP);
+    drawBuffer(count, count, filled ? GL_TRIANGLE_FAN : GL_LINE_STRIP);
 }
 
 

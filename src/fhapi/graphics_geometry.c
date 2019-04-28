@@ -24,17 +24,15 @@ static int fn_love_geometry_circle(struct fh_program *prog,
     }
 
     const char* type = fh_get_string(&args[0]);
-    double x = fh_get_number_err(prog, args, 1);
-    double y = fh_get_number_err(prog, args, 2);
-    double radius = fh_get_number_err(prog, args, 3);
-    if ((x == -1 || y == -1 || radius == -1) && !fh_running)
-        return -1;
-    double segments = fh_optnumber(args[4], 12);
-    double rotation = fh_optnumber(args[5], 0);
-    double sx = fh_optnumber(args[6], 1);
-    double sy = fh_optnumber(args[7], sx);
-    double ox = fh_optnumber(args[8], 0);
-    double oy = fh_optnumber(args[9], ox);
+    double x = fh_get_number(&args[1]);
+    double y = fh_get_number(&args[2]);
+    double radius = fh_get_number(&args[3]);
+    double segments = fh_optnumber(args, n_args, 4, 12);
+    double rotation = fh_optnumber(args, n_args, 5, 0);
+    double sx = fh_optnumber(args, n_args, 6, 1);
+    double sy = fh_optnumber(args, n_args, 7, sx);
+    double ox = fh_optnumber(args, n_args, 8, 0);
+    double oy = fh_optnumber(args, n_args, 9, ox);
 
     if (strcmp(type, "line") == 0)
         graphics_geometry_lineCircle(x, y, radius, segments, rotation, sx, sy, ox, oy);
@@ -56,17 +54,15 @@ static int fn_love_geometry_rectangle(struct fh_program *prog,
     }
 
     const char* type = fh_get_string(&args[0]);
-    float x = fh_get_number_err(prog, args, 1);
-    float y = fh_get_number_err(prog, args, 2);
-    float w = fh_get_number_err(prog, args, 3);
-    if ((x == -1 || y == -1 || w == -1) && !fh_running)
-        return -1;
-    float h = fh_optnumber(args[4], w);
-    float rotation = fh_optnumber(args[5], 0);
-    float sx = fh_optnumber(args[6], 1);
-    float sy = fh_optnumber(args[7], sx);
-    float ox = fh_optnumber(args[8], 0);
-    float oy = fh_optnumber(args[9], ox);
+    double x = fh_get_number(&args[1]);
+    double y = fh_get_number(&args[2]);
+    double w = fh_get_number(&args[3]);
+    float h = fh_optnumber(args, n_args, 4, w);
+    float rotation = fh_optnumber(args, n_args, 5, 0);
+    float sx = fh_optnumber(args, n_args, 6, 1);
+    float sy = fh_optnumber(args, n_args, 7, sx);
+    float ox = fh_optnumber(args, n_args, 8, 0);
+    float oy = fh_optnumber(args, n_args, 9, ox);
 
     if (strcmp(type, "line") == 0)
         graphics_geometry_rectangle(false, x, y, w, h, rotation, sx, sy, ox, oy);
@@ -86,10 +82,9 @@ static int fn_love_geometry_points(struct fh_program *prog,
         return fh_set_error(prog, "Expeceted 2 arguments");
     }
 
-    float x = fh_get_number_err(prog, args, 0);
-    float y = fh_get_number_err(prog, args, 1);
-    if ((x == -1 || y == -1) && !fh_running)
-        return -1;
+    double x = fh_get_number(&args[0]);
+    double y = fh_get_number(&args[1]);
+
     graphics_geometry_points(x, y);
     return 0;
 }
@@ -97,17 +92,13 @@ static int fn_love_geometry_points(struct fh_program *prog,
 static int fn_love_geometry_vertex(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     UNUSED(ret);
-    if (n_args < 4) {
-        return fh_set_error(prog, "Expected 4 arguments");
+    if (!fh_is_string(&args[0]) || !fh_is_array(&args[1])) {
+        return fh_set_error(prog, "Expected 2 arguments, string and array");
     }
 
-    const char *filled = fh_get_string_err(prog, args, 0);
-    float x = fh_get_number_err(prog, args, 1);
-    float y = fh_get_number_err(prog, args, 2);
-    if ((filled == -1 || x == -1 || y == -1) && !fh_running)
-        return -1;
+    const char *filled = fh_get_string(&args[0]);
 
-    struct fh_value *arr = &args[3];
+    struct fh_value *arr = &args[1];
     int len = fh_get_array_len(arr);
     int *vertices = malloc(sizeof(int)*len);
 
@@ -121,9 +112,9 @@ static int fn_love_geometry_vertex(struct fh_program *prog,
     }
 
     if (strcmp(filled, "fill") == 0)
-        graphics_geometry_vertex(true, x, y, vertices, len);
+        graphics_geometry_vertex(true, vertices, len / 2);
     else if (strcmp(filled, "line") == 0)
-        graphics_geometry_vertex(false, x, y, vertices, len);
+        graphics_geometry_vertex(false, vertices, len / 2);
     else {
         free(vertices);
         return fh_set_error(prog, "Expected 'fill' or 'line' for the first argument");
@@ -135,12 +126,8 @@ static int fn_love_geometry_vertex(struct fh_program *prog,
 static int fn_love_geometry_setLineWidth(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
 
-    float width = fh_get_number_err(prog, args, 0);
-    if (width == -1 && !fh_running)
-        return fh_set_error(prog, "Expected number as first argument");
-
-    graphics_geometry_setLineWidth(width);
-
+    double w = fh_get_number(&args[0]);
+    graphics_geometry_setLineWidth(w);
     return 0;
 }
 

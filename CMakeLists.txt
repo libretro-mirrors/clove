@@ -24,17 +24,13 @@ if (USE_PHYSFS)
 endif(USE_PHYSFS)
 
 if (USE_LUA)
-        #ADD_DEFINITIONS("-DUSE_LUA=1")
-        #message(STATUS, "Using Lua")
-else()
-        ADD_DEFINITIONS("-DUSE_LUA=0")
+        ADD_DEFINITIONS("-DUSE_LUA=1")
+        message(STATUS, "Using Lua")
 endif(USE_LUA)
 
 if (USE_FH)
         ADD_DEFINITIONS("-DUSE_FH=1")
         message(STATUS, "Using FH")
-else()
-        ADD_DEFINITIONS("-DUSE_FH=0")
 endif(USE_FH)
 
 IF(WIN32)
@@ -154,6 +150,8 @@ FILE(
     src/3rdparty/FH/src/*.h
     src/3rdparty/FH/src/map/*.c
     src/3rdparty/FH/src/map/*.h
+    src/3rdparty/FH/src/vec/*.c
+    src/3rdparty/FH/src/vec/*.h
     )
 #TODO
 #I do not think we're allowed by ndk to have a main.cpp file

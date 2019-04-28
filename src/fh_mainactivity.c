@@ -9,6 +9,8 @@
 
 #include "include/fh_mainactivity.h"
 
+#include "3rdparty/FH/src/value.h"
+
 /*
  * TODO:
  * 1) make use of macro "USE_NATIVE"
@@ -21,6 +23,7 @@
 #include "fhapi/graphics_geometry.h"
 #include "fhapi/image.h"
 #include "fhapi/graphics.h"
+#include "fhapi/graphics_window.h"
 
 #include "include/geometry.h"
 
@@ -29,6 +32,7 @@ typedef struct {
     struct fh_program *prog;
     struct fh_value delta;
     struct fh_value focus;
+    struct fh_value opt;
 } MainLoopData;
 
 static MainLoopData loopData;
@@ -57,19 +61,21 @@ static void main_clean(void) {
   audio_close();
 }
 
+static struct fh_value update_args[2];
 void fh_main_loop(void) {
     timer_step();
     focus_function();
     matrixstack_origin();
     loopData.delta.data.num = (double)timer_getDelta();
 
-    if (fh_call_function(loopData.prog, "love_update", &loopData.delta, 1, NULL) == -2) {
+    update_args[0] = loopData.delta;
+    update_args[1] = loopData.opt;
+    if (fh_call_function(loopData.prog, "love_update", update_args, 2, NULL) == -2) {
         return;
     }
 
     graphics_clear();
-
-    if (fh_call_function(loopData.prog, "love_draw", NULL, 0, NULL) == -2) {
+    if (fh_call_function(loopData.prog, "love_draw", &loopData.opt, 1, NULL) == -2) {
         return;
     }
 
@@ -214,9 +220,9 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_graphics_geometry_register(loopData.prog);
     fh_image_register(loopData.prog);
     fh_graphics_register(loopData.prog);
+    fh_graphics_window_register(loopData.prog);
 
-
-    int ret = fh_run_script_file(loopData.prog, 0, "main.fh", argv, argc);
+    int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {
         clove_error("ERROR: %s\n", fh_get_error(loopData.prog));
         main_clean();
@@ -224,9 +230,11 @@ void fh_main_activity_load(int argc, char* argv[]) {
     }
 
     loopData.delta = fh_new_number(1);
-    loopData.focus = fh_new_bool(true);
+    loopData.focus = fh_new_bool(false);
 
-    if (fh_call_function(loopData.prog, "love_load", NULL, 0, NULL) < 0) {
+    loopData.opt = fh_new_map(loopData.prog);
+
+    if (fh_call_function(loopData.prog, "love_load", NULL, 0, &loopData.opt) < 0) {
         clove_error("Errro: %s\n", fh_get_error(loopData.prog));
     }
 

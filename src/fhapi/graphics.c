@@ -20,13 +20,15 @@
 
 static int fn_love_graphics_setBackgroundColor(struct fh_program *prog,
                                                struct fh_value *ret, struct fh_value *args, int n_args) {
-    double red = fh_get_number_err(prog, args, 0);
-    if (red == -1 && !fh_running)
-        return -1;
 
-    double green = fh_optnumber(args[1], red);
-    double blue = fh_optnumber(args[2], green);
-    double alpha = fh_optnumber(args[3], 255.0);
+    if (!fh_is_number(&args[0]))
+        return fh_set_error(prog, "Expected number");
+
+    double red = fh_get_number(&args[0]);
+
+    double green = fh_optnumber(args, n_args, 1, red);
+    double blue = fh_optnumber(args, n_args, 2, green);
+    double alpha = fh_optnumber(args, n_args, 3, 255.0);
 
     float scale = 1.0f / 255.0f;
 
@@ -56,9 +58,9 @@ static int fn_love_graphics_setColor(struct fh_program *prog,
         return fh_set_error(prog, "Expected number");
 
     double red = fh_get_number(&args[0]);
-    double green = fh_optnumber(args[1], red);
-    double blue = fh_optnumber(args[2], green);
-    double alpha = fh_optnumber(args[3], 255.0);
+    double green = fh_optnumber(args, n_args, 1, red);
+    double blue = fh_optnumber(args, n_args, 2, green);
+    double alpha = fh_optnumber(args, n_args, 3, 255.0);
 
     float scale = 1.0f / 255.0f;
 
@@ -111,7 +113,7 @@ static int fn_love_graphics_translate(struct fh_program *prog,
 
     float x = (float)fh_get_number(&args[0]);
     float y = (float)fh_get_number(&args[1]);
-    float z = (float)fh_optnumber(args[2], 1.0);
+    float z = (float)fh_optnumber(args, n_args, 2, 1.0);
 
     matrixstack_translate(x, y, z);
     return 0;
@@ -124,7 +126,7 @@ static int fn_love_graphics_scale(struct fh_program *prog,
 
     float x = (float)fh_get_number(&args[0]);
     float y = (float)fh_get_number(&args[1]);
-    float z = (float)fh_optnumber(args[2], 1.0);
+    float z = (float)fh_optnumber(args, n_args, 2, 1.0);
 
     matrixstack_scale(x, y, z);
     return 0;
@@ -328,20 +330,20 @@ static const graphics_Quad defaultQuad = {
 static int fn_love_graphics_draw(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
 
-    if (!fh_is_c_obj(&args[0]) || n_args < 3)
+    if (!fh_is_c_obj(&args[0]) || !fh_is_number(&args[1]) || !fh_is_number(&args[2]))
         return fh_set_error(prog, "Expected image, batch, mesh or particle and x, y coordonate");
 
     struct fh_c_obj *o = fh_get_c_obj(&args[0]);
 
-    double x = fh_get_number_err(prog, args, 1);
-    double y = fh_get_number_err(prog, args, 2);
-    double r = fh_optnumber(args[3], 0);
-    double sx = fh_optnumber(args[4], 1);
-    double sy = fh_optnumber(args[5], sx);
-    double ox = fh_optnumber(args[6], 0);
-    double oy = fh_optnumber(args[7], ox);
-    double kx = fh_optnumber(args[8], 0);
-    double ky = fh_optnumber(args[9], kx);
+    float x = (float)fh_get_number(&args[1]);
+    float y = (float)fh_get_number(&args[2]);
+    float r = (float)fh_optnumber(args, n_args, 3, 0.0);
+    float sx = (float)fh_optnumber(args, n_args, 4, 1.0);
+    float sy = (float)fh_optnumber(args, n_args, 5, 1.0);
+    float ox = (float)fh_optnumber(args, n_args, 6, 0.0);
+    float oy = (float)fh_optnumber(args, n_args, 7, 0.0);
+    float kx = (float)fh_optnumber(args, n_args, 8, 0.0);
+    float ky = (float)fh_optnumber(args, n_args, 9, 0.0);
 
     if (o->type == FH_IMAGE_TYPE) {
         fh_image_t *image = o->ptr;
@@ -349,6 +351,7 @@ static int fn_love_graphics_draw(struct fh_program *prog,
     } else
         return fh_set_error(prog, "Expected image, batch, mesh or particle as argument 1");
 
+    *ret = fh_new_null();
     return 0;
 }
 

@@ -25,7 +25,7 @@ static struct {
     SDL_GLContext context;
     SDL_WindowFlags w_flags;
 
-	SDL_Surface* surface;
+    SDL_Surface* surface;
     graphics_Color backgroundColor;
     graphics_Color foregroundColor;
 
@@ -59,8 +59,8 @@ static void graphics_init_window(int width, int height)
 
     if(res != GLEW_OK) {
         clove_error("Error: Could not init glew!\n");
-		return;
-	}
+        return;
+    }
 
     glViewport(0, 0, width, height);
 
@@ -94,8 +94,8 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
 
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         clove_error("Error: Could not init SDL video \n");
-		return;
-	}
+        return;
+    }
 
     moduleData.isCreated = false;
     //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, 0);
@@ -116,40 +116,40 @@ void graphics_init(int width, int height, bool resizable, bool stats, bool show)
     moduleData.y = SDL_WINDOWPOS_CENTERED;
     moduleData.title = "CLove: Untitled window";
 
-	moduleData.w_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-	if (resizable) {
-		moduleData.w_flags = (SDL_WindowFlags)(moduleData.w_flags | SDL_WINDOW_RESIZABLE);
-	}
+    moduleData.w_flags = (SDL_WindowFlags)(SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+    if (resizable) {
+        moduleData.w_flags = (SDL_WindowFlags)(moduleData.w_flags | SDL_WINDOW_RESIZABLE);
+    }
 
-	if (moduleData.hasWindow)
-	{
-		moduleData.window = SDL_CreateWindow(moduleData.title, moduleData.x, moduleData.y, width, height, moduleData.w_flags);
+    if (moduleData.hasWindow)
+    {
+        moduleData.window = SDL_CreateWindow(moduleData.title, moduleData.x, moduleData.y, width, height, moduleData.w_flags);
 
-		if(!moduleData.window) {
-			clove_error("Error: Could not create window :O\n");
-			return;
-		}
+        if(!moduleData.window) {
+            clove_error("Error: Could not create window :O\n");
+            return;
+        }
 
-		moduleData.context = SDL_GL_CreateContext(moduleData.window);
-		if(!moduleData.context) {
-			clove_error("Error: Could not create window context!\n");
-		}
+        moduleData.context = SDL_GL_CreateContext(moduleData.window);
+        if(!moduleData.context) {
+            clove_error("Error: Could not create window context!\n");
+        }
 
-		//moduleData.surface = SDL_GetWindowSurface(moduleData.window);
-		SDL_GL_SetSwapInterval(1); //limit FPS to 60, this may not work on all drivers
+        //moduleData.surface = SDL_GetWindowSurface(moduleData.window);
+        SDL_GL_SetSwapInterval(1); //limit FPS to 60, this may not work on all drivers
 
-		if (stats > 0) {
-			printf("Sdl version: %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
-			printf("OpenGL version: %s\n", glGetString(GL_VERSION));
-			printf("GLSL version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
-			printf("Vendor: %s\n", glGetString(GL_VENDOR));
-			printf("Renderer: %s\n", glGetString(GL_RENDERER));
-		}
+        if (stats > 0) {
+            printf("Sdl version: %d.%d.%d\n", SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL);
+            printf("OpenGL version: %s\n", glGetString(GL_VERSION));
+            printf("GLSL version: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
+            printf("Vendor: %s\n", glGetString(GL_VENDOR));
+            printf("Renderer: %s\n", glGetString(GL_RENDERER));
+        }
 
-		graphics_init_window(width, height);
-	}
-	else
-		moduleData.isCreated = false;
+        graphics_init_window(width, height);
+    }
+    else
+        moduleData.isCreated = false;
 }
 
 void graphics_destroyWindow() {
@@ -177,12 +177,12 @@ void graphics_setColor(float red, float green, float blue, float alpha) {
 }
 
 void graphics_clear(void) {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 void graphics_swap(void) {
-	if (moduleData.hasWindow)
-		SDL_GL_SwapWindow(moduleData.window);
+    if (moduleData.hasWindow)
+        SDL_GL_SwapWindow(moduleData.window);
 }
 
 void graphics_drawArray(graphics_Quad const* quad, mat4x4 const* tr2d, GLuint ibo, GLuint count, GLenum type, GLenum indexType, float const* useColor, float ws, float hs) {
@@ -208,9 +208,9 @@ void graphics_drawArray(graphics_Quad const* quad, mat4x4 const* tr2d, GLuint ib
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
     glDrawElements(type, count, indexType, (GLvoid const*)0);
 
-//    glDisableVertexAttribArray(2);
-//    glDisableVertexAttribArray(1);
-//    glDisableVertexAttribArray(0);
+    /*glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(0);*/
 }
 
 int* graphics_getDesktopDimension() {
@@ -328,8 +328,8 @@ int graphics_setMode(int width, int height,
     /*
      * If the main window was disabled in conf.lua
      * then we shall create one using this function.
-	 *
-	 * Note: This works only on desktop
+     *
+     * Note: This works only on desktop
      */
 #ifndef CLOVE_WEB
     if (!moduleData.hasWindow)
@@ -407,19 +407,19 @@ int graphics_setFullscreen(int value, const char* mode){
 #ifndef CLOVE_WEB
     if (moduleData.hasWindow)
     {
-		if (value == 1) {
-			if (strcmp(mode, "desktop") == 0)
-				SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-			else if (strcmp(mode, "fullscreen") == 0) {
-				SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN);
-			}
-			else {
-				clove_error("Unknown fullscreen type: %s, use: 'desktop' or 'fullscreen'\n", mode);
-				return 0;
-			}
-		} else {
-			SDL_SetWindowFullscreen(moduleData.window, 0);
-		}
+        if (value == 1) {
+            if (strcmp(mode, "desktop") == 0)
+                SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+            else if (strcmp(mode, "fullscreen") == 0) {
+                SDL_SetWindowFullscreen(moduleData.window, SDL_WINDOW_FULLSCREEN);
+            }
+            else {
+                clove_error("Unknown fullscreen type: %s, use: 'desktop' or 'fullscreen'\n", mode);
+                return 0;
+            }
+        } else {
+            SDL_SetWindowFullscreen(moduleData.window, 0);
+        }
         return 1;
     }
 #endif
@@ -433,11 +433,11 @@ int graphics_isCreated()
 
 void graphics_set_camera_2d(float left, float right, float bottom, float top, float zNear, float zFar)
 {
-	if (moduleData.hasWindow)
-	{
-		m4x4_newIdentity(&moduleData.projectionMatrix);
-		m4x4_newOrtho(&moduleData.projectionMatrix, left, right, bottom, top, zNear, zFar);
-	}
+    if (moduleData.hasWindow)
+    {
+        m4x4_newIdentity(&moduleData.projectionMatrix);
+        m4x4_newOrtho(&moduleData.projectionMatrix, left, right, bottom, top, zNear, zFar);
+    }
 }
 
 void graphics_set_camera_3d(float fov, float ratio, float zNear, float zFar) {
