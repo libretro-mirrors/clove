@@ -274,7 +274,7 @@ int graphics_setPosition(int x, int y) {
 
 int graphics_setVsync(bool value) {
     if (moduleData.hasWindow)
-        SDL_GL_SetSwapInterval(value == true ? 1 : 0);
+        SDL_GL_SetSwapInterval(value);
     return 1;
 }
 

@@ -87,6 +87,13 @@ int fn_love_window_setTitle(struct fh_program *prog, struct fh_value *ret, struc
     return  0;
 }
 
+int fn_love_window_setVsync(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args != 1 || !fh_is_bool(&args[0]))
+        return fh_set_error(prog, "Expected boolean");
+    graphics_setVsync(&args[0]);
+    return 0;
+}
+
 int fn_love_window_getDisplayName(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
     int index = (int)fh_optnumber(&args[0], n_args, 0, 0);
     const char *name = graphics_getDisplayName(index);
@@ -186,6 +193,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_window_hasFocus),
     DEF_FN(love_window_hasMouseFocus),
     DEF_FN(love_window_setMode),
+    DEF_FN(love_window_setVsync),
 };
 
 
