@@ -11,9 +11,6 @@
 # include <emscripten.h>
 #endif
 
-#include <stdlib.h>
-#include <stdio.h>
-
 #ifdef USE_LUA
 #include "include/lua_mainactivity.h"
 #endif

@@ -8,96 +8,124 @@
 */
 
 #include "graphics.h"
-#include "image.h"
-#include "quad.h"
 #include "batch.h"
 
-struct graphics_Particle;
+struct graphics_Particle {
+    struct graphics_Particle *prev;
+    struct graphics_Particle *next;
+
+    float lifetime;
+    float life;
+
+    float position[2];
+
+    float origin[2];
+
+    float velocity[2];
+    float linearAcceleration[2];
+    float radialAcceleration;
+    float tangentialAcceleration;
+
+    float linearDamping;
+
+    float size;
+    float sizeOffset;
+    float sizeIntervalSize;
+
+    float rotation;
+    float angle;
+    float spinStart;
+    float spinEnd;
+
+    graphics_Color color;
+
+    int quadIndex;
+};
 typedef struct graphics_Particle graphics_Particle;
 
 typedef enum {
-  graphics_ParticleInsertMode_top,
-  graphics_ParticleInsertMode_bottom,
-  graphics_ParticleInsertMode_random
+    graphics_ParticleInsertMode_top,
+    graphics_ParticleInsertMode_bottom,
+    graphics_ParticleInsertMode_random
 } graphics_ParticleInsertMode;
 
 
 typedef enum {
-  graphics_AreaSpreadDistribution_uniform,
-  graphics_AreaSpreadDistribution_normal,
-  graphics_AreaSpreadDistribution_none
+    graphics_AreaSpreadDistribution_uniform,
+    graphics_AreaSpreadDistribution_normal,
+    graphics_AreaSpreadDistribution_none
 } graphics_AreaSpreadDistribution;
 
 
 typedef struct {
-  graphics_Particle *pMem;
-  graphics_Particle *pFree;
-  graphics_Particle *pHead;
-  graphics_Particle *pTail;
+    graphics_Particle *pMem;
+    graphics_Particle *pFree;
+    graphics_Particle *pHead;
+    graphics_Particle *pTail;
 
-  graphics_Image const* texture;
-  graphics_Batch batch;
-  bool active;
+    graphics_Image const* texture;
+    graphics_Batch batch;
+    bool active;
 
-  graphics_ParticleInsertMode insertMode;
+    graphics_ParticleInsertMode insertMode;
 
-  size_t maxParticles;
-  size_t activeParticles;
+    size_t maxParticles;
+    size_t activeParticles;
 
-  float emissionRate;
-  float emitCounter;
+    float emissionRate;
+    float emitCounter;
 
-  float position[2];
-  float prevPosition[2];
+    float position[2];
+    float prevPosition[2];
 
-  graphics_AreaSpreadDistribution areaSpreadDistribution;
-  float areaSpread[2];
+    graphics_AreaSpreadDistribution areaSpreadDistribution;
+    float areaSpread[2];
 
-  float lifetime;
-  float life;
+    float lifetime;
+    float life;
 
-  float particleLifeMin;
-  float particleLifeMax;
+    float particleLifeMin;
+    float particleLifeMax;
 
-  float direction;
-  float spread;
+    float direction;
+    float spread;
 
-  float speedMin;
-  float speedMax;
+    float speedMin;
+    float speedMax;
 
-  float linearAccelerationMin[2];
-  float linearAccelerationMax[2];
+    float linearAccelerationMin[2];
+    float linearAccelerationMax[2];
 
-  float radialAccelerationMin;
-  float radialAccelerationMax;
+    float radialAccelerationMin;
+    float radialAccelerationMax;
 
-  float tangentialAccelerationMin;
-  float tangentialAccelerationMax;
+    float tangentialAccelerationMin;
+    float tangentialAccelerationMax;
 
-  float linearDampingMin;
-  float linearDampingMax;
+    float linearDampingMin;
+    float linearDampingMax;
 
-  float *sizes;
-  size_t sizeCount;
-  float sizeVariation;
+    float *sizes;
+    size_t sizeCount;
+    float sizeVariation;
 
-  float rotationMin;
-  float rotationMax;
+    float rotationMin;
+    float rotationMax;
 
-  float spinStart;
-  float spinEnd;
-  float spinVariation;
+    float spinStart;
+    float spinEnd;
+    float spinVariation;
 
-  float offsetX;
-  float offsetY;
+    float offsetX;
+    float offsetY;
 
-  graphics_Color *colors;
-  size_t colorCount;
+    graphics_Color *colors;
+    size_t colorCount;
 
-  graphics_Quad const **quads;
-  size_t quadCount;
+    graphics_Quad const **quads;
+    size_t quadCount;
 
-  bool relativeRotation;
+    bool relativeRotation;
 } graphics_ParticleSystem;
 
 

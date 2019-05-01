@@ -24,6 +24,7 @@
 #include "fhapi/image.h"
 #include "fhapi/graphics.h"
 #include "fhapi/graphics_window.h"
+#include "fhapi/math.h"
 
 #include "include/geometry.h"
 
@@ -221,6 +222,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_image_register(loopData.prog);
     fh_graphics_register(loopData.prog);
     fh_graphics_window_register(loopData.prog);
+    fh_math_register(loopData.prog);
 
     int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {
