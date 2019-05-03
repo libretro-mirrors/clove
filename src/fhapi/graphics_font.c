@@ -167,17 +167,28 @@ static int fn_love_font_getBaseline(struct fh_program *prog,
 
 static int fn_love_font_getWrap(struct fh_program *prog,
                                     struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
-        return fh_set_error(prog, "Expected font");
+    if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE) || !fh_is_string(&args[1])
+            || !fh_is_number(&args[2])) {
+        return fh_set_error(prog, "Expected font, string and wrap limit");
     }
     graphics_Font *font = fh_get_c_obj_value(&args[0]);
 
     const char *line = fh_get_string(&args[1]);
-    int width = fh_get_number(&args[2]);
+    int wraplimit = (int)fh_get_number(&args[2]);
 
-    //TODO http://muriidev.duckdns.org:3001/murii/CLove/issues/2
+    char *wrappedtext = malloc(strlen(line));
+    int wrappedlines = graphics_Font_getWrap(font, line, wraplimit, &wrappedtext);
 
-    //*ret = fh_new_number((int)graphics_Font_getWrap(font, line, width, NULL));
+    struct fh_value arr = fh_new_array(prog);
+    fh_grow_array(prog, &arr, 2);
+
+    struct fh_array *arr_val = GET_VAL_ARRAY(&arr);
+    arr_val->items[0] = fh_new_string(prog, wrappedtext);
+    arr_val->items[1] = fh_new_number((int)wrappedlines);
+
+    *ret = arr;
+
+    free(wrappedtext);
     return 0;
 }
 
@@ -191,6 +202,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_font_getBaseline),
     DEF_FN(love_font_getAscent),
     DEF_FN(love_font_getDescent),
+    DEF_FN(love_font_getWrap),
     DEF_FN(love_graphics_print),
 };
 

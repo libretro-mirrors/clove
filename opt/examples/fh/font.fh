@@ -1,0 +1,65 @@
+function love_joystick_pressed(j) {
+}
+
+function love_mousepressed(m) {
+}
+
+function love_mousereleased(m) {
+}
+
+function love_wheelmoved(y) {
+}
+
+function love_textinput(text) { 
+}
+
+function love_keypressed(key) {
+}
+
+function love_keyreleased(key) {
+}
+
+function love_quit() {
+}
+
+function love_focus(focused) {
+}
+
+function love_update(dt) {
+
+}
+
+function love_load()  {
+	let self = {};
+
+	let big = love_graphics_newFont(36);	
+	self.bigFont = big; 
+	
+	self.small = love_graphics_newFont("vera.ttf", 16);
+
+	println(love_font_getHeight(self.bigFont), " ",
+			 love_font_getWidth(self.bigFont, "Hello world!"), " ",
+			 love_font_getBaseline(self.bigFont), " ", 
+			 love_font_getAscent(self.bigFont), " ", 
+			 love_font_getDescent(self.bigFont));
+
+	self.text = love_font_getWrap(self.small, "Hellothereboy!", 30);
+	println("Total wrapped lines: ", self.text[1]);
+
+	love_draw(self);	
+	return self;
+}
+
+function love_draw(self) {
+	love_graphics_setFont(self.bigFont);
+	love_graphics_print("Hello world!", 250, 270);
+	let cf = love_graphics_getFont();
+	love_graphics_setFont(cf);
+	love_graphics_setFont(self.small);
+	love_graphics_print("Hi", 100, 100, 90);
+	love_graphics_print(self.text[0], 300, 100);
+}
+
+function main() {
+
+}

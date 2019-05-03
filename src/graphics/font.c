@@ -201,9 +201,30 @@ int graphics_Font_new(graphics_Font *dst, char const* filename, int ptsize) {
 }
 
 
-int graphics_Font_getWrap(graphics_Font * font, char const* text, int width, char ** wrapped) {
-    // TODO
-    return 0;
+int graphics_Font_getWrap(graphics_Font * font, char const* line, int wraplimit, char **wrappedtext) {
+    int width = 0, uni = 0, wrappedlines = 1;
+    size_t i = 0;
+    size_t len = strlen(line);
+    char *c = NULL;
+    while((uni = utf8_scan(&line))) {
+        c = *wrappedtext;
+        graphics_Glyph const* g = graphics_Font_findGlyph(font, uni);
+        width += g->advance;
+        if (i + 1 >= len) {
+            len <<= 2 + 1;
+            *wrappedtext = realloc(*wrappedtext, len);
+            c = *wrappedtext;
+        }
+        if(width >= wraplimit && uni != '\n') {
+            wrappedlines++;
+            c[i++] = '\n';
+            width = 0;
+        }
+        c[i++] = (char)uni;
+    }
+    c[i] = '\0';
+
+    return wrappedlines;
 }
 
 static void prepareBatches(graphics_Font* font, int chars) {
