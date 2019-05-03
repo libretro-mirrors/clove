@@ -52,8 +52,6 @@ void graphics_geometry_lineCircle(float x, float y, float radius, uint32_t segme
  */
 void graphics_geometry_vertex(bool filled, int vertices[], uint32_t count);
 /*
-bool filled, int vertices[], uint32_t count);
-/*
  * Summary: Draw a pixel at X, Y
  */
 void graphics_geometry_points(float x, float y);

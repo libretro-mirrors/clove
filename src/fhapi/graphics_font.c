@@ -46,7 +46,9 @@ static int fn_love_graphics_newFont(struct fh_program *prog,
     }
 
     graphics_Font *font = malloc(sizeof(graphics_Font));
-    graphics_Font_new(font, filename, moduleData.currentFontSize);
+    int err = graphics_Font_new(font, filename, moduleData.currentFontSize);
+    if (err != 0)
+        return fh_set_error(prog, "Error loading font");
 
     fh_c_obj_gc_callback freeCallback = gcFont;
     *ret = fh_new_c_obj(prog, font, freeCallback, FH_FONT_TYPE);

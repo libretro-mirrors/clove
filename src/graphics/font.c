@@ -138,7 +138,7 @@ graphics_Glyph const* graphics_Font_findGlyph(graphics_Font *font, unsigned unic
     // This assumes pixel unpack alignment is set to 1 (glPixelStorei)
     glBindTexture(GL_TEXTURE_2D, font->glyphs.textures[font->glyphs.numTextures-1]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, font->glyphs.currentX, font->glyphs.currentY,
-            b.width, b.rows, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, buf);
+                    b.width, b.rows, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, buf);
 
     // Store geometric information for the glyph
     newGlyph->code = unicode;
@@ -172,14 +172,18 @@ int graphics_Font_new(graphics_Font *dst, char const* filename, int ptsize) {
         error = FT_New_Memory_Face(moduleData.ft, defaultFontData, defaultFontSize, 0, &dst->face);
     }
     if (error != 0) {
-        if ( error == FT_Err_Unknown_File_Format )
-            clove_error("Error, unknown font format: %s\n");
-        else
-            clove_error("Error, the font file: %s, could not be opened or read\n");
+        if ( error == FT_Err_Unknown_File_Format ) {
+            clove_error("Error, unknown font format: %s\n", filename);
+            return 1;
+        }
+        else {
+            clove_error("Error, the font file: %s, could not be opened or read\n", filename);
+            return 1;
+        }
     }
 
     FT_Set_Pixel_Sizes(dst->face, 0, ptsize);
-	dst->ptsize = ptsize;
+    dst->ptsize = ptsize;
 
     memset(&dst->glyphs, 0, sizeof(graphics_GlyphMap));
 
@@ -284,7 +288,7 @@ void graphics_Font_render(graphics_Font* font, char const* text, int px, int py,
     int x = 0;
     int y = font->ascent;
     while((cp = utf8_scan(&text))) {
-         // This will create the glyph if required
+        // This will create the glyph if required
         graphics_Glyph const* glyph = graphics_Font_findGlyph(font, cp);
 
         if(cp == '\n') {
