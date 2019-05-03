@@ -10,6 +10,4 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#include <stdbool.h>
-
 void fh_graphics_geometry_register(struct fh_program *prog);

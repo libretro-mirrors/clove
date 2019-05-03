@@ -177,7 +177,7 @@ void graphics_setColor(float red, float green, float blue, float alpha) {
 }
 
 void graphics_clear(void) {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT/* | GL_DEPTH_BUFFER_BIT*/);
 }
 
 void graphics_swap(void) {

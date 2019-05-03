@@ -29,6 +29,10 @@ function love_update(dt) {
 
 }
 
+function love_load()  {
+
+}
+
 function love_draw() {
 	love_geometry_circle("line", 320, 220, 16);
 	love_geometry_circle("fill", 220, 260, 16);
