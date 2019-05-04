@@ -26,6 +26,7 @@
 #include "fhapi/graphics_window.h"
 #include "fhapi/math.h"
 #include "fhapi/graphics_font.h"
+#include "fhapi/graphics_bitmapfont.h"
 
 #include "include/geometry.h"
 
@@ -45,14 +46,12 @@ static void quit_function(void) {
     }
 }
 
-
 static void focus_function(void) {
     loopData.focus.data.b = graphics_hasFocus();
     if (fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL) == -2) {
         clove_error("Errro: %s\n", fh_get_error(loopData.prog));
     }
 }
-
 
 static void main_clean(void) {
   joystick_close();
@@ -225,6 +224,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_graphics_window_register(loopData.prog);
     fh_math_register(loopData.prog);
     fh_graphics_font_register(loopData.prog);
+    fh_graphics_bitmap_font_register(loopData.prog);
 
     int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {

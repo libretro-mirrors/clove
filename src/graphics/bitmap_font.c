@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2017-2018 Muresan Vlad
+#   Copyright (C) 2017-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -18,46 +18,46 @@
 
 /* TODO: A better implementation would be by using hashmaps instead of arrays. */
 
-void graphics_BitmapFont_new(graphics_BitmapFont* dst, char const* filename,
+void graphics_BitmapFont_new(graphics_BitmapFont* font, char const* filename,
                              int max_size, char const* glyphs, float glyph_width, float glyph_height)
 {
   size_t glyphs_len = strlen(glyphs);
 
-  dst->glyphs_t = malloc(sizeof(glyph_t) * glyphs_len);
-  dst->image = malloc(sizeof(graphics_Image));
-  dst->data = malloc(sizeof(image_ImageData));
-  dst->batches = malloc(sizeof(graphics_Batch));
+  font->glyphs_t = malloc(sizeof(glyph_t) * glyphs_len);
+  font->image = malloc(sizeof(graphics_Image));
+  font->data = malloc(sizeof(image_ImageData));
+  font->batches = malloc(sizeof(graphics_Batch));
 
-  image_ImageData_new_with_filename(dst->data, filename);
+  image_ImageData_new_with_filename(font->data, filename);
 
-  graphics_Image_new_with_ImageData(dst->image, dst->data);
+  graphics_Image_new_with_ImageData(font->image, font->data);
 
-  int img_width = image_ImageData_getWidth(dst->data);
-  int img_height = image_ImageData_getHeight(dst->data);
+  int img_width = image_ImageData_getWidth(font->data);
+  int img_height = image_ImageData_getHeight(font->data);
 
   // In case we did not specify these two we calculate them manually
-  dst->glyph_width = glyph_width = glyph_width == 0 ? (int)(img_width / glyphs_len) : glyph_width;
-  dst->glyph_height = glyph_height = glyph_height == 0 ? img_height : glyph_height;
+  font->glyph_width = glyph_width = glyph_width == 0 ? (int)(img_width / glyphs_len) : glyph_width;
+  font->glyph_height = glyph_height = glyph_height == 0 ? img_height : glyph_height;
 
-  dst->indexer_map_size = glyphs_len;
+  font->indexer_map_size = glyphs_len;
 
   // Get all the glyphs from the font
   uint16_t i = 0;
-  uint32_t get_w = 0;
+  uint32_t word = 0;
 
-  graphics_Batch_new(dst->batches, dst->image, max_size, graphics_BatchUsage_static);
-  while(get_w = utf8_scan(&glyphs))
+  graphics_Batch_new(font->batches, font->image, max_size, graphics_BatchUsage_static);
+  while(word = utf8_scan(&glyphs))
     {
-      dst->glyphs_t[i].quad = malloc(sizeof(graphics_Quad));
-      graphics_Quad_newWithRef(dst->glyphs_t[i].quad, glyph_width * i, 0,
+      font->glyphs_t[i].quad = malloc(sizeof(graphics_Quad));
+      graphics_Quad_newWithRef(font->glyphs_t[i].quad, glyph_width * i, 0,
                                glyph_width, glyph_height, img_width, img_height);
-      dst->glyphs_t[i].word = get_w;
-      dst->glyphs_t[i].index = i;
-      dst->glyphs_t[i].offsetx = 0;
-      dst->glyphs_t[i].offsety = 0;
+      font->glyphs_t[i].word = word;
+      font->glyphs_t[i].index = i;
+      font->glyphs_t[i].offsetx = 0;
+      font->glyphs_t[i].offsety = 0;
       i++;
     }
-  dst->allocated_glyphs = i;
+  font->allocated_glyphs = i;
 }
 
 void graphics_BitmapFont_setGlyphOffsetX(graphics_BitmapFont* font, float off, char const* glyph)
@@ -84,6 +84,11 @@ void graphics_BitmapFont_setGlyphOffsetY(graphics_BitmapFont* font, float off, c
     }
 }
 
+void graphics_BitmapFont_setFilter(graphics_BitmapFont *font, graphics_Filter const* filter)
+{
+    graphics_Image_setFilter(font->image, filter);
+}
+
 static glyph_t* find_glyph(graphics_BitmapFont* font, uint32_t what)
 {
   for (uint16_t i = 0; i < font->indexer_map_size; i++)
@@ -103,7 +108,7 @@ void graphics_BitmapFont_render(graphics_BitmapFont* dst, char const* text,
   graphics_Shader* shader = graphics_getShader();
   graphics_setDefaultShader();
 
-  int g = 0;
+  uint32_t g = 0;
   int posx = 0;
   int posy = 0;
 
@@ -114,7 +119,7 @@ void graphics_BitmapFont_render(graphics_BitmapFont* dst, char const* text,
       if (map != NULL && map->word == g) {
           if (g == '\n') {
               posx = 0;
-              posy += floor(dst->glyph_height + 1 + 0.5f);
+              posy += floor(dst->glyph_height + 1.0 + 0.5);
               continue;
             }
           graphics_Batch_add(dst->batches, map->quad, posx + map->offsetx,
@@ -122,7 +127,6 @@ void graphics_BitmapFont_render(graphics_BitmapFont* dst, char const* text,
           posx += dst->glyph_width;
         }
     }
-
 
   graphics_Batch_bind(dst->batches);
   graphics_Batch_draw(dst->batches, x, y, r, sx, sy, ox, oy, kx, ky);
@@ -139,5 +143,6 @@ void graphics_BitmapFont_free(graphics_BitmapFont* dst)
   free(dst->glyphs_t);
   image_ImageData_free(dst->data);
   graphics_Image_free(dst->image);
+  free(dst->image);
+  free(dst->data);
 }
-

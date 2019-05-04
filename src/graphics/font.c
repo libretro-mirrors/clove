@@ -324,7 +324,7 @@ int graphics_Font_getDescent(graphics_Font const* font) {
 }
 
 int graphics_Font_getBaseline(graphics_Font const* font) {
-    return floor(font->height / 1.25f + 0.5f);
+    return (int)floor(font->height / 1.25f + 0.5f);
 }
 
 int graphics_Font_getHeight(graphics_Font const* font) {
@@ -360,5 +360,3 @@ void graphics_Font_free(graphics_Font *obj) {
     FT_Done_Face(obj->face);
     graphics_GlyphMap_free(&obj->glyphs);
 }
-
-

@@ -8,17 +8,24 @@
 */
 
 #include "graphics_font.h"
+#include "graphics_bitmapfont.h"
 
 #include "../3rdparty/FH/src/value.h"
 
 #include "../include/font.h"
 #include "../include/matrixstack.h"
 #include "../include/graphics.h"
+#include "../include/bitmap_font.h"
 
 static struct {
     graphics_Font defaultFont;
-    graphics_Font* currentFont;
+    graphics_Font *currentFont;
     int currentFontSize;
+    graphics_BitmapFont *currentBitmapFont;
+    /**
+     * When this is set to true then we're rendering a bitmap image font
+     */
+    bool isBitmapFont;
 } moduleData;
 
 static void gcFont(graphics_Font *font) {
@@ -64,11 +71,15 @@ static void graphics_loadDefaultFont() {
 static int fn_love_graphics_setFont(struct fh_program *prog,
                                     struct fh_value *ret, struct fh_value *args, int n_args) {
 
-    if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
-        return fh_set_error(prog, "Expected font");
+    if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
+        moduleData.isBitmapFont = false;
+        moduleData.currentFont = fh_get_c_obj_value(&args[0]);
+    } else if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
+        moduleData.isBitmapFont = true;
+        moduleData.currentBitmapFont = fh_get_c_obj_value(&args[0]);
+    } else {
+        return fh_set_error(prog, "Expected font or image font");
     }
-
-    moduleData.currentFont = fh_get_c_obj_value(&args[0]);
 
     *ret = fh_new_null();
     return 0;
@@ -85,7 +96,7 @@ static int fn_love_graphics_print(struct fh_program *prog,
     if (!fh_is_string(&args[0]))
         return fh_set_error(prog, "Expected string");
 
-    if (!moduleData.currentFont) {
+    if (!moduleData.currentFont && !moduleData.isBitmapFont) {
         graphics_loadDefaultFont();
     }
 
@@ -101,14 +112,17 @@ static int fn_love_graphics_print(struct fh_program *prog,
     int kx = fh_optnumber(args, n_args, 8, 0);
     int ky = fh_optnumber(args, n_args, 9, 0);
 
-    graphics_Font_render(moduleData.currentFont, text, x, y, r, sx, sy, ox, oy, kx, ky);
-
+    if (moduleData.isBitmapFont) {
+        graphics_BitmapFont_render(moduleData.currentBitmapFont, text, x, y, r, sx, sy, ox, oy, kx, ky);
+    } else {
+        graphics_Font_render(moduleData.currentFont, text, x, y, r, sx, sy, ox, oy, kx, ky);
+    }
     *ret = fh_new_null();
     return 0;
 }
 
 static int fn_love_font_getHeight(struct fh_program *prog,
-                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
         return fh_set_error(prog, "Expected font");
     }
@@ -119,7 +133,7 @@ static int fn_love_font_getHeight(struct fh_program *prog,
 }
 
 static int fn_love_font_getWidth(struct fh_program *prog,
-                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+                                 struct fh_value *ret, struct fh_value *args, int n_args) {
     if (n_args != 2) {
         return fh_set_error(prog, "Illegal number of arguments, expected two, font and string");
     }
@@ -134,7 +148,7 @@ static int fn_love_font_getWidth(struct fh_program *prog,
 }
 
 static int fn_love_font_getDescent(struct fh_program *prog,
-                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
         return fh_set_error(prog, "Expected font");
     }
@@ -145,7 +159,7 @@ static int fn_love_font_getDescent(struct fh_program *prog,
 }
 
 static int fn_love_font_getAscent(struct fh_program *prog,
-                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
         return fh_set_error(prog, "Expected font");
     }
@@ -168,7 +182,7 @@ static int fn_love_font_getBaseline(struct fh_program *prog,
 
 
 static int fn_love_font_getWrap(struct fh_program *prog,
-                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+                                struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE) || !fh_is_string(&args[1])
             || !fh_is_number(&args[2])) {
         return fh_set_error(prog, "Expected font, string and wrap limit");
@@ -194,6 +208,61 @@ static int fn_love_font_getWrap(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_font_setFilter(struct fh_program *prog,
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args != 3) {
+        return fh_set_error(prog, "Expected 3 arguments!");
+    }
+
+    graphics_Font *font = NULL;
+    graphics_BitmapFont *bitmapFont = NULL;
+    bool isBitmapFont = false;
+
+    if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
+        isBitmapFont = true;
+        bitmapFont = fh_get_c_obj_value(&args[0]);
+    } else if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
+        font = fh_get_c_obj_value(&args[0]);
+    } else {
+        return fh_set_error(prog, "Expected bitmap font or ttf font");
+    }
+
+    if (!fh_is_string(&args[1]) || !fh_is_string(&args[2])) {
+        return fh_set_error(prog, "Expected minMode and magMode as strings");
+    }
+
+    const char *min = fh_get_string(&args[1]);
+    const char *mag = fh_get_string(&args[2]);
+
+    graphics_Filter newFilter;
+
+    newFilter.maxAnisotropy = (float)fh_optnumber(args, n_args, 3, 1.0);
+
+    if (strcmp(min, "none") == 0) {
+        newFilter.minMode = graphics_FilterMode_none;
+    } else if (strcmp(min, "linear") == 0) {
+        newFilter.minMode = graphics_FilterMode_linear;
+    } else if (strcmp(min, "nearest") == 0) {
+        newFilter.minMode = graphics_FilterMode_nearest;
+    }
+
+    if (strcmp(mag, "none") == 0) {
+        newFilter.magMode = graphics_FilterMode_none;
+    } else if (strcmp(mag, "linear") == 0) {
+        newFilter.magMode = graphics_FilterMode_linear;
+    } else if (strcmp(mag, "nearest") == 0) {
+        newFilter.magMode = graphics_FilterMode_nearest;
+    }
+
+    if (isBitmapFont) {
+        graphics_BitmapFont_setFilter(bitmapFont, &newFilter);
+    } else {
+        graphics_Font_setFilter(font, &newFilter);
+    }
+    *ret = fh_new_null();
+    return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_newFont),
@@ -205,11 +274,14 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_font_getAscent),
     DEF_FN(love_font_getDescent),
     DEF_FN(love_font_getWrap),
+    DEF_FN(love_font_setFilter),
     DEF_FN(love_graphics_print),
 };
 
 void fh_graphics_font_register(struct fh_program *prog) {
     moduleData.currentFont = NULL;
+    moduleData.currentBitmapFont = NULL;
+    moduleData.isBitmapFont = false;
 
     fh_add_c_funcs(prog, c_funcs, sizeof(c_funcs)/sizeof(c_funcs[0]));
 }
