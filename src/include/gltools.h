@@ -25,5 +25,6 @@ typedef struct {
   graphics_FilterMode mipmapMode;
 } graphics_Filter;
 
-void graphics_Texture_getFilter(GLuint texID, graphics_Filter * filter);
-void graphics_Texture_setFilter(GLuint texID, graphics_Filter const * filter);
+float graphics_Texture_getMaxAnisotropy(void);
+void graphics_Texture_getFilter(GLuint texID, graphics_Filter *filter);
+void graphics_Texture_setFilter(GLuint texID, graphics_Filter *filter);

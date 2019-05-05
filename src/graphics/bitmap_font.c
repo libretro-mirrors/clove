@@ -89,6 +89,11 @@ void graphics_BitmapFont_setFilter(graphics_BitmapFont *font, graphics_Filter co
     graphics_Image_setFilter(font->image, filter);
 }
 
+void graphics_BitmapFont_getFilter(graphics_BitmapFont *font, graphics_Filter *filter)
+{
+    graphics_Image_getFilter(font->image, filter);
+}
+
 static glyph_t* find_glyph(graphics_BitmapFont* font, uint32_t what)
 {
   for (uint16_t i = 0; i < font->indexer_map_size; i++)

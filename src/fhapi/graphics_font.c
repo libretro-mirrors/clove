@@ -87,7 +87,11 @@ static int fn_love_graphics_setFont(struct fh_program *prog,
 
 static int fn_love_graphics_getFont(struct fh_program *prog,
                                     struct fh_value *ret, struct fh_value *args, int n_args) {
-    *ret = fh_new_c_obj(prog, moduleData.currentFont, NULL, FH_FONT_TYPE);
+    if (moduleData.isBitmapFont) {
+        *ret = fh_new_c_obj(prog, moduleData.currentBitmapFont, NULL, FH_BITMAP_FONT_TYPE);
+    } else {
+        *ret = fh_new_c_obj(prog, moduleData.currentFont, NULL, FH_FONT_TYPE);
+    }
     return 0;
 }
 
@@ -210,7 +214,7 @@ static int fn_love_font_getWrap(struct fh_program *prog,
 
 static int fn_love_font_setFilter(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (n_args != 3) {
+    if (n_args < 3) {
         return fh_set_error(prog, "Expected 3 arguments!");
     }
 
@@ -259,7 +263,53 @@ static int fn_love_font_setFilter(struct fh_program *prog,
     } else {
         graphics_Font_setFilter(font, &newFilter);
     }
+
     *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_font_getFilter(struct fh_program *prog,
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+    graphics_Font *font = NULL;
+    graphics_BitmapFont *bitmapFont = NULL;
+    bool isBitmapFont = false;
+
+    graphics_Filter filter;
+
+    if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
+        isBitmapFont = true;
+        bitmapFont = fh_get_c_obj_value(&args[0]);
+        graphics_BitmapFont_getFilter(bitmapFont, &filter);
+    } else if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
+        font = fh_get_c_obj_value(&args[0]);
+        graphics_Font_getFilter(font, &filter);
+    } else {
+        return fh_set_error(prog, "Expected bitmap font or ttf font");
+    }
+
+    struct fh_value v = fh_new_array(prog);
+    fh_grow_array(prog, &v, 3);
+
+    struct fh_array *arr = GET_VAL_ARRAY(&v);
+
+    if (filter.minMode == graphics_FilterMode_none)
+        arr->items[0] = fh_new_string(prog, "none");
+    else if (filter.minMode == graphics_FilterMode_linear)
+        arr->items[0] = fh_new_string(prog, "linear");
+    else if (filter.minMode == graphics_FilterMode_nearest)
+        arr->items[0] = fh_new_string(prog, "nearest");
+
+    if (filter.magMode == graphics_FilterMode_none)
+        arr->items[1] = fh_new_string(prog, "none");
+    else if (filter.magMode == graphics_FilterMode_linear)
+        arr->items[1] = fh_new_string(prog, "linear");
+    else if (filter.magMode == graphics_FilterMode_nearest)
+        arr->items[1] = fh_new_string(prog, "nearest");
+
+    arr->items[2] = fh_new_number(filter.maxAnisotropy);
+
+    *ret = v;
+
     return 0;
 }
 
@@ -275,6 +325,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_font_getDescent),
     DEF_FN(love_font_getWrap),
     DEF_FN(love_font_setFilter),
+    DEF_FN(love_font_getFilter),
     DEF_FN(love_graphics_print),
 };
 

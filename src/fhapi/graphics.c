@@ -320,6 +320,16 @@ static int fn_love_graphics_getScissor(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_graphics_getMaxAnisotropy(struct fh_program *prog,
+                                 struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(args);
+    if (n_args != 0)
+        return fh_set_error(prog, "Unexpected argument");
+    *ret = fh_new_number((double)graphics_Texture_getMaxAnisotropy());
+
+    return 0;
+}
+
 static const graphics_Quad defaultQuad = {
     .x = 0.0f,
     .y = 0.0f,
@@ -379,7 +389,9 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_setScissor),
     DEF_FN(love_graphics_getScissor),
     DEF_FN(love_graphics_translate),
+    DEF_FN(love_graphics_getMaxAnisotropy),
 };
+
 void fh_graphics_register(struct fh_program *prog) {
     fh_add_c_funcs(prog, c_funcs, sizeof(c_funcs)/sizeof(c_funcs[0]));
 }

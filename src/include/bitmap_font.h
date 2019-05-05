@@ -43,4 +43,5 @@ void graphics_BitmapFont_setGlyphOffsetY(graphics_BitmapFont *font, float off, c
 void graphics_BitmapFont_render(graphics_BitmapFont *font, char const* text,
                                 int x, int y, float r, float sx, float sy, float ox, float oy, float kx, float ky);
 void graphics_BitmapFont_setFilter(graphics_BitmapFont *font, graphics_Filter const* filter);
+void graphics_BitmapFont_getFilter(graphics_BitmapFont *font, graphics_Filter *filter);
 void graphics_BitmapFont_free(graphics_BitmapFont* dst);
