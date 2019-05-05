@@ -219,7 +219,7 @@ int graphics_Font_getWrap(graphics_Font * font, char const* line, int wraplimit,
             *wrappedtext = realloc(*wrappedtext, len);
             c = *wrappedtext;
         }
-        if(width >= wraplimit && uni != '\n') {
+        if(width >= wraplimit && (uni != '\n' && uni != ' ')) {
             wrappedlines++;
             c[i++] = '\n';
             width = 0;

@@ -127,27 +127,45 @@ static int fn_love_graphics_print(struct fh_program *prog,
 
 static int fn_love_font_getHeight(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
-        return fh_set_error(prog, "Expected font");
-    }
-    graphics_Font *font = fh_get_c_obj_value(&args[0]);
+    if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
+        graphics_Font *font = fh_get_c_obj_value(&args[0]);
 
-    *ret = fh_new_number((int)graphics_Font_getHeight(font));
+        *ret = fh_new_number((int)graphics_Font_getHeight(font));
+    } else if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
+        graphics_BitmapFont *font = fh_get_c_obj_value(&args[0]);
+
+        *ret = fh_new_number((int)font->image->height);
+    } else {
+        return fh_set_error(prog, "Expected font or bitmap font");
+    }
     return 0;
 }
 
 static int fn_love_font_getWidth(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
     if (n_args != 2) {
-        return fh_set_error(prog, "Illegal number of arguments, expected two, font and string");
+        return fh_set_error(prog, "Illegal number of arguments, expected two, font/bitmap font and string");
     }
-    if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE) || !fh_is_string(&args[1])) {
-        return fh_set_error(prog, "Expected font and string");
+
+    if (!fh_is_string(&args[1])) {
+        return fh_set_error(prog, "Expected string");
     }
-    graphics_Font *font = fh_get_c_obj_value(&args[0]);
+
     char const *line = fh_get_string(&args[1]);
 
-    *ret = fh_new_number((int)graphics_Font_getWidth(font, line));
+    graphics_Font *font;
+    graphics_BitmapFont *bitmap;
+
+    if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
+        font = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number((int)graphics_Font_getWidth(font, line));
+    } else if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
+        bitmap = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number((int)graphics_BitmapFont_getWidth(bitmap, line));
+    } else {
+        return fh_set_error(prog, "Expected font or bitmap font");
+    }
+
     return 0;
 }
 
@@ -187,17 +205,33 @@ static int fn_love_font_getBaseline(struct fh_program *prog,
 
 static int fn_love_font_getWrap(struct fh_program *prog,
                                 struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE) || !fh_is_string(&args[1])
-            || !fh_is_number(&args[2])) {
-        return fh_set_error(prog, "Expected font, string and wrap limit");
+    if (!fh_is_string(&args[1]) || !fh_is_number(&args[2])) {
+        return fh_set_error(prog, "Expected string and wrap limit");
     }
-    graphics_Font *font = fh_get_c_obj_value(&args[0]);
+    graphics_Font *font;
+    graphics_BitmapFont *bitmap;
+    bool isBitmap = false;
+
+    if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE))
+        font = fh_get_c_obj_value(&args[0]);
+    else if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
+        isBitmap = true;
+        bitmap = fh_get_c_obj_value(&args[0]);
+    } else {
+        return fh_set_error(prog, "Expected font or bitmap font");
+    }
 
     const char *line = fh_get_string(&args[1]);
     int wraplimit = (int)fh_get_number(&args[2]);
 
     char *wrappedtext = malloc(strlen(line));
-    int wrappedlines = graphics_Font_getWrap(font, line, wraplimit, &wrappedtext);
+    int wrappedlines;
+
+    if (isBitmap) {
+        wrappedlines = graphics_BitmapFont_getWrap(bitmap, line, wraplimit, &wrappedtext);
+    } else {
+        wrappedlines = graphics_Font_getWrap(font, line, wraplimit, &wrappedtext);
+    }
 
     struct fh_value arr = fh_new_array(prog);
     fh_grow_array(prog, &arr, 2);
@@ -306,7 +340,7 @@ static int fn_love_font_getFilter(struct fh_program *prog,
     else if (filter.magMode == graphics_FilterMode_nearest)
         arr->items[1] = fh_new_string(prog, "nearest");
 
-    arr->items[2] = fh_new_number(filter.maxAnisotropy);
+    arr->items[2] = fh_new_number((double)filter.maxAnisotropy);
 
     *ret = v;
 

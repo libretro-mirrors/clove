@@ -44,4 +44,6 @@ void graphics_BitmapFont_render(graphics_BitmapFont *font, char const* text,
                                 int x, int y, float r, float sx, float sy, float ox, float oy, float kx, float ky);
 void graphics_BitmapFont_setFilter(graphics_BitmapFont *font, graphics_Filter const* filter);
 void graphics_BitmapFont_getFilter(graphics_BitmapFont *font, graphics_Filter *filter);
+int graphics_BitmapFont_getWidth(graphics_BitmapFont *font, char const* line);
+int graphics_BitmapFont_getWrap(graphics_BitmapFont *font, char const* line, int wraplimit, char **wrappedtext);
 void graphics_BitmapFont_free(graphics_BitmapFont* dst);
