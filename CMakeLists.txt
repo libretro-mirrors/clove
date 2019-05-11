@@ -11,12 +11,12 @@ cmake_minimum_required(VERSION 2.8)
 
 project(clove)
 
-option(USE_PHYSFS "Build Clove using Physfs for filesystem?" ON)
-option(USE_LUA "Build CLove using Lua as scripting language" OFF)
-option(USE_FH "Build CLove using FH as scripting language" ON)
+option(USE_PHYSFS "Build Clove using Physfs for filesystem?" TRUE)
+option(USE_LUA "Build CLove using Lua as scripting language" FALSE)
+option(USE_FH "Build CLove using FH as scripting language" TRUE)
 
-option(STATIC_LIB "Builds CLove as a static library" ON)
-option(DYNAMIC_LIB "Builds CLove as a shared library" OFF)
+option(STATIC_LIB "Builds CLove as a static library" TRUE)
+option(DYNAMIC_LIB "Builds CLove as a shared library" FALSE)
 
 if (USE_PHYSFS)
     ADD_DEFINITIONS(-DUSE_PHYSFS=ON)
@@ -24,8 +24,8 @@ if (USE_PHYSFS)
 endif(USE_PHYSFS)
 
 if (USE_LUA)
-    #ADD_DEFINITIONS(-DUSE_LUA=ON)
-    #message(STATUS, "Using Lua")
+    ADD_DEFINITIONS(-DUSE_LUA=ON)
+    message(STATUS, "Using Lua")
 endif(USE_LUA)
 
 if (USE_FH)

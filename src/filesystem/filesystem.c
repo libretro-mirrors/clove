@@ -8,8 +8,11 @@
 */
 
 #include "../include/filesystem.h"
-
 #include "../include/utils.h"
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #ifdef CLOVE_WINDOWS
 #include <direct.h>
@@ -118,13 +121,16 @@ int filesystem_write(const char* name, const char* data)
 
 	PHYSFS_File* file;
 	file = PHYSFS_openWrite(name);
-	if(! file)
+    if(! file) {
 		clove_error(PHYSFS_getLastError());
-
+        return -1;
+    }
 
 	int write_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
-	if (write_size == -1)
+    if (write_size == -1) {
 		clove_error(PHYSFS_getLastError());
+        return -2;
+    }
 
 	PHYSFS_close(file);
 
@@ -133,7 +139,7 @@ int filesystem_write(const char* name, const char* data)
 	#else
 	FILE* file = fopen(name, "w");
 	if(!file){
-		clove_error("%s No file named %s",name,"%s creating one");
+        clove_error("Couldn't open filename %s\n", name);
 		return -1;
 	}
 
@@ -141,8 +147,13 @@ int filesystem_write(const char* name, const char* data)
 	long size = ftell(file);
 	rewind(file);
 
-	fprintf(file, data);
-	fclose(file);
+    int wrote = fprintf(file, data);
+    if (wrote < 0) {
+        fclose(file);
+        clove_error("Couldn't write to filename %s\n", name);
+        return -2;
+    }
+    fclose(file);
 
 	return size;
 	#endif
@@ -154,13 +165,16 @@ int filesystem_append(const char* name, const char* data) {
 
 	PHYSFS_File* file;
 	file = PHYSFS_openAppend(name);
-	if(! file)
+    if(! file) {
 		clove_error(PHYSFS_getLastError());
-
+        return -1;
+    }
 	int append_size = PHYSFS_write(file, data, sizeof(char), strlen(data));
-	if (append_size == -1)
+    if (append_size == -1) {
+        PHYSFS_close(file);
 		clove_error(PHYSFS_getLastError());
-
+        return -2;
+    }
 	PHYSFS_close(file);
 
 	return append_size;
@@ -168,13 +182,22 @@ int filesystem_append(const char* name, const char* data) {
 	#else
 
 	FILE* file = fopen(name, "a");
+    if (!file) {
+        clove_error("Couldn't open file %s for appending\n", name);
+        return -1;
+    }
 
 	fseek(file,0,SEEK_END);
 	long size = ftell(file);
 	rewind(file);
 
-	fprintf(file, data);
-	fclose(file);
+    int appended = fprintf(file, data);
+    if (appended < 0) {
+        clove_error("Couldn't write to file %s for appending\n", name);
+        fclose(file);
+        return -2;
+    }
+    fclose(file);
 
 	return size;
 	#endif
@@ -201,13 +224,13 @@ const char* filesystem_getCurrentDirectory() {
  * 6, read and write
  * default is 0
  */
-int filesystem_isFile(const char* file, int mode) {
+bool filesystem_status(const char* file, int mode) {
 	//TODO Look into this
 #ifndef CLOVE_WEB
 	if (access(file, mode) != -1)
-		return 0;
+        return true;
 #endif
-	return -1;
+    return false;
 }
 
 int filesystem_read(char const* filename, char** output) {
@@ -216,6 +239,8 @@ int filesystem_read(char const* filename, char** output) {
 
 	PHYSFS_File* file;
 	file = PHYSFS_openRead(filename);
+    if (!file)
+        return -1;
 	int size = PHYSFS_fileLength(file);
 
 	*output = malloc(size + 1);
@@ -241,8 +266,8 @@ int filesystem_read(char const* filename, char** output) {
 	fread(*output, size, 1, infile);
 	fclose(infile);
 	(*output)[size] = 0;
-	return size;
 
+    return size;
 	#endif
 }
 
@@ -380,9 +405,12 @@ const char* filesystem_getUsrDir()
 	#endif
 }
 
-int filesystem_remove(const char* name) {
-	remove(name);
-	return 0;
+bool filesystem_remove(const char* name) {
+    return remove(name);
+}
+
+bool filesystem_rename(const char *old_name, const char *new_name) {
+    return rename(old_name, new_name);
 }
 
 

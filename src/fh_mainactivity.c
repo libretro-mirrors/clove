@@ -27,6 +27,7 @@
 #include "fhapi/math.h"
 #include "fhapi/graphics_font.h"
 #include "fhapi/graphics_bitmapfont.h"
+#include "fhapi/filesystem.h"
 
 #include "include/geometry.h"
 
@@ -225,6 +226,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_math_register(loopData.prog);
     fh_graphics_font_register(loopData.prog);
     fh_graphics_bitmap_font_register(loopData.prog);
+    fh_filesystem_register(loopData.prog);
 
     int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {

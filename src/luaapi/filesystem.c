@@ -141,22 +141,18 @@ static int l_filesystem_isFile(lua_State* state) {
 	const char* string_mode = luaL_optstring(state, 2, "e"); //default check only for existence
 	int mode = 0;
 
-	if (strncmp(string_mode,"e", 1) == 0)
+	if (strcmp(string_mode, "e") == 0)
 		mode = 0;
-	else if (strncmp(string_mode,"w", 1) == 0)
+    else if (strcmp(string_mode, "x") == 0)
+        mode = 1;
+	else if (strcmp(string_mode, "w") == 0)
 		mode = 2;
-	else if (strncmp(string_mode,"r", 1) == 0)
+	else if (strcmp(string_mode, "r") == 0)
 		mode = 4;
-	else if (strncmp(string_mode,"wr", 2) == 0)
+	else if (strcmp(string_mode, "wr") == 0)
 		mode = 6;
 
-	int isFile = filesystem_isFile(file, mode);
-
-	if (isFile == 0)
-		lua_pushboolean(state, 1);
-	else
-		lua_pushboolean(state, 0);
-
+    lua_pushboolean(state, filesystem_status(file, mode));
 	return 1;
 }
 
