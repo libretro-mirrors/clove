@@ -84,6 +84,16 @@ static int fn_love_filesystem_exists(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_filesystem_setSource(struct fh_program *prog,
+                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0]))
+        return fh_set_error(prog, "Illegal parameter, expected source:string");
+    const char *source = fh_get_string(&args[0]);
+    filesystem_setSource(source);
+    *ret = fh_make_null();
+    return 0;
+}
+
 static int fn_love_filesystem_getSource(struct fh_program *prog,
                                         struct fh_value *ret, struct fh_value *args, int n_args) {
     const char *source = filesystem_getSource();
@@ -113,7 +123,7 @@ static int fn_love_filesystem_rename(struct fh_program *prog,
     return 0;
 }
 
-static int fn_love_filesystem_status(struct fh_program *prog,
+static int fn_love_filesystem_state(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0]))
         return fh_set_error(prog, "Illegal parameter, expected filename:string");
@@ -134,9 +144,19 @@ static int fn_love_filesystem_status(struct fh_program *prog,
         mode = 6;
     }
 
-    *ret = fh_new_bool(filesystem_status(filename, mode));
+    *ret = fh_new_bool(filesystem_state(filename, mode));
     return 0;
 }
+
+/*static int fn_love_filesystem_mkDir(struct fh_program *prog,
+                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0]))
+        return fh_set_error(prog, "Illegal parameter, expected name:string");
+    const char *name = fh_get_string(&args[0]);
+
+    *ret = fh_new_bool(filesystem_mkDir(name));
+    return 0;
+}*/
 
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
@@ -145,10 +165,12 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_filesystem_append),
     DEF_FN(love_filesystem_getSaveDirectory),
     DEF_FN(love_filesystem_exists),
+    DEF_FN(love_filesystem_setSource),
     DEF_FN(love_filesystem_getSource),
     DEF_FN(love_filesystem_remove),
     DEF_FN(love_filesystem_rename),
-    DEF_FN(love_filesystem_status),
+    DEF_FN(love_filesystem_state),
+    //DEF_FN(love_filesystem_mkDir),
 };
 
 void fh_filesystem_register(struct fh_program *prog) {

@@ -29,7 +29,7 @@ int filesystem_equals(const char* a,const char* b,int l);
 int filesystem_contain(const char* a, const char* b);
 bool filesystem_remove(const char* name);
 bool filesystem_rename(const char *old_name, const char *new_name);
-bool filesystem_status(const char* file, int mode);
+bool filesystem_state(const char* file, int mode);
 bool filesystem_isDir(const char* dir);
 bool filesystem_mkDir(const char* path);
 const char* filesystem_getCurrentDirectory(void);
@@ -40,5 +40,5 @@ bool filesystem_setIdentity(const char* path);
 bool filesystem_mount(const char* path, const char* mountPoint, int appendToPath);
 bool filesystem_unmount(const char* path);
 
-void filesystem_setSource(const char* source, const char* dir);
+void filesystem_setSource(const char* source);
 const char* filesystem_getSource(void);
