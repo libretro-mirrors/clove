@@ -18,5 +18,5 @@ typedef enum {
 } audio_Type;
 
 void audio_init(int stats);
-void audio_setVolume(double value);
+void audio_setVolume(float value);
 void audio_close(void);
