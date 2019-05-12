@@ -8,7 +8,7 @@ function main() {
 
 function love_load() {
 	let self = {};
-	self.img = love_graphics_newImage("icon.png");
+	self.img = love_graphics_newImage("1.png");
 	
 	love_window_setIcon(self.img);
 
