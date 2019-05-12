@@ -1,7 +1,7 @@
 /*
 #   CMath
 #
-#   Copyright (C) 2016 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -17,20 +17,20 @@
 #endif
 
 typedef struct {
-  float x;
-  float y;
-  float z;
-  float w;
+    float x;
+    float y;
+    float z;
+    float w;
 } vec4;
 
 typedef struct {
-  float x;
-  float y;
-  float z;
+    float x;
+    float y;
+    float z;
 } vec3;
 
 vec3 vec3_new(float x, float y, float z);
-vec3 vec3_newv();
+vec3 vec3_newv(void);
 vec3 v3_add   (vec3 a, vec3 b);
 vec3 v3_adds  (vec3 a, float s);
 vec3 v3_sub   (vec3 a, vec3 b);
@@ -47,8 +47,8 @@ float  v3_dot   (vec3 a, vec3 b);
 float  v3_length(vec3 v);
 
 typedef struct {
-  float x;
-  float y;
+    float x;
+    float y;
 } vec2;
 
 vec2 vec2_new (float x, float y);
@@ -65,7 +65,7 @@ float v2_dot   (vec2 a, vec2 b);
 float v2_length(vec2 v);
 
 typedef struct {
-  float m[4][4];
+    float m[4][4];
 } mat4x4;
 
 mat4x4 m4x4_new(float m00, float m01, float m02, float m03,
@@ -79,7 +79,7 @@ void m4x4_set   (mat4x4 *out,
                  float m30, float m31, float m32, float m33);
 
 typedef struct {
-  float m[3][3];
+    float m[3][3];
 } mat3x3;
 
 void m4x4_newIdentity(mat4x4 *out);

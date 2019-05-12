@@ -356,7 +356,7 @@ static int fn_love_graphics_draw(struct fh_program *prog,
     float ky = (float)fh_optnumber(args, n_args, 9, 0.0);
 
     if (o->type == FH_IMAGE_TYPE) {
-        fh_image_t *image = o->ptr;
+        fh_image_t *image = fh_get_c_obj_value(&args[0]);
         graphics_Image_draw(image->img, &defaultQuad, x, y, r, sx, sy, ox, oy, kx, ky);
     } else
         return fh_set_error(prog, "Expected image, batch, mesh or particle as argument 1");
