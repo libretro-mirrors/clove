@@ -365,6 +365,13 @@ static int fn_love_graphics_draw(struct fh_program *prog,
     return 0;
 }
 
+// Technically, it's love.window.getDPIScale
+static int fn_love_graphics_getDPIScale(struct fh_program *prog,
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+    *ret = fh_new_number( (double) graphics_getDPIScale());
+    return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_setBackgroundColor),
@@ -390,6 +397,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_getScissor),
     DEF_FN(love_graphics_translate),
     DEF_FN(love_graphics_getMaxAnisotropy),
+    DEF_FN(love_graphics_getDPIScale),
 };
 
 void fh_graphics_register(struct fh_program *prog) {
