@@ -564,3 +564,12 @@ void graphics_reset(void) {
     graphics_setColorMask(true, true, true, true);
     graphics_clearScissor();
 }
+
+double graphics_getDPIScale(){
+// TODO: Add ANDROID switch
+// return love::android::getScreenScale();
+
+  int pixelWidth, pixelHeight;
+  SDL_GL_GetDrawableSize(moduleData.window, &pixelWidth, &pixelHeight);
+  return (double) pixelHeight / (double) moduleData.height;
+}

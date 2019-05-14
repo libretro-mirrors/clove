@@ -346,6 +346,10 @@ static int l_graphics_reset(lua_State* state) {
 	return 0;
 }
 
+static int l_graphics_getDPIScale(lua_State* state) {
+	lua_pushnumber(state, graphics_getDPIScale());
+	return 1;
+}
 
 static luaL_Reg const regFuncs[] = {
 	{"setBackgroundColor", l_graphics_setBackgroundColor},
@@ -372,6 +376,7 @@ static luaL_Reg const regFuncs[] = {
 	{"getWidth",           l_graphics_getWidth},
 	{"getHeight",          l_graphics_getHeight},
 	{"reset",              l_graphics_reset},
+	{"getDPIScale",        l_graphics_getDPIScale},
 	{NULL, NULL}
 };
 
