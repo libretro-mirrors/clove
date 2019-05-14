@@ -85,7 +85,7 @@ static int fn_love_filesystem_exists(struct fh_program *prog,
 }
 
 static int fn_love_filesystem_setSource(struct fh_program *prog,
-                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+                                        struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0]))
         return fh_set_error(prog, "Illegal parameter, expected source:string");
     const char *source = fh_get_string(&args[0]);
@@ -124,7 +124,7 @@ static int fn_love_filesystem_rename(struct fh_program *prog,
 }
 
 static int fn_love_filesystem_state(struct fh_program *prog,
-                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0]))
         return fh_set_error(prog, "Illegal parameter, expected filename:string");
     const char *filename = fh_get_string(&args[0]);
@@ -148,15 +148,76 @@ static int fn_love_filesystem_state(struct fh_program *prog,
     return 0;
 }
 
-/*static int fn_love_filesystem_mkDir(struct fh_program *prog,
-                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+static int fn_love_filesystem_isSymLink(struct fh_program *prog,
+                                        struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0]))
+        return fh_set_error(prog, "Illegal parameter, expected filename:string");
+    const char *filename = fh_get_string(&args[0]);
+
+    *ret = fh_new_bool(filesystem_isSymLink(filename));
+    return 0;
+}
+
+static int fn_love_filesystem_mkDir(struct fh_program *prog,
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0]))
         return fh_set_error(prog, "Illegal parameter, expected name:string");
     const char *name = fh_get_string(&args[0]);
 
     *ret = fh_new_bool(filesystem_mkDir(name));
     return 0;
-}*/
+}
+
+static int fn_love_filesystem_isDir(struct fh_program *prog,
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0]))
+        return fh_set_error(prog, "Illegal parameter, expected name:string");
+    const char *name = fh_get_string(&args[0]);
+
+    *ret = fh_new_bool(filesystem_isDir(name));
+    return 0;
+}
+
+static int fn_love_filesystem_getUsrDir(struct fh_program *prog,
+                                        struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    *ret = fh_new_bool(filesystem_getUsrDir());
+    return 0;
+}
+
+static int fn_love_filesystem_setIdentity(struct fh_program *prog,
+                                          struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0]))
+        return fh_set_error(prog, "Illegal parameter, expected name:string");
+    const char *name = fh_get_string(&args[0]);
+
+    filesystem_setIdentity(name);
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_filesystem_enumerate(struct fh_program *prog,
+                                        struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0]))
+        return fh_set_error(prog, "Illegal parameter, expected name:string");
+    const char *path = fh_get_string(&args[0]);
+
+    char **rez = filesystem_enumerate(path);
+    if (rez == NULL)
+        return fh_set_error(prog, "Couldn't get files in directory %s, perhaps you didn't call setIdentity first?\n", path);
+    size_t rez_size = strlen(*rez);
+
+    struct fh_value arr = fh_new_array(prog);
+    fh_grow_array(prog, &arr, rez_size);
+
+    struct fh_array *arr_val = GET_VAL_ARRAY(&arr);
+    for (size_t i = 0; i < rez_size-1; i++) {
+        arr_val->items[i] = fh_new_string(prog, rez[i]);
+    }
+
+    *ret = arr;
+    return 0;
+}
 
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
@@ -170,7 +231,12 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_filesystem_remove),
     DEF_FN(love_filesystem_rename),
     DEF_FN(love_filesystem_state),
-    //DEF_FN(love_filesystem_mkDir),
+    DEF_FN(love_filesystem_isSymLink),
+    DEF_FN(love_filesystem_mkDir),
+    DEF_FN(love_filesystem_isDir),
+    DEF_FN(love_filesystem_getUsrDir),
+    DEF_FN(love_filesystem_setIdentity),
+    DEF_FN(love_filesystem_enumerate),
 };
 
 void fh_filesystem_register(struct fh_program *prog) {

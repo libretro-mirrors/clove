@@ -30,6 +30,7 @@ int filesystem_contain(const char* a, const char* b);
 bool filesystem_remove(const char* name);
 bool filesystem_rename(const char *old_name, const char *new_name);
 bool filesystem_state(const char* file, int mode);
+bool filesystem_isSymLink(const char* dir);
 bool filesystem_isDir(const char* dir);
 bool filesystem_mkDir(const char* path);
 const char* filesystem_getCurrentDirectory(void);

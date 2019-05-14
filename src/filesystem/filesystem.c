@@ -34,6 +34,12 @@ static struct {
      * determine the mouting point
      */
     const char* source;
+    /**
+     * @brief hasIdentitySet most physfs features do not work
+     * until you set the identity folder, we have to check for that
+     * before executing a function
+     */
+    bool hasIdentitySet;
 } moduleData;
 
 void filesystem_init(char* argv0, int stats) {
@@ -56,7 +62,7 @@ void filesystem_init(char* argv0, int stats) {
     if (!PHYSFS_init(argv0))
         clove_error(PHYSFS_getLastError());
 #endif
-
+    moduleData.hasIdentitySet = false;
 }
 
 void filesystem_free()
@@ -275,9 +281,7 @@ int filesystem_read(char const* filename, char** output) {
 #endif
 }
 
-/**
- *NOTE: this function has not been tested on Windows with USE_PHYSFS OFF
- */
+
 bool filesystem_mkDir(const char* path)
 {
 #ifdef USE_PHYSFS
@@ -308,13 +312,25 @@ bool filesystem_mkDir(const char* path)
 bool filesystem_isDir(const char* dir)
 {
 #ifdef USE_PHYSFS
-    return PHYSFS_isDirectory(dir) != 0;
+    return PHYSFS_isDirectory(dir);
 #else
 
     clove_error("isDir feature is supported by enabling physfs.");
     return false;
 #endif
 }
+
+bool filesystem_isSymLink(const char* name)
+{
+#ifdef USE_PHYSFS
+    return PHYSFS_isSymbolicLink(name) != 0;
+#else
+
+    clove_error("isDir feature is supported by enabling physfs.");
+    return false;
+#endif
+}
+
 
 void filesystem_setSource(const char* source)
 {
@@ -363,10 +379,10 @@ bool filesystem_setIdentity(const char* name)
         clove_error(PHYSFS_getLastError());
         return false;
     }
-
+    moduleData.hasIdentitySet = true;
     return true;
 #else
-    return false;
+    return true;
 #endif
 }
 
@@ -403,6 +419,8 @@ bool filesystem_unmount(const char* path)
 char** filesystem_enumerate(const char* path)
 {
 #ifdef USE_PHYSFS
+    if (!moduleData.hasIdentitySet)
+        return NULL;
     return PHYSFS_enumerateFiles(path);
 #else
     clove_error("enumerate feature is supported by enabling physfs.");

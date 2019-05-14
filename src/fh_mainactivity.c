@@ -56,12 +56,12 @@ static void focus_function(void) {
 }
 
 static void main_clean(void) {
-  joystick_close();
-  graphics_geometry_free();
-  graphics_destroyWindow();
-  filesystem_free();
-  fh_free_program(loopData.prog);
-  audio_close();
+    joystick_close();
+    graphics_geometry_free();
+    graphics_destroyWindow();
+    filesystem_free();
+    fh_free_program(loopData.prog);
+    audio_close();
 }
 
 static struct fh_value update_args[2];
