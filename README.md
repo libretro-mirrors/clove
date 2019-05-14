@@ -33,7 +33,7 @@ libaudio-dev libesd0-dev libpulse-dev libroar-dev
 
 
 For Web: 
-- Install emscripten(1.38.15 (commit 7a0e27441eda6cb0e3f1210e6837cae4b080ab4c)) and add it to your path.
+- Install emscripten(1.38.15, commit 7a0e27441eda6cb0e3f1210e6837cae4b080ab4c) and add it to your path.
 - Run ./build_web.sh .When it's done you will have "clove.bc" and other files. The .bc file is used 
 for linking with your C/C++ programs, the rest is used for Lua.
 - For testing you have the following options: 
@@ -74,10 +74,11 @@ Features
 Planned work
 ============
 1. The project can be cleaned a bit more
-1. Fix/Improve Threads module and Networking overall(plus support for Windows)
+1. Fix/Improve Threads module
+1. Networking module overall (plus support for Windows)
 1. Android
 
-Examples (see examples folder)
+Examples
 --------
 
 Lua:
@@ -108,6 +109,48 @@ local ogg_music = love.audio.newSource("music.ogg")
 function love.load()
 	ogg_music:play()
 end
+```
+
+FH:
+```php
+# Example of drawing an image
+function love_load() {
+	let self = {};
+	self.image = love.graphics.newImage("image.png");
+	
+	draw(self);
+
+	return self;
+}
+
+function love_draw(self) {
+	love_graphics_draw(self.image, 200, 200);
+}
+```
+
+FH:
+```php
+# Example of drawing some primitives
+function love_draw()
+	love_graphics_rectangle("fill", 100, 100, 32, 16);
+	love_graphics_rectangle("line", 200, 200, 32, 32);
+	love_graphics_circle("fill", 270, 200, 32, 16);
+	love_graphics_circle("line", 300, 100, 32, 8);
+end
+```
+
+FH:
+```php
+# Example of playing music
+local ogg_music = love.audio.newSource("music.ogg")
+function love_load() {
+	let self = {}
+
+	self.ogg_music = love.audio.newSource("music.ogg");
+	love_audio_play(self.ogg_music);	
+
+	return self;
+}
 ```
 
 
