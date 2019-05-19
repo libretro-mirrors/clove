@@ -1,0 +1,63 @@
+function love_joystick_pressed(j) {
+}
+
+function love_mousepressed(m) {
+}
+
+function love_mousereleased(m) {
+}
+
+function love_wheelmoved(y) {
+}
+
+function love_textinput(text) {
+}
+
+function love_keypressed(key) {
+}
+
+function love_keyreleased(key) {
+}
+
+function love_quit() {
+}
+
+function love_focus(focused) {
+}
+
+function setSpriteBatch(self) {
+    love_graphics_batch_clear(self.batch);
+    for (let i = 0; i < 2000; i = i + 1) {
+
+        love_graphics_batch_add(self.batch,
+                math_random(0, love_window_getWidth()),
+                math_random(0, love_window_getHeight()));
+    }
+    love_graphics_batch_flush(self.batch);
+}
+
+function love_load()  {
+    let self = {};
+
+    self.image = love_graphics_newImage("hey.png");
+    self.batch = love_graphics_newSpriteBatch(self.image, 2000);
+    setSpriteBatch(self);
+
+    love_draw(self);
+    love_update(1, self);
+    return self;
+}
+
+function love_update(dt, self) {
+
+    setSpriteBatch(self);
+}
+
+function love_draw(self) {
+    love_graphics_draw(self.batch);
+    love_graphics_print("" + love_timer_getFPS(), 10, 10);
+}
+
+function main() {
+
+}

@@ -251,11 +251,11 @@ int filesystem_read(char const* filename, char** output) {
     file = PHYSFS_openRead(filename);
     if (!file)
         return -1;
-    int size = PHYSFS_fileLength(file);
+    PHYSFS_sint64 size = PHYSFS_fileLength(file);
 
     *output = malloc(size + 1);
 
-    int len_read = PHYSFS_read(file, *output, 1, PHYSFS_fileLength(file));
+    /*int len_read = */PHYSFS_read(file, *output, 1, size);
     (*output)[size] = '\n';
 
     PHYSFS_close(file);
@@ -354,27 +354,23 @@ bool filesystem_setIdentity(const char* name)
 #ifdef USE_PHYSFS
     const char* save_dir = filesystem_getUsrDir();
 
-    if (! PHYSFS_setWriteDir(save_dir))
-    {
+    if (! PHYSFS_setWriteDir(save_dir)) {
         clove_error(PHYSFS_getLastError());
         return false;
     }
 
-    if (! filesystem_mkDir(name))
-    {
+    if (! filesystem_mkDir(name)) {
         PHYSFS_setWriteDir(NULL);
         clove_error(PHYSFS_getLastError());
         return false;
     }
 
-    if (! PHYSFS_setWriteDir(name))
-    {
+    if (! PHYSFS_setWriteDir(name)) {
         clove_error(PHYSFS_getLastError());
         return false;
     }
 
-    if (! PHYSFS_mount(name, NULL, 0))
-    {
+    if (! PHYSFS_mount(name, NULL, 0)) {
         PHYSFS_setWriteDir(NULL);
         clove_error(PHYSFS_getLastError());
         return false;
@@ -401,11 +397,8 @@ bool filesystem_unmount(const char* path)
 {
 #ifdef USE_PHYSFS
     const char* getMountPoint = PHYSFS_getMountPoint(path);
-    if (!getMountPoint)
-    {
-        clove_error("no mouting point for:");
-        clove_error(path);
-
+    if (!getMountPoint) {
+        clove_error("no mouting point for: %s\n", path);
         return false;
     }
     return PHYSFS_removeFromSearchPath(path) != 0;
