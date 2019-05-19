@@ -1,31 +1,31 @@
-function love_joystick_pressed(j) {
+fn love_joystick_pressed(j) {
 }
 
-function love_mousepressed(m) {
+fn love_mousepressed(m) {
 }
 
-function love_mousereleased(m) {
+fn love_mousereleased(m) {
 }
 
-function love_wheelmoved(y) {
+fn love_wheelmoved(y) {
 }
 
-function love_textinput(text) {
+fn love_textinput(text) {
 }
 
-function love_keypressed(key) {
+fn love_keypressed(key) {
 }
 
-function love_keyreleased(key) {
+fn love_keyreleased(key) {
 }
 
-function love_quit() {
+fn love_quit() {
 }
 
-function love_focus(focused) {
+fn love_focus(focused) {
 }
 
-function setSpriteBatch(self) {
+fn setSpriteBatch(self) {
     love_graphics_batch_clear(self.batch);
     for (let i = 0; i < 2000; i = i + 1) {
 
@@ -36,7 +36,7 @@ function setSpriteBatch(self) {
     love_graphics_batch_flush(self.batch);
 }
 
-function love_load()  {
+fn love_load()  {
     let self = {};
 
     self.image = love_graphics_newImage("hey.png");
@@ -48,16 +48,16 @@ function love_load()  {
     return self;
 }
 
-function love_update(dt, self) {
+fn love_update(dt, self) {
 
     setSpriteBatch(self);
 }
 
-function love_draw(self) {
+fn love_draw(self) {
     love_graphics_draw(self.batch);
     love_graphics_print("" + love_timer_getFPS(), 10, 10);
 }
 
-function main() {
+fn main() {
 
 }
