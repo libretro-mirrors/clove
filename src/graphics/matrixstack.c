@@ -103,3 +103,13 @@ void matrixstack_multiply(mat4x4 const* matrix) {
   m4x4_mulM4x4(matrixstack_head(), matrix, &m);
 }
 
+void matrixstack_shear_2d(float x, float y){
+  mat4x4 m, m2;
+  memcpy( &m, matrixstack_head(), sizeof(mat4x4));
+
+  m4x4_newIdentity( &m2 );
+  m2.m[0][1] = y;
+  m2.m[1][0] = x;
+
+  m4x4_mulM4x4(matrixstack_head(), &m, &m2);
+}
