@@ -573,3 +573,7 @@ double graphics_getDPIScale(){
   SDL_GL_GetDrawableSize(moduleData.window, &pixelWidth, &pixelHeight);
   return (double) pixelHeight / (double) moduleData.height;
 }
+
+void graphics_shear(float kx, float ky){
+  matrixstack_shear_2d( kx, ky );
+}
