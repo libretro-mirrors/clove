@@ -152,7 +152,14 @@ static int fn_love_graphics_origin(struct fh_program *prog,
 
 static int fn_love_graphics_shear(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
-    return fh_set_error(prog, "not implemented");
+    if (! (fh_is_number(&args[0]) && fh_is_number(&args[1])) )
+      return fh_set_error(prog, "Expected exactly 2 numbers as arguments\n");
+    
+    float kx = (float)fh_get_number(&args[0]);
+    float ky = (float)fh_get_number(&args[1]);
+
+    graphics_shear(kx, ky);
+    return 0;
 }
 
 static int fn_love_graphics_setColorMask(struct fh_program *prog,
