@@ -230,8 +230,18 @@ static int l_graphics_origin(lua_State* state) {
 }
 
 static int l_graphics_shear(lua_State* state) {
-	lua_pushstring(state, "not implemented");
-	lua_error(state);
+  float top = lua_getopt(state);
+  float x;
+  float y;
+  
+  if(top == 2){
+    x = l_tools_toNumberOrError(state, 1);
+    y = l_tools_toNumberOrError(state, 1);
+    graphics_shear( x, y );
+  }else {
+    luaL_error(state, "love.graphics.shear expects 2 params");
+  }
+
 	return 0;
 }
 
