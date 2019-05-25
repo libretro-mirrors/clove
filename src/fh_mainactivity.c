@@ -30,6 +30,7 @@
 #include "fhapi/filesystem.h"
 #include "fhapi/audio.h"
 #include "fhapi/graphics_batch.h"
+#include "fhapi/event.h"
 
 #include "include/geometry.h"
 
@@ -231,6 +232,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_filesystem_register(loopData.prog);
     fh_audio_register(loopData.prog);
     fh_graphics_batch_register(loopData.prog);
+    fh_event_register(loopData.prog);
 
     int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {
