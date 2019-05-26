@@ -37,8 +37,7 @@ static void feedIndices(int size) {
     }
 }
 
-static long readVertices(struct fh_program *prog, struct fh_value *args) {
-    struct fh_array *arr = GET_VAL_ARRAY(&args[0]);
+static long readVertices(struct fh_program *prog, struct fh_value *args, struct fh_array *arr) {
     feedVertices(arr->len * sizeof(graphics_Vertex));
 
     for (uint32_t i = 0; i < arr->len; i++) {
@@ -66,8 +65,7 @@ static long readVertices(struct fh_program *prog, struct fh_value *args) {
     return arr->len;
 }
 
-static long readIndices(struct fh_program *prog, struct fh_value *args) {
-    struct fh_array *arr = GET_VAL_ARRAY(&args[1]);
+static long readIndices(struct fh_program *prog, struct fh_value *args, struct fh_array *arr) {
     feedIndices(arr->len * sizeof(unsigned int));
     unsigned int *indices = moduleData.indices;
 
@@ -81,39 +79,92 @@ static long readIndices(struct fh_program *prog, struct fh_value *args) {
     return arr->len;
 }
 
-static void on_gc(graphics_Mesh *mesh) {
+static fh_c_obj_gc_callback on_gc(graphics_Mesh *mesh) {
     graphics_Mesh_free(mesh);
     free(mesh);
+    return (fh_c_obj_gc_callback)1;
 }
 
 static int fn_love_graphics_newMesh(struct fh_program *prog,
-                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_array(&args[0]) || !fh_is_array(&args[1]))
         return fh_set_error(prog, "Expected array of vertices and array of indices");
 
-    int vertexCount = readVertices(prog, args);
-    int indicesCount = GET_VAL_ARRAY(&args[1])->len;
+    struct fh_array *arrVertices = GET_VAL_ARRAY(&args[0]);
+    int vertexCount = readVertices(prog, args, arrVertices);
 
-    readIndices(prog, args);
+    struct fh_array *arrIndices = GET_VAL_ARRAY(&args[1]);
 
+    readIndices(prog, args, arrIndices);
+
+    const char *mode_str = fh_optstring(args, n_args, 2, "fan");
     graphics_MeshDrawMode mode = graphics_MeshDrawMode_fan;
-
+    if (strcmp(mode_str, "fan") == 0) {
+        mode = graphics_MeshDrawMode_fan;
+    } else if (strcmp(mode_str, "strip") == 0) {
+        mode = graphics_MeshDrawMode_strip;
+    } else if (strcmp(mode_str, "triangles") == 0) {
+        mode = graphics_MeshDrawMode_triangles;
+    } else if (strcmp(mode_str, "points") == 0) {
+        mode = graphics_MeshDrawMode_points;
+    } else {
+        return fh_set_error(prog, "Cannot handle mesh draw mode '%s'\n", mode_str);
+    }
     graphics_Mesh *mesh = malloc(sizeof(graphics_Mesh));
-    graphics_Mesh_new(mesh, vertexCount, (graphics_Vertex*)moduleData.vertices, indicesCount, moduleData.indices, mode);
-    fh_c_obj_gc_callback freeCallback = on_gc;
-    *ret = fh_new_c_obj(prog, mesh, freeCallback, FH_GRAPHICS_MESH);
+    graphics_Mesh_new(mesh, vertexCount, (graphics_Vertex*)moduleData.vertices, arrIndices->len, moduleData.indices, mode);
+    *ret = fh_new_c_obj(prog, mesh, on_gc, FH_GRAPHICS_MESH);
     return 0;
 }
 
 static int fn_love_mesh_setTexture(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_MESH) || !fh_is_c_obj_of_type(&args[1], FH_IMAGE_TYPE))
-        return fh_set_error(prog, "Expected mesh and image");
+    // We also enable the user to pass "null" as texture param which results in having a blank mesh
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_MESH))
+        return fh_set_error(prog, "Expected mesh");
+    if (!fh_is_c_obj_of_type(&args[1], FH_IMAGE_TYPE) && !fh_is_null(&args[1]))
+        return fh_set_error(prog, "Expected image or null");
 
     graphics_Mesh *mesh = fh_get_c_obj_value(&args[0]);
-    fh_image_t *image = fh_get_c_obj_value(&args[1]);
 
-    graphics_Mesh_setTexture(mesh, image->img);
+    if (!fh_is_null(&args[1])) {
+        fh_image_t *image = fh_get_c_obj_value(&args[1]);
+        graphics_Mesh_setTexture(mesh, image->img);
+    } else {
+        graphics_Mesh_setTexture(mesh, NULL);
+    }
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_mesh_setVertices(struct fh_program *prog,
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_MESH) || !fh_is_array(&args[1]))
+        return fh_set_error(prog, "Expected mesh and array of vertices");
+    UNUSED(n_args);
+
+    graphics_Mesh *mesh = fh_get_c_obj_value(&args[0]);
+    struct fh_array *arr = GET_VAL_ARRAY(&args[1]);
+    int vertexCount = readVertices(prog, args, arr);
+
+    graphics_Mesh_setVertices(mesh, moduleData.vertices, vertexCount);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_mesh_setIndices(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_MESH) || !fh_is_array(&args[1]))
+        return fh_set_error(prog, "Expected mesh and array of vertices");
+    UNUSED(n_args);
+
+    graphics_Mesh *mesh = fh_get_c_obj_value(&args[0]);
+    struct fh_array *arr = GET_VAL_ARRAY(&args[1]);
+
+    int indexCount = readIndices(prog, args, arr);
+
+    graphics_Mesh_setIndices(mesh, moduleData.indices, indexCount);
 
     *ret = fh_new_null();
     return 0;
@@ -122,6 +173,8 @@ static int fn_love_mesh_setTexture(struct fh_program *prog,
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_newMesh),
+    DEF_FN(love_mesh_setVertices),
+    DEF_FN(love_mesh_setIndices),
     DEF_FN(love_mesh_setTexture),
 };
 

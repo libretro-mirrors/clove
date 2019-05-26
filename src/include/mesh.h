@@ -42,6 +42,11 @@ typedef struct {
 	mat4x4 tr2d;
 	bool hasTexture;
 	graphics_Shader plainColorShader;
+        /**
+         * @brief dirty - when set to true it means the user has changed the default indices or vertices.
+         * Default set to 'false'
+         */
+        bool dirty;
 } graphics_Mesh;
 
 void graphics_Mesh_new(graphics_Mesh* mesh, int vertexCount, graphics_Vertex* vertices, int indexCount, unsigned int* indices, graphics_MeshDrawMode drawMode);

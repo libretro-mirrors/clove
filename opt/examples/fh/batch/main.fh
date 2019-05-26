@@ -39,7 +39,7 @@ fn setSpriteBatch(self) {
 fn love_load()  {
     let self = {};
 
-    self.image = love_graphics_newImage("hey.png");
+    self.image = love_graphics_newImage("../hey.png");
     self.batch = love_graphics_newSpriteBatch(self.image, 2000);
     setSpriteBatch(self);
 
