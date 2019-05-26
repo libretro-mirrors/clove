@@ -14,11 +14,13 @@
 
 #include "image.h"
 #include "graphics_batch.h"
+#include "graphics_mesh.h"
 
 #include "../include/graphics.h"
 #include "../include/matrixstack.h"
 #include "../include/shader.h"
 #include "../include/batch.h"
+#include "../include/mesh.h"
 
 static int fn_love_graphics_setBackgroundColor(struct fh_program *prog,
                                                struct fh_value *ret, struct fh_value *args, int n_args) {
@@ -35,6 +37,7 @@ static int fn_love_graphics_setBackgroundColor(struct fh_program *prog,
     float scale = 1.0f / 255.0f;
 
     graphics_setBackgroundColor((float)red * scale, (float)green * scale, (float) blue * scale, (float) alpha * scale);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -168,6 +171,7 @@ static int fn_love_graphics_shear(struct fh_program *prog,
     float ky = (float)fh_get_number(&args[1]);
 
     graphics_shear(kx, ky);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -382,6 +386,9 @@ static int fn_love_graphics_draw(struct fh_program *prog,
     } else if (o->type == FH_GRAPHICS_BATCH) {
         graphics_Batch *batch = fh_get_c_obj_value(&args[0]);
         graphics_Batch_draw(batch, x, y, r, sx, sy, ox, oy, kx, ky);
+    } else if (o->type == FH_GRAPHICS_MESH) {
+        graphics_Mesh *mesh = fh_get_c_obj_value(&args[0]);
+        graphics_Mesh_draw(mesh, x, y, r, sx, sy, ox, oy, kx, ky);
     } else
         return fh_set_error(prog, "Expected image, batch, mesh or particle as first argument");
 

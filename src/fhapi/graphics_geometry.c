@@ -10,7 +10,6 @@
 #include "graphics_geometry.h"
 #include "tools.h"
 
-#include "../3rdparty/FH/src/fh.h"
 #include "../3rdparty/FH/src/value.h"
 
 #include "../include/geometry.h"

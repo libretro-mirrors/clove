@@ -55,8 +55,8 @@ static int fn_love_image_getWidth(struct fh_program *prog,
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj_value(&args[0]);
-    *ret = fh_new_number(image_ImageData_getWidth(img));
+    fh_image_t *img = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number(image_ImageData_getWidth(img->data));
     return 0;
 }
 
@@ -65,9 +65,9 @@ static int fn_love_image_getHeight(struct fh_program *prog,
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj_value(&args[0]);
+    fh_image_t *img = fh_get_c_obj_value(&args[0]);
 
-    *ret = fh_new_number(image_ImageData_getHeight(img));
+    *ret = fh_new_number(image_ImageData_getHeight(img->data));
     return 0;
 }
 
@@ -94,9 +94,9 @@ static int fn_love_image_getPath(struct fh_program *prog,
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj_value(&args[0]);
+    fh_image_t *img = fh_get_c_obj_value(&args[0]);
 
-    *ret = fh_new_string(prog, image_ImageData_getPath(img));
+    *ret = fh_new_string(prog, image_ImageData_getPath(img->data));
     return 0;
 }
 
@@ -105,9 +105,9 @@ static int fn_love_image_getChannels(struct fh_program *prog,
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
-    image_ImageData *img = fh_get_c_obj_value(&args[0]);
+    fh_image_t *img = fh_get_c_obj_value(&args[0]);
 
-    *ret = fh_new_number(image_ImageData_getChannels(img));
+    *ret = fh_new_number(image_ImageData_getChannels(img->data));
     return 0;
 }
 
