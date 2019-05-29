@@ -32,6 +32,7 @@
 #include "fhapi/graphics_batch.h"
 #include "fhapi/event.h"
 #include "fhapi/graphics_mesh.h"
+#include "fhapi/graphics_quad.h"
 
 #include "include/geometry.h"
 
@@ -235,6 +236,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_graphics_batch_register(loopData.prog);
     fh_event_register(loopData.prog);
     fh_graphics_mesh_register(loopData.prog);
+    fh_graphics_quad_register(loopData.prog);
 
     int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {
