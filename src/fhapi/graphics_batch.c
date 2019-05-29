@@ -15,6 +15,7 @@
 #include "../include/batch.h"
 #include "../include/quad.h"
 
+#include "graphics_quad.h"
 #include "image.h"
 
 static fh_c_obj_gc_callback batch_gc(graphics_Batch *batch) {
@@ -89,16 +90,16 @@ static int fn_love_graphics_batch_add(struct fh_program *prog,
     graphics_Quad const *quad = &defaultQuad;
     int basedidx = 1;
 
-    /*if (fh_is_c_obj_of_type(&args[1], FH_GRAPHICS_QUAD)) {
+    if (fh_is_c_obj_of_type(&args[1], FH_GRAPHICS_QUAD)) {
         quad = fh_get_c_obj_value(&args[1]);
         basedidx = 2;
-    }*/
+    }
 
     float x = (float)fh_optnumber(args,  n_args, basedidx, 0.0);
     float y = (float)fh_optnumber(args,  n_args, basedidx + 1, 0.0);
     float r = (float)fh_optnumber(args,  n_args, basedidx + 2, 0.0);
     float sx = (float)fh_optnumber(args, n_args, basedidx + 3, 1.0);
-    float sy = (float)fh_optnumber(args, n_args, basedidx + 4, sx);
+    float sy = (float)fh_optnumber(args, n_args, basedidx + 4, 1.0);
     float ox = (float)fh_optnumber(args, n_args, basedidx + 5, 0.0);
     float oy = (float)fh_optnumber(args, n_args, basedidx + 6, 0.0);
     float kx = (float)fh_optnumber(args, n_args, basedidx + 7, 0.0);
