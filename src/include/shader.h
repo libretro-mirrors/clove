@@ -89,6 +89,7 @@ bool graphics_Shader_compileAndAttachShader(graphics_Shader *shader, GLenum shad
 graphics_ShaderUniformInfo const* graphics_Shader_getUniform(graphics_Shader const* shader, char const* name);
 graphics_ShaderUniformType graphics_shader_toLoveType(GLenum type);
 int graphics_shader_toLoveComponents(GLenum type);
+int graphics_getMaxTextureUnits();
 
 void graphics_Shader_sendIntegers(graphics_Shader *shader, graphics_ShaderUniformInfo const* info, int count, GLint const* numbers);
 void graphics_Shader_sendBooleans(graphics_Shader *shader, graphics_ShaderUniformInfo const* info, int count, GLint const* numbers);

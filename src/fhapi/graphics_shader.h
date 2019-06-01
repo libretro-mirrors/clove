@@ -16,7 +16,7 @@
 
 typedef struct {
   graphics_Shader shader;
-  int *referencedTextures;
+  int referencedTextures;
 } fh_graphics_Shader;
 
 void fh_graphics_shader_register(struct fh_program *prog);

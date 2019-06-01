@@ -21,7 +21,6 @@
 
 static fh_c_obj_gc_callback shader_gc(fh_graphics_Shader *shader) {
     graphics_Shader_free(&shader->shader);
-    free(shader->referencedTextures);
     free(shader);
     return (fh_c_obj_gc_callback) 1;
 }
@@ -135,7 +134,7 @@ static int fn_love_graphics_newShader(struct fh_program *prog,
     free(loadedFile2);
 
     int const textureUnits = shader->shader.textureUnitCount;
-    shader->referencedTextures = malloc(textureUnits * sizeof(int));
+    shader->referencedTextures = 0;
 
     *ret = fh_new_c_obj(prog, shader, shader_gc, FH_GRAPHICS_SHADER);
 
@@ -163,11 +162,242 @@ static int fn_love_graphics_setShader(struct fh_program *prog,
     return 0;
 }
 
+static char const vertexName[] = "vertex shader:\n";
+static char const fragmentName[] = "\npixel shader:\n";
+static char const programName[] = "\nprogram:\n";
+
+static char *pushShaderInfoLog(graphics_Shader const* shader) {
+    size_t len = strlen(shader->warnings.fragment)
+            + strlen(shader->warnings.vertex)
+            + strlen(shader->warnings.program)
+            + strlen(vertexName)
+            + strlen(fragmentName)
+            + strlen(programName);
+
+    char * fullLog = malloc(len + 1);
+    strcpy(fullLog, vertexName);
+    strcat(fullLog, shader->warnings.vertex);
+    strcat(fullLog, fragmentName);
+    strcat(fullLog, shader->warnings.fragment);
+    strcat(fullLog, programName);
+    strcat(fullLog, shader->warnings.program);
+    fullLog[len] = '\0';
+    return fullLog;
+}
+
+static int fn_love_graphics_getShaderWarnings(struct fh_program *prog,
+                                              struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER))
+        return fh_set_error(prog, "Expected shader");
+
+    fh_graphics_Shader const* shader = fh_get_c_obj_value(&args[0]);
+
+    char *warning = pushShaderInfoLog(&shader->shader);
+    *ret = fh_new_string(prog, warning);
+    free(warning);
+    return 0;
+}
+
+static int fn_love_shader_sendFloat(struct fh_program *prog,
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if (n_args != 3)
+        return fh_set_error(prog, "Expected 3 arguments, got '%d'", n_args);
+
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)
+            || !fh_is_string(&args[1])
+            || !fh_is_number(&args[2]))
+        return fh_set_error(prog, "Expected shader, 'extern' aka uniform name and a float");
+
+    fh_graphics_Shader *shader = fh_get_c_obj_value(&args[0]);
+    const char *name = fh_get_string(&args[1]);
+
+    graphics_ShaderUniformInfo info;
+    info.location = glGetUniformLocation(shader->shader.program, name);
+    if (info.location == -1) {
+        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+    }
+    info.type = GL_FLOAT;
+
+    float v = (float)args[2].data.num;
+    graphics_Shader_sendFloats(&shader->shader, &info, 1, (GLfloat*)&v);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_shader_sendBool(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if (n_args != 3)
+        return fh_set_error(prog, "Expected 3 arguments, got '%d'", n_args);
+
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)
+            || !fh_is_string(&args[1])
+            || !fh_is_bool(&args[2]))
+        return fh_set_error(prog, "Expected shader, extern' aka uniform name and a bool");
+
+    fh_graphics_Shader *shader = fh_get_c_obj_value(&args[0]);
+    const char *name = fh_get_string(&args[1]);
+
+    graphics_ShaderUniformInfo info;
+    info.location = glGetUniformLocation(shader->shader.program, name);
+    if (info.location == -1) {
+        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+    }
+    info.type = GL_BOOL;
+
+    int v = (int)args[2].data.b;
+    graphics_Shader_sendBooleans(&shader->shader, &info, 1, (GLint*)&v);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_shader_sendVector(struct fh_program *prog,
+                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if (n_args != 3)
+        return fh_set_error(prog, "Expected 3 arguments, got '%d'", n_args);
+
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)
+            || !fh_is_string(&args[1])
+            || !fh_is_array(&args[2]))
+        return fh_set_error(prog, "Expected shader, 'extern' aka uniform name and a vector");
+
+    fh_graphics_Shader *shader = fh_get_c_obj_value(&args[0]);
+    const char *name = fh_get_string(&args[1]);
+
+    graphics_ShaderUniformInfo info;
+
+    info.location = glGetUniformLocation(shader->shader.program, name);
+    if (info.location == -1) {
+        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+    }
+
+    struct fh_array *arr = GET_VAL_ARRAY(&args[2]);
+
+    if (arr->len == 2) {
+        info.type = GL_FLOAT_VEC2;
+    } else if (arr->len == 3) {
+        info.type = GL_FLOAT_VEC3;
+    } else if (arr->len == 4) {
+        info.type = GL_FLOAT_VEC4;
+    } else
+        return fh_set_error(prog, "Invalid array length!");
+
+    float *v = malloc(sizeof(float) * arr->len);
+    for (uint32_t i = 0; i < arr->len; i++) {
+        if (!fh_is_number(&arr->items[i]))
+            return fh_set_error(prog, "Expected float got '%s'", fh_type_to_str(prog, arr->items[i].type));
+        v[i] = (float)arr->items[i].data.num;
+    }
+    graphics_Shader_sendFloatVectors(&shader->shader, &info, 1, (GLfloat*)v);
+    free(v);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_shader_sendMatrice(struct fh_program *prog,
+                                      struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if (n_args != 3)
+        return fh_set_error(prog, "Expected 3 arguments, got '%d'", n_args);
+
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)
+            || !fh_is_string(&args[1])
+            || !fh_is_array(&args[2]))
+        return fh_set_error(prog, "Expected shader, 'extern' aka uniform name and a vector");
+
+    fh_graphics_Shader *shader = fh_get_c_obj_value(&args[0]);
+    const char *name = fh_get_string(&args[1]);
+
+    graphics_ShaderUniformInfo info;
+    info.location = glGetUniformLocation(shader->shader.program, name);
+    if (info.location == -1) {
+        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+    }
+    info.type = GL_FLOAT;
+
+    struct fh_array *arr = GET_VAL_ARRAY(&args[2]);
+
+    if (arr->len == 2) {
+        info.type = GL_FLOAT_MAT2;
+    } else if (arr->len == 3) {
+        info.type = GL_FLOAT_MAT3;
+    } else if (arr->len == 4) {
+        info.type = GL_FLOAT_MAT4;
+    } else
+        return fh_set_error(prog, "Invalid matrix length!");
+
+
+    float *v = malloc(sizeof(float) * arr->len);
+    for (uint32_t i = 0; i < arr->len; i++) {
+        if (!fh_is_number(&arr->items[i]))
+            return fh_set_error(prog, "Expected float got '%s'", fh_type_to_str(prog, arr->items[i].type));
+        v[i] = (float)arr->items[i].data.num;
+    }
+    graphics_Shader_sendFloatVectors(&shader->shader, &info, 1, (GLfloat*)v);
+    free(v);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_shader_sendTexture(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if (n_args != 3)
+        return fh_set_error(prog, "Expected 3 arguments, got '%d'", n_args);
+
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)
+            || !fh_is_string(&args[1])
+            || !fh_is_c_obj_of_type(&args[2], FH_IMAGE_TYPE))
+        return fh_set_error(prog, "Expected shader, extern name and a image");
+
+    fh_graphics_Shader *shader = fh_get_c_obj_value(&args[0]);
+    const char *name = fh_get_string(&args[1]);
+
+    fh_image_t *v = fh_get_c_obj_value(&args[2]);
+
+    graphics_ShaderUniformInfo info;
+    info.type = GL_SAMPLER_2D;
+
+    info.location = glGetUniformLocation(shader->shader.program, name);
+    if (info.location == -1) {
+        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+    }
+
+    if (shader->referencedTextures >= graphics_getMaxTextureUnits())
+        return fh_set_error(prog, "Reached maximum number, '%d' of textures per shader", graphics_getMaxTextureUnits());
+
+    shader->shader.textureUnits[shader->referencedTextures++].boundTexture = v->img->texID;
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_graphics_getMaxTextureUnits(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    UNUSED(args);
+    UNUSED(n_args);
+    *ret = fh_new_number(graphics_getMaxTextureUnits());
+    return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_newShader),
     DEF_FN(love_graphics_setShader),
     DEF_FN(love_graphics_getShader),
+    DEF_FN(love_graphics_getMaxTextureUnits),
+    DEF_FN(love_graphics_getShaderWarnings),
+    DEF_FN(love_shader_sendFloat),
+    DEF_FN(love_shader_sendBool),
+    DEF_FN(love_shader_sendVector),
+    DEF_FN(love_shader_sendMatrice),
+    DEF_FN(love_shader_sendTexture),
 };
 
 void fh_graphics_shader_register(struct fh_program *prog) {

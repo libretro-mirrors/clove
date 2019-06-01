@@ -17,10 +17,6 @@
 #include "../include/gl.h"
 
 static struct {
-    /*
-     * By default activeShader && defaultShader
-     * are set to 2d
-     */
     graphics_Shader *activeShader;
     graphics_Shader defaultShader;
     int maxTextureUnits;
@@ -70,6 +66,7 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
 
     char *info = malloc(infolen);
     glGetShaderInfoLog(shader, infolen, 0, info);
+    info[infolen] = 0;
     switch(shaderType) {
     case GL_VERTEX_SHADER:
         free(program->warnings.vertex);
@@ -93,16 +90,16 @@ bool graphics_Shader_compileAndAttachShader(graphics_Shader *shader, GLenum shad
     int footerlen = 0;
     switch(shaderType) {
     case GL_VERTEX_SHADER:
-        header = vertexHeader2d;
-        headerlen = sizeof(vertexHeader2d) - 1;
-        footer = vertexFooter2d;
-        footerlen = sizeof(vertexFooter2d) - 1;
+        header = vertexHeader;
+        headerlen = sizeof(vertexHeader) - 1;
+        footer = vertexFooter;
+        footerlen = sizeof(vertexFooter) - 1;
         break;
     case GL_FRAGMENT_SHADER:
-        header = fragmentHeader2d;
-        headerlen = sizeof(fragmentHeader2d) - 1;
-        footer = fragmentFooter2d;
-        footerlen = sizeof(fragmentFooter2d) - 1;
+        header = fragmentHeader;
+        headerlen = sizeof(fragmentHeader) - 1;
+        footer = fragmentFooter;
+        footerlen = sizeof(fragmentFooter) - 1;
         break;
     default:
         return false;
@@ -258,11 +255,11 @@ graphics_ShaderCompileStatus graphics_Shader_new(graphics_Shader *shader, char c
     *shader->warnings.vertex = *shader->warnings.fragment = *shader->warnings.program = 0;
 
     if(!vertexCode) {
-        vertexCode = defaultVertexSource2d;
+        vertexCode = defaultVertexSource;
     }
 
     if(!fragmentCode) {
-        fragmentCode = defaultFragmentSource2d;
+        fragmentCode = defaultFragmentSource;
     }
 
     shader->program = glCreateProgram();
@@ -324,6 +321,7 @@ void graphics_Shader_activate(mat4x4 const* projection, mat4x4 const* view, mat4
     for(int i = 0; i < moduleData.activeShader->textureUnitCount; ++i) {
         glActiveTexture(GL_TEXTURE0 + moduleData.activeShader->textureUnits[i].unit);
         glBindTexture(GL_TEXTURE_2D, moduleData.activeShader->textureUnits[i].boundTexture);
+        //printf("Count:%d Texture id:%d Unit:%d\n", moduleData.activeShader->textureUnitCount, moduleData.activeShader->textureUnits[i].boundTexture, moduleData.activeShader->textureUnits[i].unit);
     }
 }
 
@@ -349,6 +347,10 @@ void graphics_shader_init(void) {
     graphics_Shader_new(&moduleData.defaultShader, NULL, NULL);
     moduleData.activeShader = &moduleData.defaultShader;
     glGetIntegerv(GL_MAX_COMBINED_TEXTURE_IMAGE_UNITS, &moduleData.maxTextureUnits);
+}
+
+int graphics_getMaxTextureUnits() {
+    return moduleData.maxTextureUnits;
 }
 
 #define mkScalarSendFunc(name, type, glfunc) \
