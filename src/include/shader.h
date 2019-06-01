@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -55,12 +55,18 @@ typedef struct {
     graphics_ShaderTextureUnitInfo *textureUnits;
 
     struct {
-        char * fragment;
-        char * vertex;
-        char * program;
+        char *fragment;
+        char *vertex;
+        char *program;
     } warnings;
 
     GLuint program;
+    /**
+     * @brief customShader - set to 'true' when the user
+     * uses his own custom shader. Set back to 'false' when
+     * he uses the default provided shader by CLove.
+     */
+    bool customShader;
 } graphics_Shader;
 
 typedef enum {
@@ -71,14 +77,13 @@ typedef enum {
 } graphics_ShaderCompileStatus;
 
 graphics_ShaderCompileStatus graphics_Shader_new(graphics_Shader *shader, char const* vertexCode, char const* fragmentCode);
-graphics_ShaderCompileStatus graphics_Shader_new3d(graphics_Shader *shader, char const* vertexCode, char const* fragmentCode);
-void graphics_Shader_activate3d(mat4x4 const* projection, mat4x4 const* view, mat4x4 const* model, graphics_Quad const* textureRect, float const* useColor, float ws, float hs, float ds);
 void graphics_Shader_activate(mat4x4 const* projection, mat4x4 const* view, mat4x4 const* model, graphics_Quad const* textureRect, float const* useColor, float ws, float hs);
 graphics_Shader* graphics_getShader(void);
 void graphics_shader_init(void);
 void graphics_Shader_free(graphics_Shader* shader);
 void graphics_setDefaultShader(void);
 void graphics_setShader(graphics_Shader* shader);
+bool graphics_Shader_hasCustomShader(graphics_Shader *shader);
 bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *shader, GLenum shaderType, char const* code);
 bool graphics_Shader_compileAndAttachShader(graphics_Shader *shader, GLenum shaderType, char const* code);
 graphics_ShaderUniformInfo const* graphics_Shader_getUniform(graphics_Shader const* shader, char const* name);

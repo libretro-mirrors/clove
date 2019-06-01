@@ -283,8 +283,8 @@ static void prepareBatches(graphics_Font* font, int chars) {
 void graphics_Font_render(graphics_Font* font, char const* text, int px, int py, float r, float sx, float sy, float ox, float oy, float kx, float ky) {
     prepareBatches(font, strlen(text));
     uint32_t cp;
-    graphics_Shader* shader = graphics_getShader();
-    graphics_setDefaultShader();
+    //graphics_Shader* shader = graphics_getShader();
+    //graphics_setDefaultShader();
     int x = 0;
     int y = font->ascent;
     while((cp = utf8_scan(&text))) {
@@ -307,7 +307,7 @@ void graphics_Font_render(graphics_Font* font, char const* text, int px, int py,
         graphics_Batch_draw(&moduleData.batches[i], px, py, r, sx, sy, ox, oy, kx, ky);
     }
 
-    graphics_setShader(shader);
+    //graphics_setShader(shader);
 }
 
 

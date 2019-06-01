@@ -96,13 +96,15 @@ void graphics_Mesh_draw(graphics_Mesh* mesh, float x, float y, float r, float sx
          * Set the default shader in case you previously
          * did not have a texture put
          */
-        graphics_setShader(shader);
+        //graphics_setShader(shader);
         //glEnable(GL_TEXTURE_2D); Deprecated in GLES 2
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, mesh->image->texID);
     }
-    else
-        graphics_setShader(&mesh->plainColorShader);
+    else {
+        if (!graphics_Shader_hasCustomShader(shader))
+            graphics_setShader(&mesh->plainColorShader);
+    }
 
     glBufferData(GL_ARRAY_BUFFER, sizeof(graphics_Vertex) * mesh->vertexCount, mesh->vertices, mesh->dirty ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 

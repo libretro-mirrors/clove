@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -9,7 +9,7 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
+#include <stdio.h>
 
 #include "../3rdparty/slre/slre.h"
 
@@ -33,7 +33,6 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
 
     glAttachShader(program->program, shader);
 
-
     GLint compileStatus;
 
     glGetShaderiv(shader,GL_COMPILE_STATUS,&compileStatus);
@@ -41,14 +40,13 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
     {
         GLint info;
         glGetShaderiv(shader,GL_INFO_LOG_LENGTH,&info);
-        GLchar* buffer = malloc(sizeof(info));
+        GLchar buffer[1024];
 
         int bufferSize;
-        glGetShaderInfoLog(shader, info,&bufferSize,buffer);
+        glGetShaderInfoLog(shader, info, &bufferSize, buffer);
 
         clove_error("%s %s \n","vertex shader compile error " , buffer);
-        free (buffer);
-
+        return false;
     }
 
     glGetShaderiv(shader,GL_COMPILE_STATUS,&compileStatus);
@@ -56,14 +54,13 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
     {
         GLint info;
         glGetShaderiv(shader,GL_INFO_LOG_LENGTH,&info);
-        GLchar* buffer = malloc(sizeof(info));
+        GLchar buffer[1024];
 
         int bufferSize;
-        glGetShaderInfoLog(shader, info,&bufferSize,buffer);
+        glGetShaderInfoLog(shader, info, &bufferSize, buffer);
 
         clove_error("%s %s \n","fragment shader compile error " , buffer);
-
-        free (buffer);
+        return false;
     }
 
     int state;
@@ -96,19 +93,19 @@ bool graphics_Shader_compileAndAttachShader(graphics_Shader *shader, GLenum shad
     int footerlen = 0;
     switch(shaderType) {
     case GL_VERTEX_SHADER:
-            header = vertexHeader2d;
-            headerlen = sizeof(vertexHeader2d) - 1;
-            footer = vertexFooter2d;
-            footerlen = sizeof(vertexFooter2d) - 1;
-            break;
+        header = vertexHeader2d;
+        headerlen = sizeof(vertexHeader2d) - 1;
+        footer = vertexFooter2d;
+        footerlen = sizeof(vertexFooter2d) - 1;
+        break;
     case GL_FRAGMENT_SHADER:
-            header = fragmentHeader2d;
-            headerlen = sizeof(fragmentHeader2d) - 1;
-            footer = fragmentFooter2d;
-            footerlen = sizeof(fragmentFooter2d) - 1;
-            break;
-	default:
-			return false;
+        header = fragmentHeader2d;
+        headerlen = sizeof(fragmentHeader2d) - 1;
+        footer = fragmentFooter2d;
+        footerlen = sizeof(fragmentFooter2d) - 1;
+        break;
+    default:
+        return false;
     }
     int codelen = strlen(code);
     GLchar *combinedCode = malloc(headerlen + footerlen + codelen + 1);
@@ -191,8 +188,8 @@ graphics_ShaderUniformType graphics_shader_toLoveType(GLenum type) {
 
 static void readShaderUniforms(graphics_Shader *shader) {
     shader->uniformLocations.projection  = glGetUniformLocation(shader->program, "projection");
-    shader->uniformLocations.view  = glGetUniformLocation(shader->program, "view");
-    shader->uniformLocations.model  = glGetUniformLocation(shader->program, "model");
+    shader->uniformLocations.view        = glGetUniformLocation(shader->program, "view");
+    shader->uniformLocations.model       = glGetUniformLocation(shader->program, "model");
     shader->uniformLocations.textureRect = glGetUniformLocation(shader->program, "textureRect");
     shader->uniformLocations.tex         = glGetUniformLocation(shader->program, DEFAULT_SAMPLER);
     shader->uniformLocations.color       = glGetUniformLocation(shader->program, "color");
@@ -297,6 +294,8 @@ graphics_ShaderCompileStatus graphics_Shader_new(graphics_Shader *shader, char c
 
     allocateTextureUnits(shader);
 
+    shader->customShader = false;
+
     return graphics_ShaderCompileStatus_okay;
 }
 
@@ -328,12 +327,18 @@ void graphics_Shader_activate(mat4x4 const* projection, mat4x4 const* view, mat4
     }
 }
 
+bool graphics_Shader_hasCustomShader(graphics_Shader *shader) {
+    return shader->customShader;
+}
+
 void graphics_setDefaultShader(void) {
     moduleData.activeShader = &moduleData.defaultShader;
+    moduleData.activeShader->customShader = false;
 }
 
 void graphics_setShader(graphics_Shader* shader) {
     moduleData.activeShader = shader;
+    moduleData.activeShader->customShader = true;
 }
 
 graphics_Shader* graphics_getShader(void) {
