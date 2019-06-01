@@ -366,7 +366,8 @@ static int fn_love_graphics_draw(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
 
     if (!fh_is_c_obj(&args[0]))
-        return fh_set_error(prog, "Expected image, batch, mesh or particle");
+        return fh_set_error(prog, "Expected image, batch, mesh or particle as first argument, got '%s'",
+                            fh_type_to_str(prog, args[0].type));
 
     struct fh_c_obj *o = fh_get_c_obj(&args[0]);
 
@@ -390,7 +391,8 @@ static int fn_love_graphics_draw(struct fh_program *prog,
         graphics_Mesh *mesh = fh_get_c_obj_value(&args[0]);
         graphics_Mesh_draw(mesh, x, y, r, sx, sy, ox, oy, kx, ky);
     } else
-        return fh_set_error(prog, "Expected image, batch, mesh or particle as first argument");
+        return fh_set_error(prog, "Expected image, batch, mesh or particle as first argument, got '%s'",
+                            fh_type_to_str(prog, args[0].type));
 
     *ret = fh_new_null();
     return 0;
@@ -398,6 +400,9 @@ static int fn_love_graphics_draw(struct fh_program *prog,
 
 static int fn_love_graphics_getDPIScale(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    UNUSED(args);
+    UNUSED(n_args);
     *ret = fh_new_number( (double) graphics_getDPIScale());
     return 0;
 }
