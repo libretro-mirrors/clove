@@ -250,9 +250,8 @@ void graphics_ParticleSystem_clone(graphics_ParticleSystem const* ps, graphics_P
     graphics_ParticleSystem_setDirection(psNew, ps->direction);
     graphics_ParticleSystem_setSpread(psNew, ps->spread);
     graphics_ParticleSystem_setSpeed(psNew, ps->speedMin, ps->speedMax);
-    graphics_ParticleSystem_setLinearAcceleration(
-                psNew,
-                ps->linearAccelerationMin[0], ps->linearAccelerationMin[1],
+    graphics_ParticleSystem_setLinearAcceleration(psNew,
+            ps->linearAccelerationMin[0], ps->linearAccelerationMin[1],
             ps->linearAccelerationMax[0], ps->linearAccelerationMax[1]);
     graphics_ParticleSystem_setRadialAcceleration(psNew, ps->radialAccelerationMin, ps->radialAccelerationMax);
     graphics_ParticleSystem_setTangentialAcceleration(psNew, ps->tangentialAccelerationMin, ps->tangentialAccelerationMax);

@@ -47,7 +47,7 @@ static int fn_love_graphics_newQuad(struct fh_program *prog,
 
 static int fn_love_graphics_getViewport(struct fh_program *prog,
                                     struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_QUAD)) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_QUAD)) {
         return fh_set_error(prog, "Expected quad object as first argument!");
     }
 
@@ -73,7 +73,7 @@ static int fn_love_graphics_setViewport(struct fh_program *prog,
     if (n_args != 5)
         return fh_set_error(prog, "Expected 5 arguemnts!");
 
-    if (fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_QUAD)) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_QUAD)) {
         return fh_set_error(prog, "Expected quad object as first argument!");
     }
 
