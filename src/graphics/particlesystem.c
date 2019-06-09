@@ -14,6 +14,9 @@
 #include "../include/minmax.h"
 #include "../include/lerp.h"
 
+#include <string.h>
+#include <math.h>
+
 static const graphics_Color defaultColor = {1.0f, 1.0f, 1.0f, 1.0f};
 static const graphics_Quad defaultQuad = {0.0f, 0.0f, 1.0f, 1.0f};
 static const graphics_Quad *defaultQuadPtr = &defaultQuad;
