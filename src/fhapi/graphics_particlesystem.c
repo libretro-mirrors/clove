@@ -228,6 +228,161 @@ static int fn_love_particleSystem_getColors(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_particleSystem_getCount(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getCount(p));
+
+	return 0;
+}
+
+static int fn_love_particleSystem_setDirection(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+	float dir = (float) fh_get_number(&args[1]);
+
+	graphics_ParticleSystem_setDirection(p, dir);
+	*ret = fh_new_null();
+	return 0;
+}
+
+static int fn_love_particleSystem_setEmissionRate(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+	float v = (float) fh_get_number(&args[1]);
+
+	graphics_ParticleSystem_setEmissionRate(p, v);
+	*ret = fh_new_null();
+	return 0;
+}
+
+static int fn_love_particleSystem_setEmitterLifetime(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+	float v = (float) fh_get_number(&args[1]);
+
+	graphics_ParticleSystem_setEmitterLifetime(p, v);
+	*ret = fh_new_null();
+	return 0;
+}
+
+static int fn_love_particleSystem_setSizeVariation(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+	float v = (float) fh_get_number(&args[1]);
+
+	graphics_ParticleSystem_setSizeVariation(p, v);
+	*ret = fh_new_null();
+	return 0;
+}
+
+static int fn_love_particleSystem_setSpinVariation(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+	float v = (float) fh_get_number(&args[1]);
+
+	graphics_ParticleSystem_setSpinVariation(p, v);
+	*ret = fh_new_null();
+	return 0;
+}
+
+static int fn_love_particleSystem_setSpread(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+	float v = (float) fh_get_number(&args[1]);
+
+	graphics_ParticleSystem_setSpread(p, v);
+	*ret = fh_new_null();
+	return 0;
+}
+
+static int fn_love_particleSystem_getDirection(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getDirection(p));
+
+	return 0;
+}
+
+static int fn_love_particleSystem_getEmissionRate(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getEmissionRate(p));
+
+	return 0;
+}
+
+static int fn_love_particleSystem_getEmitterLifetime(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getEmitterLifetime(p));
+
+	return 0;
+}
+
+static int fn_love_particleSystem_getSizeVariation(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getSizeVariation(p));
+
+	return 0;
+}
+
+static int fn_love_particleSystem_getSpinVariation(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getSpinVariation(p));
+
+	return 0;
+}
+
+static int fn_love_particleSystem_getSpread(struct fh_program *prog,
+                                            struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
+        return fh_set_error(prog, "Expected particle");
+
+    graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
+    *ret = fh_new_number((double)graphics_ParticleSystem_getSpread(p));
+
+	return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_newParticleSystem),
@@ -240,6 +395,17 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_particleSystem_getAreaSpread),
     DEF_FN(love_particleSystem_setColors),
     DEF_FN(love_particleSystem_getColors),
+    DEF_FN(love_particleSystem_getCount),
+	DEF_FN(love_particleSystem_setDirection),
+	DEF_FN(love_particleSystem_setEmitterLifetime),
+	DEF_FN(love_particleSystem_setSizeVariation),
+	DEF_FN(love_particleSystem_setSpinVariation),
+	DEF_FN(love_particleSystem_setSpread),
+	DEF_FN(love_particleSystem_getDirection),
+	DEF_FN(love_particleSystem_getEmissionRate),
+	DEF_FN(love_particleSystem_getEmitterLifetime),
+	DEF_FN(love_particleSystem_getSizeVariation),
+	DEF_FN(love_particleSystem_getSpinVariation),
 };
 
 void fh_graphics_particlesystem_register(struct fh_program *prog) {

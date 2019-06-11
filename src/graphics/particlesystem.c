@@ -666,7 +666,7 @@ void graphics_ParticleSystem_draw(graphics_ParticleSystem *ps, float x, float y,
     //printf("Drawing particle system, %zu particles\n", ps->activeParticles);
 
     graphics_Batch *b = &ps->batch;
-    //graphics_Batch_bind(b);
+    graphics_Batch_bind(b);
     graphics_Batch_clear(b);
     for(graphics_Particle *p = ps->pHead; p; p = p->next) {
         graphics_Quad const* q = ps->quads[p->quadIndex];
