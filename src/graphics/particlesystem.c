@@ -495,7 +495,6 @@ void graphics_ParticleSystem_setRelativeRotation(graphics_ParticleSystem *ps, bo
     ps->relativeRotation = enable;
 }
 
-
 bool graphics_ParticleSystem_hasRelativeRotation(graphics_ParticleSystem const *ps) {
     return ps->relativeRotation;
 }

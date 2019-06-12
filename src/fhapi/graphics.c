@@ -15,12 +15,14 @@
 #include "image.h"
 #include "graphics_batch.h"
 #include "graphics_mesh.h"
+#include "graphics_particlesystem.h"
 
 #include "../include/graphics.h"
 #include "../include/matrixstack.h"
 #include "../include/shader.h"
 #include "../include/batch.h"
 #include "../include/mesh.h"
+#include "../include/particlesystem.h"
 
 static int fn_love_graphics_setBackgroundColor(struct fh_program *prog,
                                                struct fh_value *ret, struct fh_value *args, int n_args) {
@@ -165,7 +167,7 @@ static int fn_love_graphics_origin(struct fh_program *prog,
 static int fn_love_graphics_shear(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     if (! (fh_is_number(&args[0]) && fh_is_number(&args[1])) )
-      return fh_set_error(prog, "Expected exactly 2 numbers as arguments\n");
+        return fh_set_error(prog, "Expected exactly 2 numbers as arguments\n");
     
     float kx = (float)fh_get_number(&args[0]);
     float ky = (float)fh_get_number(&args[1]);
@@ -346,7 +348,7 @@ static int fn_love_graphics_getScissor(struct fh_program *prog,
 }
 
 static int fn_love_graphics_getMaxAnisotropy(struct fh_program *prog,
-                                 struct fh_value *ret, struct fh_value *args, int n_args) {
+                                             struct fh_value *ret, struct fh_value *args, int n_args) {
     UNUSED(args);
     if (n_args != 0)
         return fh_set_error(prog, "Unexpected argument");
@@ -390,7 +392,10 @@ static int fn_love_graphics_draw(struct fh_program *prog,
     } else if (o->type == FH_GRAPHICS_MESH) {
         graphics_Mesh *mesh = fh_get_c_obj_value(&args[0]);
         graphics_Mesh_draw(mesh, x, y, r, sx, sy, ox, oy, kx, ky);
-    } else
+    } else if (o->type == FH_GRAPHICS_PARTICLE) {
+        graphics_ParticleSystem *particle = fh_get_c_obj_value(&args[0]);
+        graphics_ParticleSystem_draw(particle, x, y, r, sx, sy, ox, oy, kx, ky);
+    }  else
         return fh_set_error(prog, "Expected image, batch, mesh or particle as first argument, got '%s'",
                             fh_type_to_str(prog, args[0].type));
 
@@ -399,7 +404,7 @@ static int fn_love_graphics_draw(struct fh_program *prog,
 }
 
 static int fn_love_graphics_getDPIScale(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                        struct fh_value *ret, struct fh_value *args, int n_args) {
     UNUSED(prog);
     UNUSED(args);
     UNUSED(n_args);
