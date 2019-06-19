@@ -48,6 +48,7 @@ int fn_love_timer_sleep(struct fh_program *prog, struct fh_value *ret, struct fh
         return fh_set_error(prog,"Expected number, got: %s\n", fh_type_to_str(prog, args[0].type));
     }
     timer_sleep((short)fh_get_number(&args[0]));
+    *ret = fh_new_null();
     return 1;
 }
 

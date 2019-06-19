@@ -104,6 +104,7 @@ int fn_love_keyboard_setTextInput(struct fh_program *prog, struct fh_value *ret,
     } else {
         keyboard_stopText();
     }
+    *ret = fh_new_null();
     return 0;
 }
 

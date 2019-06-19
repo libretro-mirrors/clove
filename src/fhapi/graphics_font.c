@@ -28,9 +28,10 @@ static struct {
     bool isBitmapFont;
 } moduleData;
 
-static void gcFont(graphics_Font *font) {
+static fh_c_obj_gc_callback gcFont(graphics_Font *font) {
     graphics_Font_free(font);
     free(font);
+    return (fh_c_obj_gc_callback)1;
 }
 
 static int fn_love_graphics_newFont(struct fh_program *prog,
@@ -57,8 +58,7 @@ static int fn_love_graphics_newFont(struct fh_program *prog,
     if (err != 0)
         return fh_set_error(prog, "Error loading font");
 
-    fh_c_obj_gc_callback freeCallback = gcFont;
-    *ret = fh_new_c_obj(prog, font, freeCallback, FH_FONT_TYPE);
+    *ret = fh_new_c_obj(prog, font, gcFont, FH_FONT_TYPE);
     return 0;
 }
 
@@ -77,8 +77,12 @@ static int fn_love_graphics_setFont(struct fh_program *prog,
     } else if (fh_is_c_obj_of_type(&args[0], FH_BITMAP_FONT_TYPE)) {
         moduleData.isBitmapFont = true;
         moduleData.currentBitmapFont = fh_get_c_obj_value(&args[0]);
+    } else if (fh_is_number(&args[0])) {
+        moduleData.isBitmapFont = false;
+        graphics_Font_new(&moduleData.defaultFont, NULL, (int)fh_get_number(&args[0]));
+        moduleData.currentFont = &moduleData.defaultFont;
     } else {
-        return fh_set_error(prog, "Expected font or image font");
+        return fh_set_error(prog, "Expected font, number or image font");
     }
 
     *ret = fh_new_null();

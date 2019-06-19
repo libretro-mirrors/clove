@@ -72,6 +72,7 @@ static int fn_love_graphics_setColor(struct fh_program *prog,
     float scale = 1.0f / 255.0f;
 
     graphics_setColor((float)red * scale, (float)green * scale, (float)blue * scale, (float)alpha * scale);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -343,7 +344,6 @@ static int fn_love_graphics_getScissor(struct fh_program *prog,
     arr->items[3] = fh_new_number(h);
 
     *ret = array;
-
     return 0;
 }
 

@@ -252,10 +252,14 @@ void fh_main_activity_load(int argc, char* argv[]) {
     loopData.delta = fh_new_number(1);
     loopData.focus = fh_new_bool(false);
 
-    loopData.opt = fh_new_map(loopData.prog);
+    int pinned = fh_get_pin_state(loopData.prog);
+    loopData.opt = fh_new_map_pinned(loopData.prog);
 
     if (fh_call_function(loopData.prog, "love_load", NULL, 0, &loopData.opt) < 0) {
-        clove_error("Errro: %s\n", fh_get_error(loopData.prog));
+        clove_error("Error: %s\n", fh_get_error(loopData.prog));
+        fh_running = false;
+        main_clean();
+        return;
     }
 
 #ifdef CLOVE_WEB
@@ -265,6 +269,8 @@ void fh_main_activity_load(int argc, char* argv[]) {
         fh_main_loop();
     }
 #endif
+
+    fh_restore_pin_state(loopData.prog, pinned);
 
     /*
      * The logic:

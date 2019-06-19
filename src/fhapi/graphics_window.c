@@ -84,6 +84,7 @@ int fn_love_window_setTitle(struct fh_program *prog, struct fh_value *ret, struc
 
     const char *title = fh_get_string(&args[0]);
     graphics_setTitle(title);
+    *ret = fh_new_null();
     return  0;
 }
 
@@ -91,6 +92,7 @@ int fn_love_window_setVsync(struct fh_program *prog, struct fh_value *ret, struc
     if (n_args != 1 || !fh_is_bool(&args[0]))
         return fh_set_error(prog, "Expected boolean");
     graphics_setVsync(&args[0]);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -109,6 +111,7 @@ int fn_love_window_setFullscreen(struct fh_program *prog, struct fh_value *ret, 
     const char *mode = fh_get_string(&args[1]);
 
     graphics_setFullscreen(fullscreen, mode);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -130,6 +133,7 @@ int fn_love_window_setPosition(struct fh_program *prog, struct fh_value *ret, st
     int y = (int)fh_get_number(&args[1]);
 
     graphics_setPosition(x, y);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -172,6 +176,7 @@ int fn_love_window_setMode(struct fh_program *prog, struct fh_value *ret, struct
     double y = fh_optnumber(&args, n_args, 10, -1);
 
     graphics_setMode(w, h, fullscreen, vsync, m_s_x, m_s_y, ma_s_x, ma_s_y, border, x, y);
+    *ret = fh_new_null();
     return 0;
 }
 

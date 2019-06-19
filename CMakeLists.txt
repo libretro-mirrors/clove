@@ -51,7 +51,7 @@ IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
 SET(OPENAL_LIBRARY "openal")
 set(CMAKE_C_FLAGS " -std=gnu99 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} -fPIC -DLINUX -ldl")
-set(CMAKE_C_FLAGS_DEBUG "  -std=c99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__ -g3")
+set(CMAKE_C_FLAGS_DEBUG "  -std=c99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE " -std=c99 ${CMAKE_C_FLAGS_RELEASE} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__Debug__")
@@ -162,6 +162,8 @@ if (USE_FH)
         src/3rdparty/FH/src/map/*.h
         src/3rdparty/FH/src/vec/*.c
         src/3rdparty/FH/src/vec/*.h
+        src/3rdparty/FH/src/regex/*.c
+        src/3rdparty/FH/src/regex/*.h
         )
 endif()
 

@@ -15,15 +15,17 @@
 #include "../include/staticsource.h"
 #include "../include/streamsource.h"
 
-static void gcStaticSource(audio_StaticSource *source) {
+static fh_c_obj_gc_callback gcStaticSource(audio_StaticSource *source) {
     audio_SourceCommon_free(&source->common);
     free(source);
+    return (fh_c_obj_gc_callback)1;
 }
 
 
-static void gcStreamSource(audio_StreamSource *source) {
+static fh_c_obj_gc_callback gcStreamSource(audio_StreamSource *source) {
     audio_StreamSource_free(source);
     free(source);
+    return (fh_c_obj_gc_callback)1;
 }
 
 static int fn_love_audio_newSource(struct fh_program *prog,
@@ -37,17 +39,17 @@ static int fn_love_audio_newSource(struct fh_program *prog,
     audio_StaticSource *staticSource = NULL;
     audio_StreamSource *streamSource = NULL;
     if (strcmp(type, "static") == 0) {
-        fh_c_obj_gc_callback *callback = gcStaticSource;
+        //fh_c_obj_gc_callback *callback = gcStaticSource;
 
         staticSource = malloc(sizeof(audio_StaticSource));
         err = audio_loadStatic(staticSource, filename);
-        *ret = fh_new_c_obj(prog, staticSource, callback, FH_AUDIO_STATIC_SOURCE_TYPE);
+        *ret = fh_new_c_obj(prog, staticSource, gcStaticSource, FH_AUDIO_STATIC_SOURCE_TYPE);
     } else if (strcmp(type, "stream") == 0) {
-        fh_c_obj_gc_callback *callback = gcStreamSource;
+        //fh_c_obj_gc_callback *callback = gcStreamSource;
 
         streamSource = malloc(sizeof(audio_StreamSource));
         err = audio_loadStream(streamSource, filename);
-        *ret = fh_new_c_obj(prog, streamSource, callback, FH_AUDIO_STREAM_SOURCE_TYPE);
+        *ret = fh_new_c_obj(prog, streamSource, gcStreamSource, FH_AUDIO_STREAM_SOURCE_TYPE);
     }
     if (err == -1) {
         if (staticSource)

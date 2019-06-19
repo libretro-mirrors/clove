@@ -12,12 +12,13 @@
 
 #include "../3rdparty/FH/src/value.h"
 
-static void onFreeCallback(fh_image_t *data) {
+static fh_c_obj_gc_callback onFreeCallback(fh_image_t *data) {
     graphics_Image_free(data->img);
     image_ImageData_free(data->data);
     free(data->data);
     free(data->img);
     free(data);
+    return (fh_c_obj_gc_callback)1;
 }
 
 static int fn_love_graphics_newImage(struct fh_program *prog,
@@ -120,7 +121,7 @@ static int fn_love_image_refresh(struct fh_program *prog,
     fh_image_t *imgd = fh_get_c_obj_value(&args[1]);
 
     graphics_Image_refresh(img->img, imgd->data);
-
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -181,6 +182,7 @@ static int fn_love_image_setWrap(struct fh_program *prog,
 
     graphics_Image_setWrap(img->img, &wrap);
 
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -251,6 +253,7 @@ static int fn_love_image_setFilter(struct fh_program *prog,
 
     graphics_Image_setFilter(img->img, &newFilter);
 
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -286,6 +289,7 @@ static int fn_love_image_setMipmapFilter(struct fh_program *prog,
 
     graphics_Image_setFilter(img->img, &newFilter);
 
+    *ret = fh_new_null();
     return 0;
 }
 

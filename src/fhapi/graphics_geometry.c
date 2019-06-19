@@ -40,7 +40,7 @@ static int fn_love_geometry_circle(struct fh_program *prog,
     else {
         return fh_set_error(prog, "Expected 'line' or 'fill' as input type!\n");
     }
-
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -70,7 +70,7 @@ static int fn_love_geometry_rectangle(struct fh_program *prog,
     else {
         return clove_error("Expected 'line' or 'fill' as input type!");
     }
-
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -85,6 +85,7 @@ static int fn_love_geometry_points(struct fh_program *prog,
     double y = fh_get_number(&args[1]);
 
     graphics_geometry_points(x, y);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -119,6 +120,7 @@ static int fn_love_geometry_vertex(struct fh_program *prog,
         return fh_set_error(prog, "Expected 'fill' or 'line' for the first argument");
     }
     free(vertices);
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -127,6 +129,7 @@ static int fn_love_geometry_setLineWidth(struct fh_program *prog,
 
     double w = fh_get_number(&args[0]);
     graphics_geometry_setLineWidth(w);
+    *ret = fh_new_null();
     return 0;
 }
 
