@@ -16,6 +16,7 @@
 #include "graphics_batch.h"
 #include "graphics_mesh.h"
 #include "graphics_particlesystem.h"
+#include "graphics_quad.h"
 
 #include "../include/graphics.h"
 #include "../include/matrixstack.h"
@@ -372,20 +373,27 @@ static int fn_love_graphics_draw(struct fh_program *prog,
                             fh_type_to_str(prog, args[0].type));
 
     struct fh_c_obj *o = fh_get_c_obj(&args[0]);
+    int index = 1;
 
-    float x = (float)fh_optnumber(args, n_args, 1, 0.0);
-    float y = (float)fh_optnumber(args, n_args, 2, 0.0);
-    float r = (float)fh_optnumber(args, n_args, 3, 0.0);
-    float sx = (float)fh_optnumber(args, n_args, 4, 1.0);
-    float sy = (float)fh_optnumber(args, n_args, 5, 1.0);
-    float ox = (float)fh_optnumber(args, n_args, 6, 0.0);
-    float oy = (float)fh_optnumber(args, n_args, 7, 0.0);
-    float kx = (float)fh_optnumber(args, n_args, 8, 0.0);
-    float ky = (float)fh_optnumber(args, n_args, 9, 0.0);
+    graphics_Quad *quad = &defaultQuad;
+    if (fh_is_c_obj_of_type(&args[index], FH_GRAPHICS_QUAD)) {
+        quad = fh_get_c_obj_value(&args[index]);
+        index ++;
+    }
+
+    float x = (float)fh_optnumber(args, n_args, index, 0.0);
+    float y = (float)fh_optnumber(args, n_args, index + 1, 0.0);
+    float r = (float)fh_optnumber(args, n_args, index + 2, 0.0);
+    float sx = (float)fh_optnumber(args, n_args, index + 3, 1.0);
+    float sy = (float)fh_optnumber(args, n_args, index + 4, 1.0);
+    float ox = (float)fh_optnumber(args, n_args, index + 5, 0.0);
+    float oy = (float)fh_optnumber(args, n_args, index + 6, 0.0);
+    float kx = (float)fh_optnumber(args, n_args, index + 7, 0.0);
+    float ky = (float)fh_optnumber(args, n_args, index + 8, 0.0);
 
     if (o->type == FH_IMAGE_TYPE) {
         fh_image_t *image = fh_get_c_obj_value(&args[0]);
-        graphics_Image_draw(image->img, &defaultQuad, x, y, r, sx, sy, ox, oy, kx, ky);
+        graphics_Image_draw(image->img, quad, x, y, r, sx, sy, ox, oy, kx, ky);
     } else if (o->type == FH_GRAPHICS_BATCH) {
         graphics_Batch *batch = fh_get_c_obj_value(&args[0]);
         graphics_Batch_draw(batch, x, y, r, sx, sy, ox, oy, kx, ky);

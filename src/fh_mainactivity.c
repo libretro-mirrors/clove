@@ -258,6 +258,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     if (fh_call_function(loopData.prog, "love_load", NULL, 0, &loopData.opt) < 0) {
         clove_error("Error: %s\n", fh_get_error(loopData.prog));
         fh_running = false;
+        fh_restore_pin_state(loopData.prog, pinned);
         main_clean();
         return;
     }

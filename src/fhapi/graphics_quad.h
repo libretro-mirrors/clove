@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_GRAPHICS_QUAD 234
+#define FH_GRAPHICS_QUAD 1997
 
 void fh_graphics_quad_register(struct fh_program *prog);
