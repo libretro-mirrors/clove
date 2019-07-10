@@ -154,8 +154,8 @@ fn love_load() {
 Contact
 -------
 
-Freenode: murii
-Email: muresanvladmihail@gmail.com
+1. Freenode: murii ##netcode
+1. Email: muresanvladmihail@gmail.com
 
 
 CLove pictures
