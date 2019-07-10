@@ -48,7 +48,7 @@ On Linux and OS X:
 
     Features
     ========
-    - Scripting languages like: FH and Lua
+    - Scripting languages: FH and Lua
     - Can be used as a shared or static library.
     - Native C/C++ support.
     - Easy to learn and use api.
@@ -64,7 +64,7 @@ On Linux and OS X:
     - Primitive drawing.
     - Filesystem functions.
     - OpenGL ES 2.0.
-- Networking, unix only (TCP,IPv4 or IPv6)
+	- Networking, unix only (TCP,IPv4 or IPv6)
     - Powerful font loading and drawing using batch system.
     - Support for image fonts.
     - Keyboard, mouse and joystick support.
@@ -73,10 +73,9 @@ On Linux and OS X:
 
     Planned work
     ============
-    1. The project can be cleaned a bit more
     1. Fix/Improve Threads module
-1. Networking module overall (plus support for Windows)
-    1. Android
+	1. Networking module overall (plus support for Windows)
+    1. Mobile support
 
     Examples
     --------
@@ -116,9 +115,9 @@ ogg_music:play()
 # Example of drawing an image
     function love_load() {
         let self = {};
-        self.image = love.graphics.newImage("image.png");
+        self.image = love_graphics_newImage("image.png");
 
-        draw(self);
+        love_draw(self);
 
         return self;
     }
@@ -131,19 +130,19 @@ function love_draw(self) {
 FH:
 ```php
 # Example of drawing some primitives
-function love_draw()
+fn love_draw() {
     love_graphics_rectangle("fill", 100, 100, 32, 16);
     love_graphics_rectangle("line", 200, 200, 32, 32);
     love_graphics_circle("fill", 270, 200, 32, 16);
     love_graphics_circle("line", 300, 100, 32, 8);
-    end
+}
     ```
 
     FH:
     ```php
-# Example of playing music
-    local ogg_music = love.audio.newSource("music.ogg")
-    function love_load() {
+	# Example of playing music
+    let ogg_music = love.audio.newSource("music.ogg")
+    fn love_load() {
         let self = {}
 
         self.ogg_music = love.audio.newSource("music.ogg");
