@@ -170,7 +170,7 @@ static int fn_love_graphics_shear(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     if (! (fh_is_number(&args[0]) && fh_is_number(&args[1])) )
         return fh_set_error(prog, "Expected exactly 2 numbers as arguments\n");
-    
+
     float kx = (float)fh_get_number(&args[0]);
     float ky = (float)fh_get_number(&args[1]);
 
@@ -375,7 +375,7 @@ static int fn_love_graphics_draw(struct fh_program *prog,
     struct fh_c_obj *o = fh_get_c_obj(&args[0]);
     int index = 1;
 
-    graphics_Quad *quad = &defaultQuad;
+    const graphics_Quad *quad = &defaultQuad;
     if (fh_is_c_obj_of_type(&args[index], FH_GRAPHICS_QUAD)) {
         quad = fh_get_c_obj_value(&args[index]);
         index ++;
