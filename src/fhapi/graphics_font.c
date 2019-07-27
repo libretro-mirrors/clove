@@ -94,6 +94,10 @@ static int fn_love_graphics_getFont(struct fh_program *prog,
     if (moduleData.isBitmapFont) {
         *ret = fh_new_c_obj(prog, moduleData.currentBitmapFont, NULL, FH_BITMAP_FONT_TYPE);
     } else {
+		if (!moduleData.currentFont) {
+			*ret = fh_new_null();
+			return 0;
+		}
         *ret = fh_new_c_obj(prog, moduleData.currentFont, NULL, FH_FONT_TYPE);
     }
     return 0;
