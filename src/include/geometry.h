@@ -41,8 +41,10 @@ void graphics_geometry_rectangle(bool filled, float x, float y,
  * radius: size of the circle (from center)
  * segments: how many vertices should this circle have, default 12.
  */
-void graphics_geometry_fillCircle(float x, float y, float radius, uint32_t segments, float r, float sx, float sy, float ox, float oy);
-void graphics_geometry_lineCircle(float x, float y, float radius, uint32_t segments, float r, float sx, float sy, float ox, float oy);
+void graphics_geometry_fillCircle(float x, float y, float radius,
+        uint32_t segments, float r, float sx, float sy, float ox, float oy);
+void graphics_geometry_lineCircle(float x, float y, float radius,
+        uint32_t segments, float r, float sx, float sy, float ox, float oy);
 
 /*
  * Summary: Draw vertices filled or not filled with color

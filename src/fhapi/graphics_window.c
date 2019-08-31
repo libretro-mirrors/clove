@@ -150,7 +150,7 @@ int fn_love_window_hasMouseFocus(struct fh_program *prog, struct fh_value *ret, 
 
 int fn_love_window_setMode(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
 
-    if (n_args < 8 || n_args > 10)
+    if (n_args < 8 || n_args > 11)
         return fh_set_error(prog, "Invalid number of arguments");
 
     for (int i = 0; i < 9; i++) {
@@ -172,8 +172,8 @@ int fn_love_window_setMode(struct fh_program *prog, struct fh_value *ret, struct
     double ma_s_x = fh_get_number(&args[6]);
     double ma_s_y = fh_get_number(&args[7]);
     bool border = fh_get_bool(&args[8]);
-    double x = fh_optnumber(&args, n_args, 9, -1);
-    double y = fh_optnumber(&args, n_args, 10, -1);
+    double x = fh_optnumber(args, n_args, 9, -1);
+    double y = fh_optnumber(args, n_args, 10, -1);
 
     graphics_setMode(w, h, fullscreen, vsync, m_s_x, m_s_y, ma_s_x, ma_s_y, border, x, y);
     *ret = fh_new_null();

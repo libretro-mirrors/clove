@@ -16,8 +16,6 @@
 
 static int fn_love_geometry_circle(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-
-    UNUSED(ret);
     if (n_args < 4) {
         return fh_set_error(prog, "Expected at least 4 arguments, got %d", n_args);
     }
@@ -46,8 +44,6 @@ static int fn_love_geometry_circle(struct fh_program *prog,
 
 static int fn_love_geometry_rectangle(struct fh_program *prog,
                                       struct fh_value *ret, struct fh_value *args, int n_args) {
-
-    UNUSED(ret);
     if (n_args < 4) {
         return fh_set_error(prog, "Expected at least 5 arguments, got %d", n_args);
     }
@@ -68,7 +64,7 @@ static int fn_love_geometry_rectangle(struct fh_program *prog,
     else if(strcmp(type, "fill") == 0)
         graphics_geometry_rectangle(true, x, y, w, h, rotation, sx, sy, ox, oy);
     else {
-        return clove_error("Expected 'line' or 'fill' as input type!");
+        return fh_set_error(prog, "Expected 'line' or 'fill' as input type!");
     }
     *ret = fh_new_null();
     return 0;
@@ -76,7 +72,6 @@ static int fn_love_geometry_rectangle(struct fh_program *prog,
 
 static int fn_love_geometry_points(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-    UNUSED(ret);
     if (n_args < 2) {
         return fh_set_error(prog, "Expeceted 2 arguments");
     }
@@ -91,7 +86,6 @@ static int fn_love_geometry_points(struct fh_program *prog,
 
 static int fn_love_geometry_vertex(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-    UNUSED(ret);
     if (!fh_is_string(&args[0]) || !fh_is_array(&args[1])) {
         return fh_set_error(prog, "Expected 2 arguments, string and array");
     }
@@ -135,7 +129,6 @@ static int fn_love_geometry_setLineWidth(struct fh_program *prog,
 
 static int fn_love_geometry_getLineWidth(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-
     *ret = fh_new_number(graphics_geometry_getLineWidth());
     return 0;
 }

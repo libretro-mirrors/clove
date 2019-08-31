@@ -72,7 +72,7 @@ static void growBuffers(int vertices, int indices) {
         moduleData.currentDataSize = datasize;
     }
 
-    int indexsize = indices * sizeof(uint32_t);
+    uint32_t indexsize = indices * sizeof(uint32_t);
     if(moduleData.currentIndexSize < indexsize) {
         free(moduleData.index);
         moduleData.index = (uint32_t*)malloc(indexsize);
@@ -91,7 +91,8 @@ static void drawBufferSpecial(uint32_t indices,
     glBufferData(GL_ARRAY_BUFFER, vertices*sizeof(float)*8, moduleData.data, GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices*sizeof(uint32_t)*8, moduleData.index, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices*sizeof(uint32_t),
+	moduleData.index, GL_STREAM_DRAW);
 
     glLineWidth(moduleData.lineWidth);
 
@@ -113,7 +114,8 @@ static void drawBuffer(uint32_t indices, int vertices, GLenum type) {
     glBufferData(GL_ARRAY_BUFFER, vertices*8*sizeof(float), moduleData.data, GL_STREAM_DRAW);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, moduleData.dataIBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices*sizeof(uint32_t), moduleData.index, GL_STREAM_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices*sizeof(uint32_t),
+	moduleData.index, GL_STREAM_DRAW);
 
     glLineWidth(moduleData.lineWidth);
 
@@ -129,7 +131,8 @@ static void drawBuffer(uint32_t indices, int vertices, GLenum type) {
     glLineWidth(1.0f);
 }
 
-void graphics_geometry_lineCircle(float x, float y, float radius, uint32_t segments, float r, float sx, float sy, float ox, float oy) {
+void graphics_geometry_lineCircle(float x, float y, float radius,
+	uint32_t segments, float r, float sx, float sy, float ox, float oy) {
     growBuffers(segments+1, segments+2);
 
     float step = LOVE_PI2 / segments;
@@ -286,7 +289,6 @@ void graphics_geometry_rectangle(bool filled,
         moduleData.index[3] = 3;
         moduleData.index[4] = 0;
         moduleData.index[5] = 1;
-        moduleData.index[6] = 2;
 
         if (special)
             drawBufferSpecial(6, 32, x, y, rotation, w, h, sx, sy, ox, oy, GL_LINE_STRIP);

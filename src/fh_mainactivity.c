@@ -62,11 +62,11 @@ static void focus_function(void) {
 }
 
 static void main_clean(void) {
+    fh_free_program(loopData.prog);
     joystick_close();
     graphics_geometry_free();
     graphics_destroyWindow();
     filesystem_free();
-    fh_free_program(loopData.prog);
     audio_close();
 }
 
@@ -206,6 +206,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
         graphics_setVsync(1/*config.window.vsync*/);
         graphics_setPosition(-1,-1/*config.window.x, config.window.y*/);
     }
+    graphics_geometry_init();
 
     FILE* icon = fopen("icon.png", "r");
     if (icon)
