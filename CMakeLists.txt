@@ -125,6 +125,8 @@ FILE(
     src/net/*.h
     src/physics/*.c
     src/physics/*.h
+    src/ui/*.c
+    src/ui/*.h
     src/include/*.h
     src/include/*.c
 
@@ -133,6 +135,9 @@ FILE(
     native/*.h
 
     #3rdparty "small" libs
+    src/3rdparty/microui/src/*.c
+    src/3rdparty/microui/src/*.inl
+    src/3rdparty/microui/src/*.h
     src/3rdparty/microtar/*.c
     src/3rdparty/microtar/*.h
     src/3rdparty/noise/*.c

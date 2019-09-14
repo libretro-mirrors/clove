@@ -85,6 +85,9 @@ static void graphics_init_window(int width, int height)
     graphics_setColorMask(true, true, true, true);
     graphics_setBlendMode(graphics_BlendMode_alpha);
     glEnable(GL_BLEND);
+    glDisable(GL_CULL_FACE);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_SCISSOR_TEST);
     graphics_clearScissor();
 }
 
@@ -280,12 +283,17 @@ int graphics_setVsync(bool value) {
 
 int graphics_setBordless(bool value) {
     if (moduleData.hasWindow)
-        SDL_SetWindowBordered(moduleData.window, (SDL_bool)value);
+        SDL_SetWindowBordered(moduleData.window, (SDL_bool)!value);
     return 1;
 }
 
-int graphics_setMinSize(int x, int y) {
-    SDL_SetWindowMinimumSize(moduleData.window, x, y);
+int graphics_setMinSize(int w, int h) {
+    SDL_SetWindowMinimumSize(moduleData.window, w, h);
+    return 1;
+}
+
+int graphics_setMaxSize(int w, int h) {
+    SDL_SetWindowMaximumSize(moduleData.window, w, h);
     return 1;
 }
 

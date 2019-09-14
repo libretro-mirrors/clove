@@ -38,6 +38,10 @@
 
 #include "include/geometry.h"
 
+#include "../native/game.h"
+
+#define USE_NATIVE 1
+
 typedef struct {
     bool called_quit;
     struct fh_program *prog;
@@ -50,14 +54,17 @@ static MainLoopData loopData;
 
 static void quit_function(void) {
     if (fh_call_function(loopData.prog, "love_quit", NULL, 0, NULL) < 0) {
-        clove_error("Errro: %s\n", fh_get_error(loopData.prog));
+        clove_error("Error: %s\n", fh_get_error(loopData.prog));
     }
+#ifdef USE_NATIVE
+    game_quit();
+#endif
 }
 
 static void focus_function(void) {
     loopData.focus.data.b = graphics_hasFocus();
     if (fh_call_function(loopData.prog, "love_focus", &loopData.focus, 1, NULL) == -2) {
-        clove_error("Errro: %s\n", fh_get_error(loopData.prog));
+        clove_error("Error: %s\n", fh_get_error(loopData.prog));
     }
 }
 
@@ -83,10 +90,18 @@ void fh_main_loop(void) {
         return;
     }
 
+#ifdef USE_NATIVE
+    game_update((float)timer_getDelta());
+#endif
+
     graphics_clear();
     if (fh_call_function(loopData.prog, "love_draw", &loopData.opt, 1, NULL) == -2) {
         return;
     }
+
+#ifdef USE_NATIVE
+    game_draw();
+#endif
 
     graphics_swap();
 
@@ -193,7 +208,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     if (1/*config.window.stats*/)
         printf("%s %s \n", "Debug: Platform:", filesystem_getOS());
 
-    graphics_init(800/*config.window.width*/, 600/*config.window.height*/, 1/*config.window.resizable*/, 1/*config.window.stats*/, 1/*config.window.window*/);
+    graphics_init(800/*config.window.width*/, 600/*config.window.height*/, 0/*config.window.resizable*/, 1/*config.window.stats*/, 1/*config.window.window*/);
     /*
     * When we do not have a visible window we can't put
     * these propieties
@@ -201,10 +216,12 @@ void fh_main_activity_load(int argc, char* argv[]) {
     if (1/*config.window.window*/)
     {
         graphics_setTitle("CLove"/*config.window.title*/);
-        graphics_setBordless(1/*config.window.bordless*/);
+        graphics_setBordless(0/*config.window.bordless*/);
         graphics_setMinSize(800, 600/*config.window.minwidth, config.window.minheight*/);
+        graphics_setMaxSize(800, 600);
         graphics_setVsync(1/*config.window.vsync*/);
         graphics_setPosition(-1,-1/*config.window.x, config.window.y*/);
+        graphics_setFullscreen(0, 0);
     }
     graphics_geometry_init();
 
@@ -261,6 +278,11 @@ void fh_main_activity_load(int argc, char* argv[]) {
         main_clean();
         return;
     }
+
+
+#ifdef USE_NATIVE
+    game_load();
+#endif
 
 #ifdef CLOVE_WEB
     emscripten_set_main_loop(lua_main_loop, 60, 1);

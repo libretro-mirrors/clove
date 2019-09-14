@@ -11,61 +11,18 @@
 #include <stdbool.h>
 #include <stdio.h>
 
-/*
 #include "../src/include/graphics.h"
 #include "../src/include/geometry.h"
 #include "../src/include/matrixstack.h"
 #include "../src/include/keyboard.h"
+#include "../src/include/ui.h"
 #include "../src/luaapi/event.h"
 
-#include "../src/3rdparty/Chipmunk2D/include/chipmunk/chipmunk.h"
+static mu_Container *container0 = NULL;
 
-static cpSpace* space;
-
-
-#define WIDTH 232
-#define HEIGHT 32
-
-int width2 = 150;
-
-cpBody* body;
-
-cpBody*
-add_domino(cpSpace *space)
-{
-  cpFloat mass = 2.0f;
-  cpFloat moment = cpMomentForBox(mass, width2, HEIGHT);
-
-  cpBody *body = cpSpaceAddBody(space, cpBodyNew(mass, moment));
-  body->p = cpv(200, 200);
-
-  cpShape *shape = cpBoxShapeNew(body, width2, HEIGHT);
-  cpSpaceAddShape(space, shape);
-  shape->e = 0.4f; shape->u = 0.6f;
-
-  return body;
-}
-
-
-static cpSpace* init(void)
-{
-  space = cpSpaceNew();
-  space->iterations = 30;
-  space->gravity = cpv(0, -100);
-
-  body = add_domino(space);
-
-
-  cpShape *shape = cpSpaceAddShape(space, cpBoxShapeNew(space->staticBody, WIDTH, HEIGHT));
-  shape->e = 1.0f; shape->u = 1.0f;
-
-
-  return space;
-}
-*/
-void game_load() {
-  // graphics_setTitle("Clove in native");
-  //space = init();
+void game_load(void) {
+    ui_init();
+    container0 = ui_init_window(100, 100, 126, 126);
 }
 
 void game_update(float delta) {
@@ -75,18 +32,23 @@ void game_update(float delta) {
 //  if (keyboard_ispressed(SDLK_a))
 //    {
 //    }
-//  cpSpaceStep(space, delta);
+    ui_begin();
+    if (ui_begin_window("Test window", container0)) {
+        ui_end_window();
+    }
+    ui_end();
 }
 
-void game_draw() {
+void game_draw(void) {
 //  graphics_setBackgroundColor(.8f, .6f, .5f, 1);
 //  graphics_geometry_rectangle(true, body->p.x, body->p.y, width2, HEIGHT, body->a, 1, 1, 0, 0);
 //  graphics_geometry_rectangle(true, 0, 40, WIDTH, HEIGHT, 0, 1, 1, 0, 0);
 //  //graphics_geometry_rectangle(true, ground->body->p.x, ground->body->p.y, 800, 32, 0, 1, 1, 0, 0);
+    ui_draw();
 }
 
-void game_quit()
-{
-//  cpSpaceFree(space);
+void game_quit(void) {
+    ui_deinit_window(container0);
+    ui_deinit();
 }
 
