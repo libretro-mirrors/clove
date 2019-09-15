@@ -37,6 +37,7 @@
 #include "fhapi/graphics_particlesystem.h"
 
 #include "include/geometry.h"
+#include "include/ui.h"
 
 #include "../native/game.h"
 
@@ -76,6 +77,23 @@ static void main_clean(void) {
     filesystem_free();
     audio_close();
 }
+
+static const char ui_key_map[256] = {
+  [ SDLK_LSHIFT       & 0xff ] = MU_KEY_SHIFT,
+  [ SDLK_RSHIFT       & 0xff ] = MU_KEY_SHIFT,
+  [ SDLK_LCTRL        & 0xff ] = MU_KEY_CTRL,
+  [ SDLK_RCTRL        & 0xff ] = MU_KEY_CTRL,
+  [ SDLK_LALT         & 0xff ] = MU_KEY_ALT,
+  [ SDLK_RALT         & 0xff ] = MU_KEY_ALT,
+  [ SDLK_RETURN       & 0xff ] = MU_KEY_RETURN,
+  [ SDLK_BACKSPACE    & 0xff ] = MU_KEY_BACKSPACE,
+};
+
+static const char ui_button_map[256] = {
+  [ SDL_BUTTON_LEFT   & 0xff ] =  MU_MOUSE_LEFT,
+  [ SDL_BUTTON_RIGHT  & 0xff ] =  MU_MOUSE_RIGHT,
+  [ SDL_BUTTON_MIDDLE & 0xff ] =  MU_MOUSE_MIDDLE,
+};
 
 static struct fh_value update_args[2];
 void fh_main_loop(void) {
@@ -126,37 +144,59 @@ void fh_main_loop(void) {
             }
         }
         switch(event.wheel.type) {
-        case SDL_MOUSEWHEEL:
+        case SDL_MOUSEWHEEL: {
+            ui_input_scroll(0, event.wheel.y * - 30);
             mouse_mousewheel(event.wheel.y);
             int _what = event.wheel.y == 1 ? SDL_MOUSEBUTTONUP : SDL_MOUSEBUTTONDOWN;
             mouse_mousepressed(event.button.x, event.button.y, _what);
             mouse_setButton(event.button.button);
             break;
+        }
         default:
             break;
         }
         switch(event.type) {
-        case SDL_KEYDOWN:
+        case SDL_KEYDOWN: {
+            ui_input_keydown(event.key.keysym.sym & 0xff);
             keyboard_keypressed(event.key.keysym.sym);
             break;
-        case SDL_KEYUP:
+        }
+        case SDL_KEYUP: {
+            ui_input_keyup(event.key.keysym.sym & 0xff);
             keyboard_keyreleased(event.key.keysym.sym);
             break;
-        case SDL_TEXTINPUT:
-            keyboard_textInput(event.text.text);
+        }
+        case SDL_TEXTINPUT: {
+            const char *text = event.text.text;
+            ui_input_text(text);
+            keyboard_textInput(text);
             break;
-        case SDL_MOUSEMOTION:
-            mouse_mousemoved(event.motion.x, event.motion.y);
+        }
+        case SDL_MOUSEMOTION: {
+            int x = event.motion.x;
+            int y = event.motion.y;
+            ui_input_mouse_move(x, y);
+            mouse_mousemoved(x, y);
             break;
-        case SDL_MOUSEBUTTONDOWN:
-            mouse_mousepressed(event.button.x, event.button.y, event.button.button);
-            mouse_setButton(event.button.button);
+        }
+        case SDL_MOUSEBUTTONDOWN: {
+            int x = event.button.x;
+            int y = event.button.y;
+            int btn = event.button.button;
+            ui_input_mouse_down(ui_button_map[btn & 0xff], x, y);
+            mouse_mousepressed(x, y, btn);
+            mouse_setButton(btn);
             break;
-        case SDL_MOUSEBUTTONUP:
-            mouse_mousereleased(event.button.x, event.button.y,
-                                event.button.button);
+        }
+        case SDL_MOUSEBUTTONUP: {
+            int x = event.button.x;
+            int y = event.button.y;
+            int btn = event.button.button;
+            ui_input_mouse_up(ui_button_map[btn & 0xff], x, y);
+            mouse_mousereleased(x, y, btn);
             mouse_setButton(0);
             break;
+        }
         case SDL_JOYDEVICEADDED:
             joystick_added(event.jdevice.which);
             break;

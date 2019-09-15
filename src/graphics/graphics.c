@@ -88,6 +88,7 @@ static void graphics_init_window(int width, int height)
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_SCISSOR_TEST);
+    // glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
     graphics_clearScissor();
 }
 

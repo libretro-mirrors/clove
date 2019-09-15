@@ -19,10 +19,13 @@
 #include "../src/luaapi/event.h"
 
 static mu_Container *container0 = NULL;
+static mu_Container *container1 = NULL;
 
 void game_load(void) {
     ui_init();
     container0 = ui_init_window(100, 100, 126, 126);
+
+    container1 = ui_init_window(400, 100, 126, 126);
 }
 
 void game_update(float delta) {
@@ -33,7 +36,11 @@ void game_update(float delta) {
 //    {
 //    }
     ui_begin();
-    if (ui_begin_window("Test window", container0)) {
+    if (ui_begin_window("Window 1", container0)) {
+        ui_button("Button");
+        ui_end_window();
+    }
+    if (ui_begin_window("Window 2", container1)) {
         ui_end_window();
     }
     ui_end();
@@ -48,6 +55,7 @@ void game_draw(void) {
 }
 
 void game_quit(void) {
+    ui_deinit_window(container1);
     ui_deinit_window(container0);
     ui_deinit();
 }

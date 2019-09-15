@@ -48,7 +48,7 @@ void graphics_font_init() {
     moduleData.batchsize = 0;
 }
 
-void graphics_GlyphMap_newTexture(graphics_GlyphMap *map) {
+static void graphics_GlyphMap_newTexture(graphics_GlyphMap *map) {
     map->textures = realloc(map->textures, sizeof(GLuint) * (map->numTextures + 1));
     glGenTextures(1, &map->textures[map->numTextures]);
     glBindTexture(GL_TEXTURE_2D, map->textures[map->numTextures]);
@@ -64,7 +64,7 @@ void graphics_GlyphMap_newTexture(graphics_GlyphMap *map) {
     ++map->numTextures;
 }
 
-graphics_Glyph const* graphics_Font_findGlyph(graphics_Font *font, unsigned unicode) {
+static graphics_Glyph const* graphics_Font_findGlyph(graphics_Font *font, unsigned unicode) {
     // only 256
     unsigned idx = unicode & 0xFF;
     graphics_GlyphSet *set = &font->glyphs.glyphs[idx];
