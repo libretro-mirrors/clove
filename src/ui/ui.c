@@ -20,10 +20,7 @@ static struct {
     mu_Context *ctx;
     graphics_Font *font;
 
-    graphics_Image *close_img;
-    graphics_Image *check_img;
-    graphics_Image *expand_img;
-    graphics_Image *collapsed_img;
+    graphics_Image *img;
 } moduleData;
 
 
@@ -47,9 +44,9 @@ static void draw_icon(int id, mu_Rect rect, mu_Color color) {
   graphics_Quad quad;
   graphics_Quad_newWithRef(&quad, src.x, src.y, src.w, src.h, ATLAS_WIDTH, ATLAS_HEIGHT);
 
-  if (id == MU_ICON_CLOSE) {
-      graphics_Image_draw(moduleData.close_img, &quad, x, y, 0, 1, 1, 0, 0, 0, 0);
-  }
+  //if (id == MU_ICON_CLOSE) {
+      graphics_Image_draw(moduleData.img, &quad, x, y, 0, 1, 1, 0, 0, 0, 0);
+ // }
   graphics_setColor(1, 1, 1, 1);
 }
 
@@ -89,9 +86,9 @@ void ui_init(void) {
     filter.minMode = graphics_FilterMode_nearest;
     filter.maxAnisotropy = 1;
 
-    moduleData.close_img = malloc(sizeof(graphics_Image));
-    graphics_Image_new_with_ImageData(moduleData.close_img, data);
-    graphics_Image_setFilter(moduleData.close_img, &filter);
+    moduleData.img = malloc(sizeof(graphics_Image));
+    graphics_Image_new_with_ImageData(moduleData.img, data);
+    graphics_Image_setFilter(moduleData.img, &filter);
 
     graphics_Font_setFilter(moduleData.font, &filter);
 
@@ -100,8 +97,8 @@ void ui_init(void) {
 void ui_deinit(void) {
     free(moduleData.ctx);
     free(moduleData.font);
-    graphics_Image_free(moduleData.close_img);
-    free(moduleData.close_img);
+    graphics_Image_free(moduleData.img);
+    free(moduleData.img);
 }
 
 mu_Context *ui_get_context(void) {
@@ -135,24 +132,11 @@ mu_Container* ui_get_container() {
     return mu_get_container(moduleData.ctx);
 }
 
-mu_Container* ui_init_window(int x, int y, int w, int h, int opt) {
-    mu_Container *window = malloc(sizeof(mu_Container));
-    window->inited = false;
-    if (!window->inited) {
-        mu_init_window(moduleData.ctx, window, opt);
-        window->rect = mu_rect(x, y, w, h);
-
-        /* limit window to minimum size */
-        window->rect.w = mu_max(window->rect.w, 240);
-        window->rect.h = mu_max(window->rect.h, 300);
-    }
-    return window;
-}
-
-void ui_deinit_window(mu_Container* window) {
-    if (window) {
-        free(window);
-        window = NULL;
+void ui_init_window(mu_Container *cnt, int x, int y, int w, int h, int opt) {
+    cnt->inited = false;
+    if (!cnt->inited) {
+        mu_init_window(moduleData.ctx, cnt, opt);
+        cnt->rect = mu_rect(x, y, w, h);
     }
 }
 
@@ -160,16 +144,16 @@ int ui_begin_window(const char* title, mu_Container *window) {
     return mu_begin_window(moduleData.ctx, window, title);
 }
 
-int ui_button(const char* label) {
-    return mu_button(moduleData.ctx, label);
+int ui_button(const char* label, int opt) {
+    return mu_button_ex(moduleData.ctx, label, 0, opt);
 }
 
-int ui_textbox(char* label) {
-    return mu_textbox(moduleData.ctx, label, sizeof(label));
+int ui_textbox(char* label, int opt) {
+    return mu_textbox(moduleData.ctx, label, sizeof(label), opt);
 }
 
-int ui_header(int *state, const char *label) {
-    return mu_header(moduleData.ctx, state, label);
+int ui_header(int *state, const char *label, int opt) {
+    return mu_header(moduleData.ctx, state, label, opt);
 }
 
 int ui_begin_tree(int *state, const char *label) {
@@ -180,8 +164,8 @@ void ui_end_tree(void) {
     mu_end_treenode(moduleData.ctx);
 }
 
-void ui_label(const char *label) {
-    mu_label(moduleData.ctx, label);
+void ui_label(const char *label, int opt) {
+    mu_label(moduleData.ctx, label, opt);
 }
 
 void ui_draw_text(const char *text) {

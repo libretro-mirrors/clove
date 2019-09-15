@@ -24,15 +24,14 @@ void ui_layout_set_next(int x, int y,
                         int relative);
 mu_Container* ui_get_container(void);
 
-mu_Container* ui_init_window(int x, int y, int w, int h, int opt);
-void ui_deinit_window(mu_Container* window);
+void ui_init_window(mu_Container *ctn, int x, int y, int w, int h, int opt);
 int ui_begin_window(const char *title, mu_Container *window);
 void ui_end_window(void);
 
-int ui_button(const char* label);
-int ui_textbox(char* label);
-int ui_header(int *state, const char *label);
-void ui_label(const char *label);
+int ui_button(const char* label, int opt);
+int ui_textbox(char* label, int opt);
+int ui_header(int *state, const char *label, int opt);
+void ui_label(const char *label, int opt);
 int ui_slider(mu_Real value, int low, int high, int opt);
 int ui_begin_tree(int *state, const char *label);
 void ui_end_tree(void);

@@ -35,13 +35,14 @@
 #include "fhapi/graphics_quad.h"
 #include "fhapi/graphics_shader.h"
 #include "fhapi/graphics_particlesystem.h"
+#include "fhapi/ui.h"
 
 #include "include/geometry.h"
 #include "include/ui.h"
 
 #include "../native/game.h"
 
-#define USE_NATIVE 1
+// #define USE_NATIVE 1
 
 typedef struct {
     bool called_quit;
@@ -72,6 +73,7 @@ static void focus_function(void) {
 static void main_clean(void) {
     fh_free_program(loopData.prog);
     joystick_close();
+    ui_deinit();
     graphics_geometry_free();
     graphics_destroyWindow();
     filesystem_free();
@@ -120,6 +122,7 @@ void fh_main_loop(void) {
 #ifdef USE_NATIVE
     game_draw();
 #endif
+    ui_draw();
 
     graphics_swap();
 
@@ -276,6 +279,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
         graphics_setFullscreen(0, 0);
     }
     graphics_geometry_init();
+    ui_init();
 
     FILE* icon = fopen("icon.png", "r");
     if (icon)
@@ -311,6 +315,7 @@ void fh_main_activity_load(int argc, char* argv[]) {
     fh_graphics_quad_register(loopData.prog);
     fh_graphics_shader_register(loopData.prog);
     fh_graphics_particlesystem_register(loopData.prog);
+    fh_ui_register(loopData.prog);
 
     int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
     if (ret < 0) {
