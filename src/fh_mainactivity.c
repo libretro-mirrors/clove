@@ -157,12 +157,18 @@ void fh_main_loop(void) {
         }
         switch(event.type) {
         case SDL_KEYDOWN: {
-            ui_input_keydown(event.key.keysym.sym & 0xff);
+            int c = ui_key_map[event.key.keysym.sym & 0xff];
+            if (c) {
+                ui_input_keydown(c);
+            }
             keyboard_keypressed(event.key.keysym.sym);
             break;
         }
         case SDL_KEYUP: {
-            ui_input_keyup(event.key.keysym.sym & 0xff);
+            int c = ui_key_map[event.key.keysym.sym & 0xff];
+            if (c) {
+                ui_input_keyup(c);
+            }
             keyboard_keyreleased(event.key.keysym.sym);
             break;
         }
@@ -183,7 +189,10 @@ void fh_main_loop(void) {
             int x = event.button.x;
             int y = event.button.y;
             int btn = event.button.button;
-            ui_input_mouse_down(ui_button_map[btn & 0xff], x, y);
+            int ui_btn = ui_button_map[btn & 0xff];
+            if (ui_btn) {
+                ui_input_mouse_down(ui_btn, x, y);
+            }
             mouse_mousepressed(x, y, btn);
             mouse_setButton(btn);
             break;
@@ -192,7 +201,10 @@ void fh_main_loop(void) {
             int x = event.button.x;
             int y = event.button.y;
             int btn = event.button.button;
-            ui_input_mouse_up(ui_button_map[btn & 0xff], x, y);
+            int ui_btn = ui_button_map[btn & 0xff];
+            if (ui_btn) {
+                ui_input_mouse_up(ui_btn, x, y);
+            }
             mouse_mousereleased(x, y, btn);
             mouse_setButton(0);
             break;

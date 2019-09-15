@@ -104,11 +104,42 @@ void ui_deinit(void) {
     free(moduleData.close_img);
 }
 
-mu_Container* ui_init_window(int x, int y, int w, int h) {
+mu_Context *ui_get_context(void) {
+    return moduleData.ctx;
+}
+
+void ui_layout_row(int no_items, int widths[], int height) {
+    mu_layout_row(moduleData.ctx, no_items, widths, height);
+}
+
+void ui_layout_begin_column(void) {
+    mu_layout_begin_column(moduleData.ctx);
+}
+
+void ui_layout_end_column(void) {
+    mu_layout_end_column(moduleData.ctx);
+}
+
+void ui_layout_set_next(int x, int y,
+                        int w, int h,
+                        int relative) {
+    mu_layout_set_next(moduleData.ctx,
+                       mu_rect(x, y, w, h), relative);
+}
+
+void ui_layout_width(int width) {
+    mu_layout_width(moduleData.ctx, width);
+}
+
+mu_Container* ui_get_container() {
+    return mu_get_container(moduleData.ctx);
+}
+
+mu_Container* ui_init_window(int x, int y, int w, int h, int opt) {
     mu_Container *window = malloc(sizeof(mu_Container));
     window->inited = false;
     if (!window->inited) {
-        mu_init_window(moduleData.ctx, window, 0);
+        mu_init_window(moduleData.ctx, window, opt);
         window->rect = mu_rect(x, y, w, h);
 
         /* limit window to minimum size */
@@ -131,6 +162,63 @@ int ui_begin_window(const char* title, mu_Container *window) {
 
 int ui_button(const char* label) {
     return mu_button(moduleData.ctx, label);
+}
+
+int ui_textbox(char* label) {
+    return mu_textbox(moduleData.ctx, label, sizeof(label));
+}
+
+int ui_header(int *state, const char *label) {
+    return mu_header(moduleData.ctx, state, label);
+}
+
+int ui_begin_tree(int *state, const char *label) {
+    return mu_begin_treenode(moduleData.ctx, state, label);
+}
+
+void ui_end_tree(void) {
+    mu_end_treenode(moduleData.ctx);
+}
+
+void ui_label(const char *label) {
+    mu_label(moduleData.ctx, label);
+}
+
+void ui_draw_text(const char *text) {
+    mu_text(moduleData.ctx, text);
+}
+
+void ui_draw_rect(int x, int y, int w, int h,
+                  int r, int g, int b, int a) {
+    mu_draw_rect(moduleData.ctx, mu_rect(x, y, w, h),
+                 mu_color(r, g, b, a));
+}
+
+void ui_begin_panel(mu_Container *cnt) {
+    mu_begin_panel(moduleData.ctx, cnt);
+}
+
+void ui_end_panel(void) {
+    mu_end_panel(moduleData.ctx);
+}
+
+int ui_begin_popup(mu_Container *cnt) {
+    return mu_begin_popup(moduleData.ctx, cnt);
+}
+
+void ui_end_popup() {
+    mu_end_popup(moduleData.ctx);
+}
+
+int ui_slider(mu_Real value, int low, int high, int opt) {
+  static mu_Real tmp;
+  mu_push_id(moduleData.ctx, &value, sizeof(value));
+  tmp = value;
+  int res = mu_slider_ex(moduleData.ctx, &tmp, low, high,
+                         0, "%.0f", opt);
+  value = tmp;
+  mu_pop_id(moduleData.ctx);
+  return res;
 }
 
 void ui_end_window(void) {
