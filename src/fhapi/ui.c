@@ -72,6 +72,40 @@ static int fn_love_ui_end_window(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_ui_layout_row(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args != 3) {
+        return fh_set_error(prog, "Invalid number of arguments, expected 3 got: %d", n_args);
+    }
+
+    if (!fh_is_number(&args[0])) {
+        return fh_set_error(prog, "Expected number as argument 0");
+    }
+    if (!fh_is_number(&args[1])) {
+        return fh_set_error(prog, "Expected number as argument 1");
+    }
+
+    int no_items = (int)fh_get_number(&args[0]);
+    struct fh_value *arr = &args[1];
+    int len = fh_get_array_len(arr);
+    int *size = malloc(sizeof(int)*len);
+
+    struct fh_array *a = GET_VAL_ARRAY(arr);
+    for (int i = 0; i < len; i++) {
+        if (a->items[i].type != FH_VAL_FLOAT) {
+            free (size);
+            return fh_set_error(prog, "Expected index %d in array to be of type number, got %s", i, fh_type_to_str(prog, a->items[i].type));
+        }
+        size[i] = (int)a->items[i].data.num;
+    }
+    int height = (int)fh_get_number(&args[2]);
+
+    ui_layout_row(no_items, size, height);
+    free (size);
+    *ret = fh_new_null();
+    return 0;
+}
+
 static int fn_love_ui_header(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0])) {
@@ -179,6 +213,7 @@ static int fn_love_ui_end(struct fh_program *prog,
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_newWindow),
+    DEF_FN(love_ui_layout_row),
     DEF_FN(love_ui_begin_tree),
     DEF_FN(love_ui_end_tree),
     DEF_FN(love_ui_begin_window),
