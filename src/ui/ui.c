@@ -152,12 +152,12 @@ int ui_textbox(char* label, int opt) {
     return mu_textbox(moduleData.ctx, label, sizeof(label), opt);
 }
 
-int ui_header(int *state, const char *label, int opt) {
-    return mu_header(moduleData.ctx, state, label, opt);
+int ui_header(int state, const char *label, int id, int opt) {
+    return mu_header(moduleData.ctx, state, label, id, opt);
 }
 
-int ui_begin_tree(int *state, const char *label) {
-    return mu_begin_treenode(moduleData.ctx, state, label);
+int ui_begin_tree(int state, const char *label, int id) {
+    return mu_begin_treenode(moduleData.ctx, state, label, id);
 }
 
 void ui_end_tree(void) {
@@ -178,8 +178,8 @@ void ui_draw_rect(int x, int y, int w, int h,
                  mu_color(r, g, b, a));
 }
 
-void ui_begin_panel(mu_Container *cnt) {
-    mu_begin_panel(moduleData.ctx, cnt);
+void ui_begin_panel(mu_Container *cnt, int opt) {
+    mu_begin_panel_ex(moduleData.ctx, cnt, opt);
 }
 
 void ui_end_panel(void) {
@@ -199,7 +199,7 @@ int ui_slider(mu_Real value, int low, int high, int opt) {
   mu_push_id(moduleData.ctx, &value, sizeof(value));
   tmp = value;
   int res = mu_slider_ex(moduleData.ctx, &tmp, low, high,
-                         0, "%.0f", opt);
+                         0, "%.0d", opt);
   value = tmp;
   mu_pop_id(moduleData.ctx);
   return res;

@@ -19,6 +19,15 @@ static fh_c_obj_gc_callback ui_container_gc(mu_Container *cnt) {
     return (fh_c_obj_gc_callback)1;
 }
 
+static int fn_love_ui_newContainer(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+
+        mu_Container *cnt = malloc(sizeof(mu_Container));
+        fh_c_obj_gc_callback *callback = ui_container_gc;
+        *ret = fh_new_c_obj(prog, cnt, callback, FH_UI_TYPE);
+        return 0;
+}
+
 static int fn_love_ui_newWindow(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (n_args != 4) {
@@ -111,14 +120,14 @@ static int fn_love_ui_header(struct fh_program *prog,
     if (!fh_is_string(&args[0])) {
         return fh_set_error(prog, "Expected string for argument 0");
     }
-    if (!fh_is_bool(&args[1])) {
-        return fh_set_error(prog, "Expected boolean for argument 1");
-
-    }
+    //if (!fh_is_bool(&args[1])) {
+      //  return fh_set_error(prog, "Expected boolean for argument 1");
+    //}
     const char *title = fh_get_string(&args[0]);
     int open = fh_get_bool(&args[1]);
-    int opt = (int) fh_optnumber(args, n_args, 2, MU_OPT_ALIGNLEFT);
-    *ret = fh_new_bool(ui_header(&open, title, opt));
+    int id = fh_get_number(&args[2]);
+    int opt = (int) fh_optnumber(args, n_args, 3, MU_OPT_ALIGNLEFT);
+    *ret = fh_new_bool(ui_header(open, title, id, opt));
     return 0;
 }
 
@@ -126,14 +135,15 @@ static int fn_love_ui_begin_tree(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0])) {
         return fh_set_error(prog, "Expected string for argument 0");
-    }
-    if (!fh_is_bool(&args[1])) {
+    } else if (!fh_is_bool(&args[1])) {
         return fh_set_error(prog, "Expected boolean for argument 1");
-
+    } else if (!fh_is_number(&args[2])) {
+        return fh_set_error(prog, "Expected id (number) for argument 2");
     }
     const char *title = fh_get_string(&args[0]);
     int open = fh_get_bool(&args[1]);
-    *ret = fh_new_bool(ui_begin_tree(&open, title));
+    int id = fh_get_number(&args[2]);
+    *ret = fh_new_bool(ui_begin_tree(open, title, id));
     return 0;
 }
 
@@ -147,8 +157,65 @@ static int fn_love_ui_end_tree(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_ui_begin_panel(struct fh_program *prog,
+                struct fh_value *ret, struct fh_value *args, int n_args) {
+        if (n_args != 1) {
+                return fh_set_error(prog, "Expected at least 1 arguments");
+        }
+        if (!fh_is_c_obj_of_type(&args[0], FH_UI_TYPE)) {
+                return fh_set_error(prog, "Expected argument 0 to be an ui window");
+        }
+
+        mu_Container *cnt = fh_get_c_obj_value(&args[0]);
+        int opt = (int) fh_optnumber(args, n_args, 1, MU_OPT_ALIGNLEFT);
+        ui_begin_panel(cnt, opt);
+
+        *ret = fh_new_bool(true);
+        return 0;
+}
+
+static int fn_love_ui_end_panel(struct fh_program *prog,
+                struct fh_value *ret, struct fh_value *args, int n_args) {
+        UNUSED(prog);
+        UNUSED(ret);
+        UNUSED(args);
+        ui_end_panel();
+
+        *ret = fh_new_bool(true);
+        return 0;
+}
+
+static int fn_love_ui_draw_text(struct fh_program *prog,
+                struct fh_value *ret, struct fh_value *args, int n_args) {
+        if (!fh_is_string(&args[0])) {
+                return fh_set_error(prog, "Expected string for argument 0");
+        }
+        const char *text = fh_get_string(&args[0]);
+        ui_draw_text(text);
+        *ret = fh_new_bool(true);
+        return 0;
+}
+
+static int fn_love_ui_last_id(struct fh_program *prog,
+                struct fh_value *ret, struct fh_value *args, int n_args) {
+        *ret = fh_new_number(ui_get_context()->last_id);
+        return 0;
+}
+
+static int fn_love_ui_set_focus(struct fh_program *prog,
+                struct fh_value *ret, struct fh_value *args, int n_args) {
+        if (!fh_is_number(&args[0])) {
+                return fh_set_error(prog, "expected id as number");
+        }
+        int id = fh_get_number(&args[0]);
+        mu_set_focus(ui_get_context(), id);
+        *ret = fh_new_bool(true);
+        return 0;
+}
+
 static int fn_love_ui_slider(struct fh_program *prog,
-                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args)
+{
     if (n_args < 3) {
         return fh_set_error(prog, "Expected at least 3 arguments");
     }
@@ -174,6 +241,28 @@ static int fn_love_ui_label(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_ui_align(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+        if (!fh_is_string(&args[0])) {
+                return fh_set_error(prog, "Expected string!");
+        }
+        const char *align = fh_get_string(&args[0]);
+        int num = 0;
+        if (strcmp(align, "left") == 0) {
+                num = MU_OPT_ALIGNLEFT;
+        } else if (strcmp(align, "center") == 0) {
+                num = MU_OPT_ALIGNCENTER;
+        } else if (strcmp(align, "right") == 0) {
+                num = MU_OPT_ALIGNRIGHT;
+        } else if (strcmp(align, "bottom") == 0) {
+                num = MU_OPT_ALIGNBOTTOM;
+        } else {
+                return fh_set_error(prog, "invalid alignment %s\n", align);
+        }
+        *ret = fh_new_number(num);
+        return 0;
+}
+
 static int fn_love_ui_button(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     const char *label = fh_get_string(&args[0]);
@@ -186,7 +275,7 @@ static int fn_love_ui_textbox(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     const char *label = fh_get_string(&args[0]);
     int opt = (int) fh_optnumber(&args[1], n_args, 1, MU_OPT_ALIGNLEFT);
-    *ret = fh_new_bool(ui_textbox(label, opt));
+    *ret = fh_new_bool(ui_textbox((char*)label, opt));
     return 0;
 }
 
@@ -225,6 +314,12 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_slider),
     DEF_FN(love_ui_begin),
     DEF_FN(love_ui_end),
+    DEF_FN(love_ui_align),
+    DEF_FN(love_ui_begin_panel),
+    DEF_FN(love_ui_end_panel),
+    DEF_FN(love_ui_draw_text),
+    DEF_FN(love_ui_set_focus),
+    DEF_FN(love_ui_last_id),
 };
 
 
