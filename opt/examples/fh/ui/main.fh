@@ -1,0 +1,98 @@
+
+fn love_joystick_pressed(j) {
+}
+
+fn love_mousepressed(m) {
+}
+
+fn love_mousereleased(m) {
+}
+
+fn love_wheelmoved(y) {
+}
+
+fn love_textinput(text) {
+}
+
+fn love_keypressed(key) {
+}
+
+fn love_keyreleased(key) {
+}
+
+fn love_quit() {
+}
+
+fn love_focus(focused) {
+}
+
+fn love_load()  {
+	let self = {};
+
+	self.window = love_ui_newWindow(40, 40, 300, 450);
+
+        self.show_info = false;
+        self.show_buttons = false;
+
+	love_draw(self);
+	love_update(1, self);
+
+	return self;
+}
+
+fn test_window(self) {
+        if (love_ui_begin_window(self.window, "Demo window")) {
+                let container_info = love_ui_getContainerInfo(self.window);
+
+                # limit window to minimum size
+                love_ui_setContainerInfo(self.window, 
+                container_info[0], #x
+                container_info[1], #y
+                math_max(container_info[2], 240), #w 
+                math_max(container_info[3], 300)); #h
+
+                if (love_ui_header("Window Info", self.show_info, 100)) {
+                        love_ui_layout_row(2, [54, -1], 0);
+                        love_ui_label("Position:");
+                        love_ui_label(container_info[0] + ' ' + container_info[1]);
+                        love_ui_label("Size:");
+                        love_ui_label(container_info[2] + ' ' + container_info[3]);
+                        self.show_info = true;
+                } else {
+                        self.show_info = false;
+                }
+
+        if (love_ui_header("Test Buttons", self.show_buttons, 101)) {
+                love_ui_layout_row(3, [86, -110, -1], 0);
+                love_ui_label("Test buttons 1:");
+                if (love_ui_button("Button 1", 102)) { println("Pressed button 1"); }
+                if (love_ui_button("Button 2", 103)) { println("Pressed button 2"); }
+                love_ui_label("Test buttons 2:");
+                if (love_ui_button("Button 3", 104)) { println("Pressed button 3"); }
+                if (love_ui_button("Button 4", 105)) { println("Pressed button 4"); }
+                
+                self.show_buttons = true;
+        } else {
+                self.show_buttons = false;
+        }
+
+       love_ui_end_window();
+       }
+}
+
+fn love_update(dt, self) {
+	if (love_keyboard_isDown("esc"))
+		love_event_quit();
+
+	love_ui_begin();
+        test_window(self);
+	love_ui_end();
+}
+
+fn love_draw(self) {
+	love_graphics_setBackgroundColor(255, 0, 55, 255);
+}
+
+fn main() {
+
+}

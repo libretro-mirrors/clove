@@ -54,6 +54,58 @@ static int fn_love_ui_newWindow(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_ui_getContainerInfo(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_UI_TYPE)) {
+            return fh_set_error(prog, "Expected argument 0 to be an ui container");
+    }
+    mu_Container *cnt = fh_get_c_obj_value(&args[0]);
+    int x = cnt->rect.x;
+    int y = cnt->rect.y;
+    int w = cnt->rect.w;
+    int h = cnt->rect.h;
+    int zindex = cnt->zindex;
+    bool open = cnt->open;
+
+    struct fh_value arr_value = fh_new_array(prog);
+    struct fh_array *arr = GET_VAL_ARRAY(&arr_value);
+    fh_grow_array(prog, &arr_value, 6);
+    arr->items[0] = fh_new_number(x);
+    arr->items[1] = fh_new_number(y);
+    arr->items[2] = fh_new_number(w);
+    arr->items[3] = fh_new_number(h);
+    arr->items[4] = fh_new_number(zindex);
+    arr->items[5] = fh_new_bool(open);
+    *ret = arr_value;
+    return 0;
+}
+
+static int fn_love_ui_setContainerInfo(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_UI_TYPE)) {
+            return fh_set_error(prog, "Expected argument 0 to be an ui container");
+    }
+    mu_Container *cnt = fh_get_c_obj_value(&args[0]);
+
+
+    int x = (int)fh_optnumber(args, n_args, 1, cnt->rect.x);
+    int y = (int)fh_optnumber(args, n_args, 2, cnt->rect.y);
+    int w = (int)fh_optnumber(args, n_args, 3, cnt->rect.w);
+    int h = (int)fh_optnumber(args, n_args, 4, cnt->rect.h);
+    int zindex = (int)fh_optnumber(args, n_args, 5, cnt->zindex);
+    int open = (int)fh_optnumber(args, n_args, 6, cnt->open);
+
+    cnt->rect.x = x;
+    cnt->rect.y = y;
+    cnt->rect.w = w;
+    cnt->rect.h = h;
+    cnt->zindex = zindex;
+    cnt->open = open;
+
+    *ret = fh_new_null();
+    return 0;
+}
+
 static int fn_love_ui_begin_window(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (n_args != 2) {
@@ -90,7 +142,7 @@ static int fn_love_ui_layout_row(struct fh_program *prog,
     if (!fh_is_number(&args[0])) {
         return fh_set_error(prog, "Expected number as argument 0");
     }
-    if (!fh_is_number(&args[1])) {
+    if (!fh_is_array(&args[1])) {
         return fh_set_error(prog, "Expected number as argument 1");
     }
 
@@ -125,7 +177,7 @@ static int fn_love_ui_header(struct fh_program *prog,
     //}
     const char *title = fh_get_string(&args[0]);
     int open = fh_get_bool(&args[1]);
-    int id = fh_get_number(&args[2]);
+    mu_Id id = (mu_Id) fh_get_number(&args[2]);
     int opt = (int) fh_optnumber(args, n_args, 3, MU_OPT_ALIGNLEFT);
     *ret = fh_new_bool(ui_header(open, title, id, opt));
     return 0;
@@ -263,11 +315,23 @@ static int fn_love_ui_align(struct fh_program *prog,
         return 0;
 }
 
+static int fn_love_ui_checkbox(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+
+        const char *label = fh_get_string(&args[0]);
+        bool state = fh_get_bool(&args[1]);
+        int id = fh_get_number(&args[2]);
+        *ret = fh_new_bool(ui_checkbox(label, state, id));
+        return 0;
+}
+
+
 static int fn_love_ui_button(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     const char *label = fh_get_string(&args[0]);
-    int opt = (int) fh_optnumber(&args[1], n_args, 1, MU_OPT_ALIGNLEFT);
-    *ret = fh_new_bool(ui_button(label, opt));
+    int id = fh_get_number(&args[1]);
+    int opt = (int) fh_optnumber(&args[2], n_args, 1, MU_OPT_ALIGNLEFT);
+    *ret = fh_new_bool(ui_button(label, id, opt));
     return 0;
 }
 
@@ -308,6 +372,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_begin_window),
     DEF_FN(love_ui_end_window),
     DEF_FN(love_ui_header),
+    DEF_FN(love_ui_checkbox),
     DEF_FN(love_ui_button),
     DEF_FN(love_ui_textbox),
     DEF_FN(love_ui_label),
@@ -320,8 +385,10 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_draw_text),
     DEF_FN(love_ui_set_focus),
     DEF_FN(love_ui_last_id),
+    DEF_FN(love_ui_newContainer),
+    DEF_FN(love_ui_getContainerInfo),
+    DEF_FN(love_ui_setContainerInfo),
 };
-
 
 void fh_ui_register(struct fh_program *prog) {
     fh_add_c_funcs(prog, c_funcs, sizeof(c_funcs)/sizeof(c_funcs[0]));

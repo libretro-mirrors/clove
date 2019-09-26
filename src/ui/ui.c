@@ -144,8 +144,12 @@ int ui_begin_window(const char* title, mu_Container *window) {
     return mu_begin_window(moduleData.ctx, window, title);
 }
 
-int ui_button(const char* label, int opt) {
-    return mu_button_ex(moduleData.ctx, label, 0, opt);
+int ui_button(const char* label, int id, int opt) {
+    return mu_button_ex(moduleData.ctx, label, 0, id, opt);
+}
+
+int ui_checkbox(const char *label, int state, int id) {
+	return mu_checkbox(moduleData.ctx, state, label, id);
 }
 
 int ui_textbox(char* label, int opt) {
