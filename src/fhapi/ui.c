@@ -67,16 +67,21 @@ static int fn_love_ui_getContainerInfo(struct fh_program *prog,
     int zindex = cnt->zindex;
     bool open = cnt->open;
 
-    struct fh_value arr_value = fh_new_array(prog);
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_value);
-    fh_grow_array(prog, &arr_value, 6);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    fh_grow_array_object(prog, arr, 6);
     arr->items[0] = fh_new_number(x);
     arr->items[1] = fh_new_number(y);
     arr->items[2] = fh_new_number(w);
     arr->items[3] = fh_new_number(h);
     arr->items[4] = fh_new_number(zindex);
     arr->items[5] = fh_new_bool(open);
+
+    struct fh_value arr_value = fh_new_array(prog);
+    arr_value.data.obj = arr;
+
     *ret = arr_value;
+    fh_restore_pin_state(prog, pin_state);
     return 0;
 }
 
