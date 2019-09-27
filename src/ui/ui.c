@@ -23,7 +23,6 @@ static struct {
     graphics_Image *img;
 } moduleData;
 
-
 static void draw_rect(mu_Rect rect, mu_Color color) {
   graphics_setColor(color.r / 255.0f, color.g / 255.0f,
                     color.b / 255.0f, color.a / 255.0f);
@@ -32,7 +31,6 @@ static void draw_rect(mu_Rect rect, mu_Color color) {
                               0, 1, 1, 0, 0);
   graphics_setColor(1, 1, 1, 1);
 }
-
 
 static void draw_icon(int id, mu_Rect rect, mu_Color color) {
     mu_Rect src = atlas[id];
@@ -44,9 +42,8 @@ static void draw_icon(int id, mu_Rect rect, mu_Color color) {
   graphics_Quad quad;
   graphics_Quad_newWithRef(&quad, src.x, src.y, src.w, src.h, ATLAS_WIDTH, ATLAS_HEIGHT);
 
-  //if (id == MU_ICON_CLOSE) {
-      graphics_Image_draw(moduleData.img, &quad, x, y, 0, 1, 1, 0, 0, 0, 0);
- // }
+  graphics_Image_draw(moduleData.img, &quad, x, y, 0, 1, 1, 0, 0, 0, 0);
+
   graphics_setColor(1, 1, 1, 1);
 }
 
@@ -198,15 +195,8 @@ void ui_end_popup() {
     mu_end_popup(moduleData.ctx);
 }
 
-int ui_slider(mu_Real value, int low, int high, int opt) {
-  static mu_Real tmp;
-  mu_push_id(moduleData.ctx, &value, sizeof(value));
-  tmp = value;
-  int res = mu_slider_ex(moduleData.ctx, &tmp, low, high,
-                         0, "%.0d", opt);
-  value = tmp;
-  mu_pop_id(moduleData.ctx);
-  return res;
+mu_Real ui_slider(mu_Real value, int low, int high, int step, mu_Id id, int opt) {
+  return mu_slider_ex(moduleData.ctx, value, low, high, step, MU_SLIDER_FMT, id, opt);
 }
 
 void ui_end_window(void) {

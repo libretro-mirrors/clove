@@ -274,10 +274,7 @@ static int fn_love_ui_set_focus(struct fh_program *prog,
 static int fn_love_ui_slider(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args)
 {
-    if (n_args < 3) {
-        return fh_set_error(prog, "Expected at least 3 arguments");
-    }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         if (!fh_is_number(&args[i])) {
             return fh_set_error(prog, "Argument %d was expected to be of type number", i);
         }
@@ -285,8 +282,10 @@ static int fn_love_ui_slider(struct fh_program *prog,
     double value = fh_get_number(&args[0]);
     double low = fh_get_number(&args[1]);
     double high = fh_get_number(&args[2]);
-    int opt = (int) fh_optnumber(args, n_args, 3, MU_OPT_ALIGNLEFT);
-    *ret = fh_new_bool(ui_slider(value, low, high, opt));
+    mu_Id id = (mu_Id) fh_get_number(&args[3]);
+    double step = fh_optnumber(args, n_args, 4, 0);
+    int opt = (int) fh_optnumber(args, n_args, 5, MU_OPT_ALIGNLEFT);
+    *ret = fh_new_number(ui_slider(value, low, high, step, id, opt));
     return 0;
 }
 

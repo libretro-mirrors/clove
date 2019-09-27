@@ -34,7 +34,7 @@ int ui_button(const char* label, int id, int opt);
 int ui_textbox(char* label, int opt);
 int ui_header(int state, const char *label, int id, int opt);
 void ui_label(const char *label, int opt);
-int ui_slider(mu_Real value, int low, int high, int opt);
+mu_Real ui_slider(mu_Real value, int low, int high, int step, mu_Id id, int opt);
 int ui_begin_tree(int state, const char *label, int id);
 void ui_end_tree(void);
 void ui_draw_rect(int x, int y, int w, int h,
