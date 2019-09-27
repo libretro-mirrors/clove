@@ -37,7 +37,6 @@ void ui_label(const char *label, int opt);
 int ui_slider(mu_Real value, int low, int high, int opt);
 int ui_begin_tree(int state, const char *label, int id);
 void ui_end_tree(void);
-void ui_draw_text(const char *text);
 void ui_draw_rect(int x, int y, int w, int h,
                   int r, int g, int b, int a);
 void ui_begin_panel(mu_Container *cnt, int opt);

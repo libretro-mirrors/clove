@@ -146,8 +146,7 @@ static int fn_love_ui_layout_row(struct fh_program *prog,
 
     if (!fh_is_number(&args[0])) {
         return fh_set_error(prog, "Expected number as argument 0");
-    }
-    if (!fh_is_array(&args[1])) {
+    } else if (!fh_is_array(&args[1])) {
         return fh_set_error(prog, "Expected number as argument 1");
     }
 
@@ -175,11 +174,12 @@ static int fn_love_ui_layout_row(struct fh_program *prog,
 static int fn_love_ui_header(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0])) {
-        return fh_set_error(prog, "Expected string for argument 0");
+        return fh_set_error(prog, "Expected string title for argument 0");
+    } else if (!fh_is_bool(&args[1])) {
+        return fh_set_error(prog, "Expected boolean for argument 1");
+    } else if (!fh_is_number(&args[2])) {
+        return fh_set_error(prog, "Expected id for argument 2");
     }
-    //if (!fh_is_bool(&args[1])) {
-      //  return fh_set_error(prog, "Expected boolean for argument 1");
-    //}
     const char *title = fh_get_string(&args[0]);
     int open = fh_get_bool(&args[1]);
     mu_Id id = (mu_Id) fh_get_number(&args[2]);
@@ -243,9 +243,10 @@ static int fn_love_ui_end_panel(struct fh_program *prog,
 }
 
 static int fn_love_ui_draw_text(struct fh_program *prog,
-                struct fh_value *ret, struct fh_value *args, int n_args) {
+                struct fh_value *ret, struct fh_value *args, int n_args)
+{
         if (!fh_is_string(&args[0])) {
-                return fh_set_error(prog, "Expected string for argument 0");
+                return fh_set_error(prog, "Expected string for as text");
         }
         const char *text = fh_get_string(&args[0]);
         ui_draw_text(text);
@@ -290,7 +291,12 @@ static int fn_love_ui_slider(struct fh_program *prog,
 }
 
 static int fn_love_ui_label(struct fh_program *prog,
-                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args)
+{
+    if (!fh_is_string(&args[0])) {
+        return fh_set_error(prog, "Expected string label");
+    }
+
     const char *label = fh_get_string(&args[0]);
     int opt = (int) fh_optnumber(args, n_args, 1, MU_OPT_ALIGNLEFT);
     ui_label(label, opt);
@@ -299,7 +305,8 @@ static int fn_love_ui_label(struct fh_program *prog,
 }
 
 static int fn_love_ui_align(struct fh_program *prog,
-                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args)
+{
         if (!fh_is_string(&args[0])) {
                 return fh_set_error(prog, "Expected string!");
         }
@@ -333,7 +340,14 @@ static int fn_love_ui_text(struct fh_program *prog,
 
 static int fn_love_ui_checkbox(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-        //TODO:
+        if (!fh_is_string(&args[0])) {
+            return fh_set_error(prog, "Expected string label");
+        } else if (!fh_is_bool(&args[1])) {
+            return fh_set_error(prog, "Expected state boolean");
+        } else if (!fh_is_number(&args[2])) {
+            return fh_set_error(prog, "Expected id");
+        }
+
         const char *label = fh_get_string(&args[0]);
         bool state = fh_get_bool(&args[1]);
         mu_Id id = (mu_Id) fh_get_number(&args[2]);
@@ -344,8 +358,14 @@ static int fn_love_ui_checkbox(struct fh_program *prog,
 
 static int fn_love_ui_button(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0])) {
+        return fh_set_error(prog, "Expected string label");
+    } else if (!fh_is_number(&args[1])) {
+        return fh_set_error(prog, "Expected id");
+    }
+
     const char *label = fh_get_string(&args[0]);
-    int id = fh_get_number(&args[1]);
+    mu_Id id = (mu_Id) fh_get_number(&args[1]);
     int opt = (int) fh_optnumber(&args[2], n_args, 1, MU_OPT_ALIGNLEFT);
     *ret = fh_new_bool(ui_button(label, id, opt));
     return 0;
@@ -353,6 +373,12 @@ static int fn_love_ui_button(struct fh_program *prog,
 
 static int fn_love_ui_textbox(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_string(&args[0])) {
+        return fh_set_error(prog, "Expected string label");
+    } else if (!fh_is_bool(&args[1])) {
+        return fh_set_error(prog, "Expected state boolean");
+    }
+
     const char *label = fh_get_string(&args[0]);
     int opt = (int) fh_optnumber(&args[1], n_args, 1, MU_OPT_ALIGNLEFT);
     *ret = fh_new_bool(ui_textbox((char*)label, opt));
@@ -419,7 +445,6 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_align),
     DEF_FN(love_ui_begin_panel),
     DEF_FN(love_ui_end_panel),
-    DEF_FN(love_ui_draw_text),
     DEF_FN(love_ui_set_focus),
     DEF_FN(love_ui_last_id),
     DEF_FN(love_ui_newContainer),

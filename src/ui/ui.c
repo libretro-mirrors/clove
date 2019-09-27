@@ -176,10 +176,6 @@ void ui_label(const char *label, int opt) {
     mu_label(moduleData.ctx, label, opt);
 }
 
-void ui_draw_text(const char *text) {
-    mu_text(moduleData.ctx, text);
-}
-
 void ui_draw_rect(int x, int y, int w, int h,
                   int r, int g, int b, int a) {
     mu_draw_rect(moduleData.ctx, mu_rect(x, y, w, h),
