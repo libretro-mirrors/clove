@@ -149,7 +149,11 @@ int ui_button(const char* label, int id, int opt) {
 }
 
 int ui_checkbox(const char *label, int state, int id) {
-	return mu_checkbox(moduleData.ctx, state, label, id);
+    return mu_checkbox(moduleData.ctx, state, label, id);
+}
+
+void ui_text(const char *text) {
+    mu_text(moduleData.ctx, text);
 }
 
 int ui_textbox(char* label, int opt) {

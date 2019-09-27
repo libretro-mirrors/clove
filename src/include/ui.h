@@ -29,6 +29,7 @@ int ui_begin_window(const char *title, mu_Container *window);
 void ui_end_window(void);
 
 int ui_checkbox(const char *label, int state, int id);
+void ui_text(const char *text);
 int ui_button(const char* label, int id, int opt);
 int ui_textbox(char* label, int opt);
 int ui_header(int state, const char *label, int id, int opt);

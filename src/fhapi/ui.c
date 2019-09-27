@@ -199,7 +199,7 @@ static int fn_love_ui_begin_tree(struct fh_program *prog,
     }
     const char *title = fh_get_string(&args[0]);
     int open = fh_get_bool(&args[1]);
-    int id = fh_get_number(&args[2]);
+    mu_Id id = (mu_Id) fh_get_number(&args[2]);
     *ret = fh_new_bool(ui_begin_tree(open, title, id));
     return 0;
 }
@@ -320,12 +320,23 @@ static int fn_love_ui_align(struct fh_program *prog,
         return 0;
 }
 
+static int fn_love_ui_text(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+        if (!fh_is_string(&args[0])) {
+                return fh_set_error(prog, "Expected string!");
+        }
+        const char *text = fh_get_string(&args[0]);
+        ui_text(text);
+        *ret = fh_new_null();
+        return 0;
+}
+
 static int fn_love_ui_checkbox(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-
+        //TODO:
         const char *label = fh_get_string(&args[0]);
         bool state = fh_get_bool(&args[1]);
-        int id = fh_get_number(&args[2]);
+        mu_Id id = (mu_Id) fh_get_number(&args[2]);
         *ret = fh_new_bool(ui_checkbox(label, state, id));
         return 0;
 }
@@ -347,6 +358,27 @@ static int fn_love_ui_textbox(struct fh_program *prog,
     *ret = fh_new_bool(ui_textbox((char*)label, opt));
     return 0;
 }
+
+static int fn_love_ui_layout_begin_column(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    UNUSED(args);
+    UNUSED(n_args);
+    ui_layout_begin_column();
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_ui_layout_end_column(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    UNUSED(args);
+    UNUSED(n_args);
+    ui_layout_end_column();
+    *ret = fh_new_null();
+    return 0;
+}
+
 
 static int fn_love_ui_begin(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
@@ -393,6 +425,9 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_newContainer),
     DEF_FN(love_ui_getContainerInfo),
     DEF_FN(love_ui_setContainerInfo),
+    DEF_FN(love_ui_layout_begin_column),
+    DEF_FN(love_ui_layout_end_column),
+    DEF_FN(love_ui_text),
 };
 
 void fh_ui_register(struct fh_program *prog) {

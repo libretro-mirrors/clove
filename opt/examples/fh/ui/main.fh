@@ -34,6 +34,15 @@ fn love_load()  {
         self.show_info = false;
         self.show_buttons = false;
 
+	self.show_tree = false;
+	self.show_tree_1 = false;
+	self.show_tree_2 = false;
+
+	self.show_tree_3 = false;
+	self.show_checkbox_1 = false;
+	self.show_checkbox_2 = false;
+	self.show_checkbox_3 = false;
+
 	love_draw(self);
 	love_update(1, self);
 
@@ -75,8 +84,63 @@ fn test_window(self) {
         } else {
                 self.show_buttons = false;
         }
+	
+	if (love_ui_header("Tree and Text", self.show_tree, 106)) {
+		love_ui_layout_row(2, [140, -1], 0);
+		love_ui_layout_begin_column();
+		if (love_ui_begin_tree("Test 1", self.show_tree_1, 107)) {
+			love_ui_label("Hello");
+			love_ui_label("world");
+			love_ui_end_tree();
+			self.show_tree_1 = true;
+		} else {
+			self.show_tree_1 = false;
+		}
+		if (love_ui_begin_tree("Test 1b", self.show_tree_2, 108)) {
+			love_ui_button("Button 1", 109);		
+			love_ui_button("Button 2", 110);
+			love_ui_end_tree();		
+			self.show_tree_2 = true;
+		} else {
+			self.show_tree_2 = false;
+		}
 
-       love_ui_end_window();
+		if (love_ui_begin_tree("Test 2", self.show_tree_3, 111)) {
+			if (love_ui_checkbox("checkbox 1", self.show_checkbox_1, 112)) {
+				self.show_checkbox_1 = true;
+			} else {
+				self.show_checkbox_1 = false;
+			}
+			if (love_ui_checkbox("checkbox 2", self.show_checkbox_2, 113)) {
+				self.show_checkbox_2 = true;
+			} else {
+				self.show_checkbox_2 = false;
+			}
+			if (love_ui_checkbox("checkbox 3", self.show_checkbox_3, 114)) {
+				self.show_checkbox_3 = true;
+			} else {
+				self.show_checkbox_3 = false;
+			}
+			love_ui_end_tree();
+			self.show_tree_3 = true;
+		} else {
+			self.show_tree_3 = false;
+		}
+		love_ui_layout_end_column();
+
+		love_ui_layout_begin_column();
+		love_ui_layout_row(1, [ -1 ], 0);
+		love_ui_text("Lorem ipsum dolor sit amet, consectetur adipiscing " +
+		"elit. Maecenas lacinia, sem eu lacinia molestie, mi risus faucibus " +
+		"ipsum, eu varius magna felis a nulla.");
+		love_ui_layout_end_column();
+
+		self.show_tree = true;
+	} else {
+		self.show_tree = false;
+	}
+
+	love_ui_end_window();
        }
 }
 
