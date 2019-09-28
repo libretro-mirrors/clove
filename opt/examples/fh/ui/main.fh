@@ -30,6 +30,7 @@ fn love_load()  {
 	let self = {};
 
 	self.window = love_ui_newWindow(40, 40, 300, 450);
+	self.window_style = love_ui_newWindow(340, 240, 300, 260);
 
         self.show_info = false;
         self.show_buttons = false;
@@ -49,6 +50,16 @@ fn love_load()  {
 	self.r = self.bg[0];
 	self.g = self.bg[1];
 	self.b = self.bg[2];
+
+	self.r1 = 0;
+	self.g1 = 0;
+	self.b1 = 0;
+	self.a1 = 0;
+
+	self.r2 = 0;
+	self.g2 = 0;
+	self.b2 = 0;
+	self.a2 = 0;
 
 	love_draw(self);
 	love_update(1, self);
@@ -152,18 +163,19 @@ fn test_window(self) {
 		# sliders 
 		love_ui_layout_begin_column();
 		love_ui_layout_row(2, [ 46, -1 ], 0);
-		love_ui_label("Red:");   self.r = love_ui_slider(self.bg[0], 0, 255, 116);
+		love_ui_label("Red:");   self.r = love_ui_slider(self.bg[0], -10, 255, 116, 20);
 		love_ui_label("Green:"); self.g = love_ui_slider(self.bg[1], 0, 255, 117);
 		love_ui_label("Blue:");  self.b = love_ui_slider(self.bg[2], 0, 255, 118);
 		
-		# 0 means no change
-		if (self.r != 0) {
+		# 0.97 is a hard-coded value within
+		# the ui module which means *no change*
+		if (self.r != 0.97) {
 			self.bg[0] = self.r;
-		}		
-		if (self.g != 0) {
+		}
+		if (self.g != 0.97) {
 			self.bg[1] = self.g;
 		}		
-		if (self.b != 0) {
+		if (self.b != 0.97) {
 			self.bg[2] = self.b;
 		}		
 
@@ -179,6 +191,9 @@ fn test_window(self) {
 			tointeger(self.bg[1]) + ' ' + 
 			tointeger(self.bg[2]), rx, ry, rw, rh, 0,
 			 love_ui_align("center"));
+
+		love_ui_layout_setNext(100, 300, 140, 40, true);
+		love_ui_label("Surprise!");
 		self.header_2 = true;
 	} else {
 		self.header_2 = false;
@@ -188,12 +203,82 @@ fn test_window(self) {
        }
 }
 
+fn style_window(self) {
+        if (love_ui_begin_window(self.window_style, "Style window")) {
+		let w = love_ui_getContainerInfo(love_ui_getContainer())[2] * 0.14;
+		love_ui_layout_row(6, [80, w, w, w, w, -1], 0);
+
+		love_ui_label("text: ");
+		let c = love_ui_getColor('text');
+		
+		self.r1 = love_ui_slider(c[0], 0, 255, 201);
+		self.g1 = love_ui_slider(c[1], 0, 255, 202);
+		self.b1 = love_ui_slider(c[2], 0, 255, 203);
+		self.a1 = love_ui_slider(c[3], 0, 255, 204);
+
+		if (self.r1 != 0.97) {
+			c[0] = self.r1;
+		}
+
+		if (self.g1 != 0.97) {
+			c[1] = self.g1;
+		}
+
+		if (self.b1 != 0.97) {
+			c[2] = self.b1;
+		}
+
+		if (self.a1 != 0.97) {
+			c[3] = self.a1;
+		}
+
+		let rect = love_ui_layout_next();
+		love_ui_rect(rect[0], rect[1], rect[2], rect[3], c[0], c[1], c[2], c[3]);
+		love_ui_setColor(c[4], c[0], c[1], c[2], c[3]);
+
+
+		love_ui_layout_row(6, [80, w, w, w, w, -1], 0);
+
+		love_ui_label("window background: ");
+		let c1 = love_ui_getColor('windowBg');
+		
+		self.r2 = love_ui_slider(c1[0], 0, 255, 205);
+		self.g2 = love_ui_slider(c1[1], 0, 255, 206);
+		self.b2 = love_ui_slider(c1[2], 0, 255, 207);
+		self.a2 = love_ui_slider(c1[3], 0, 255, 208);
+
+		if (self.r2 != 0.97) {
+			c1[0] = self.r2;
+		}
+
+		if (self.g2 != 0.97) {
+			c1[1] = self.g2;
+		}
+
+		if (self.b2 != 0.97) {
+			c1[2] = self.b2;
+		}
+
+		if (self.a2 != 0.97) {
+			c1[3] = self.a2;
+		}
+
+		let rect = love_ui_layout_next();
+		love_ui_rect(rect[0], rect[1], rect[2], rect[3], c1[0], c1[1],
+			c1[2], c1[3]);
+		love_ui_setColor(c1[4], c1[0], c1[1], c1[2], c1[3]);
+
+		love_ui_end_window();
+	}
+}
+
 fn love_update(dt, self) {
 	if (love_keyboard_isDown("esc"))
 		love_event_quit();
 
 	love_ui_begin();
         test_window(self);
+	style_window(self);
 	love_ui_end();
 }
 

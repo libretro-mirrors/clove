@@ -61,7 +61,7 @@ static int text_width(mu_Font font, const char *text, int len) {
 }
 
 static int text_height(mu_Font font) {
-  return graphics_Font_getHeight(moduleData.font);
+    return graphics_Font_getHeight(moduleData.font);
 }
 
 void ui_init(void) {
