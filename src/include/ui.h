@@ -28,6 +28,9 @@ void ui_init_window(mu_Container *ctn, int x, int y, int w, int h, int opt);
 int ui_begin_window(const char *title, mu_Container *window);
 void ui_end_window(void);
 
+void ui_draw_control_text(const char *str, mu_Rect rect, int colorid, int opt);
+mu_Rect ui_layout_next(void);
+void ui_rect(mu_Rect rect, mu_Color color);
 int ui_checkbox(const char *label, int state, int id);
 void ui_text(const char *text);
 int ui_button(const char* label, int id, int opt);

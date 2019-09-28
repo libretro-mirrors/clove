@@ -54,6 +54,87 @@ static int fn_love_ui_newWindow(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_ui_layout_next(struct fh_program *prog,
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(args);
+    if (n_args != 0) {
+        return fh_set_error(prog, "This function doesn't expect any arguments");
+    }
+    mu_Rect rect = ui_layout_next();
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    fh_grow_array_object(prog, arr, 4);
+    arr->items[0] = fh_new_number(rect.x);
+    arr->items[1] = fh_new_number(rect.y);
+    arr->items[2] = fh_new_number(rect.w);
+    arr->items[3] = fh_new_number(rect.h);
+
+    struct fh_value arr_value = fh_new_array(prog);
+    arr_value.data.obj = arr;
+
+    *ret = arr_value;
+    fh_restore_pin_state(prog, pin_state);
+    return 0;
+}
+
+static int fn_love_ui_rect(struct fh_program *prog,
+                           struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args < 6)
+        return fh_set_error(prog, "Expected at least 6 arguments, got %d", n_args);
+
+    for (int i = 0; i < 6; i++) {
+        if (!fh_is_number(&args[i])) {
+            return fh_set_error(prog, "Expected number at argument %d", i);
+        }
+    }
+
+    mu_Rect rect;
+    rect.x = fh_get_number(&args[0]);
+    rect.y = fh_get_number(&args[1]);
+    rect.w = fh_get_number(&args[2]);
+    rect.h = fh_get_number(&args[3]);
+
+    mu_Color color;
+    color.r = fh_get_number(&args[4]);
+    color.g = fh_get_number(&args[5]);
+    color.b = fh_get_number(&args[6]);
+    color.a = fh_optnumber(args, n_args, 7, 255);
+
+    ui_rect(rect, color);
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_ui_control_text(struct fh_program *prog,
+                           struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args < 6)
+        return fh_set_error(prog, "Expected at least 6 arguments, got %d", n_args);
+
+    if (!fh_is_string(&args[0])) {
+        return fh_set_error(prog, "Expected string for argument 0");
+    }
+
+    const char *str = fh_get_string(&args[0]);
+
+    for (int i = 1; i < 6; i++) {
+        if (!fh_is_number(&args[i])) {
+            return fh_set_error(prog, "Expected number at argument %d", i);
+        }
+    }
+
+    mu_Rect rect;
+    rect.x = fh_get_number(&args[1]);
+    rect.y = fh_get_number(&args[2]);
+    rect.w = fh_get_number(&args[3]);
+    rect.h = fh_get_number(&args[4]);
+
+    int colorid = (int) fh_get_number(&args[5]);
+    int opt = fh_optnumber(args, n_args, 6, MU_OPT_ALIGNLEFT);
+    ui_draw_control_text(str, rect, colorid, opt);
+    *ret = fh_new_null();
+    return 0;
+}
+
 static int fn_love_ui_getContainerInfo(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_UI_TYPE)) {
@@ -238,18 +319,6 @@ static int fn_love_ui_end_panel(struct fh_program *prog,
         UNUSED(args);
         ui_end_panel();
 
-        *ret = fh_new_bool(true);
-        return 0;
-}
-
-static int fn_love_ui_draw_text(struct fh_program *prog,
-                struct fh_value *ret, struct fh_value *args, int n_args)
-{
-        if (!fh_is_string(&args[0])) {
-                return fh_set_error(prog, "Expected string for as text");
-        }
-        const char *text = fh_get_string(&args[0]);
-        ui_draw_text(text);
         *ret = fh_new_bool(true);
         return 0;
 }
@@ -452,6 +521,9 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_layout_begin_column),
     DEF_FN(love_ui_layout_end_column),
     DEF_FN(love_ui_text),
+    DEF_FN(love_ui_layout_next),
+    DEF_FN(love_ui_rect),
+    DEF_FN(love_ui_control_text),
 };
 
 void fh_ui_register(struct fh_program *prog) {

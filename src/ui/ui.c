@@ -141,6 +141,18 @@ int ui_begin_window(const char* title, mu_Container *window) {
     return mu_begin_window(moduleData.ctx, window, title);
 }
 
+void ui_draw_control_text(const char *str, mu_Rect rect, int colorid, int opt) {
+    mu_draw_control_text(moduleData.ctx, str, rect, colorid, opt);
+}
+
+mu_Rect ui_layout_next(void) {
+    return mu_layout_next(moduleData.ctx);
+}
+
+void ui_rect(mu_Rect rect, mu_Color color) {
+    mu_draw_rect(moduleData.ctx, rect, color);
+}
+
 int ui_button(const char* label, int id, int opt) {
     return mu_button_ex(moduleData.ctx, label, 0, id, opt);
 }
