@@ -165,8 +165,8 @@ void ui_text(const char *text) {
     mu_text(moduleData.ctx, text);
 }
 
-int ui_textbox(char* label, int opt) {
-    return mu_textbox(moduleData.ctx, label, sizeof(label), opt);
+int ui_textbox(char* label, int ls, mu_Id id, int opt) {
+    return mu_textbox(moduleData.ctx, label, ls, id, opt);
 }
 
 int ui_header(int state, const char *label, int id, int opt) {

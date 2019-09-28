@@ -394,7 +394,17 @@ static int fn_love_ui_last_id(struct fh_program *prog,
     return 0;
 }
 
-static int fn_love_ui_set_focus(struct fh_program *prog,
+static int fn_love_ui_hasFocus(struct fh_program *prog,
+                                struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_number(&args[0])) {
+        return fh_set_error(prog, "expected id as number");
+    }
+    mu_Id id = (mu_Id) fh_get_number(&args[0]);
+    *ret = fh_new_bool(ui_get_context()->focus == id);
+    return 0;
+}
+
+static int fn_love_ui_setFocus(struct fh_program *prog,
                                 struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_number(&args[0])) {
         return fh_set_error(prog, "expected id as number");
@@ -586,8 +596,21 @@ static int fn_love_ui_button(struct fh_program *prog,
 
     const char *label = fh_get_string(&args[0]);
     mu_Id id = (mu_Id) fh_get_number(&args[1]);
-    int opt = (int) fh_optnumber(&args[2], n_args, 1, MU_OPT_ALIGNLEFT);
+    int opt = (int) fh_optnumber(args, n_args, 2, MU_OPT_ALIGNLEFT);
     *ret = fh_new_bool(ui_button(label, id, opt));
+    return 0;
+}
+
+// TODO: This value shouldn't be hard-coded!
+static char textbox_buf[128];
+
+static int fn_love_ui_clear_textbox(struct fh_program *prog,
+                              struct fh_value *ret, struct fh_value *args, int n_args) {
+    UNUSED(prog);
+    UNUSED(args);
+    UNUSED(n_args);
+    memset(textbox_buf, 0, sizeof (textbox_buf));
+    *ret = fh_new_null();
     return 0;
 }
 
@@ -595,13 +618,22 @@ static int fn_love_ui_textbox(struct fh_program *prog,
                               struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0])) {
         return fh_set_error(prog, "Expected string label");
-    } else if (!fh_is_bool(&args[1])) {
-        return fh_set_error(prog, "Expected state boolean");
+    } else if (!fh_is_number(&args[1])) {
+        return fh_set_error(prog, "Expected number id");
     }
 
     const char *label = fh_get_string(&args[0]);
-    int opt = (int) fh_optnumber(&args[1], n_args, 1, MU_OPT_ALIGNLEFT);
-    *ret = fh_new_bool(ui_textbox((char*)label, opt));
+
+    int len = strlen(label);
+    size_t new_size = strlen(textbox_buf) + len;
+    if (new_size >= sizeof(textbox_buf)) {
+        *ret = fh_new_bool(false);
+        return 0;
+    }
+    memcpy(textbox_buf + len, label, len);
+    mu_Id id = (mu_Id) fh_get_number(&args[1]);
+    int opt = (int) fh_optnumber(args, n_args, 2, MU_OPT_ALIGNLEFT);
+    *ret = fh_new_bool(ui_textbox((char*)textbox_buf, sizeof(textbox_buf), id, opt));
     return 0;
 }
 
@@ -658,6 +690,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_checkbox),
     DEF_FN(love_ui_button),
     DEF_FN(love_ui_textbox),
+    DEF_FN(love_ui_clear_textbox),
     DEF_FN(love_ui_label),
     DEF_FN(love_ui_slider),
     DEF_FN(love_ui_begin),
@@ -665,7 +698,8 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_align),
     DEF_FN(love_ui_begin_panel),
     DEF_FN(love_ui_end_panel),
-    DEF_FN(love_ui_set_focus),
+    DEF_FN(love_ui_setFocus),
+    DEF_FN(love_ui_hasFocus),
     DEF_FN(love_ui_last_id),
     DEF_FN(love_ui_newContainer),
     DEF_FN(love_ui_getContainerInfo),
