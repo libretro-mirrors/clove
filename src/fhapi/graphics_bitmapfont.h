@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_BITMAP_FONT_TYPE 2
+#define FH_BITMAP_FONT_TYPE 3
 
 void fh_graphics_bitmap_font_register(struct fh_program *prog);

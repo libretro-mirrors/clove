@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_FONT_TYPE 1
+#define FH_FONT_TYPE 4
 
 void fh_graphics_font_register(struct fh_program *prog);

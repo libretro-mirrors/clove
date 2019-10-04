@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_GRAPHICS_MESH 240
+#define FH_GRAPHICS_MESH 5
 
 void fh_graphics_mesh_register(struct fh_program *prog);

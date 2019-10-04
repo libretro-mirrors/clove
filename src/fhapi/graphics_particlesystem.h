@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_GRAPHICS_PARTICLE 304
+#define FH_GRAPHICS_PARTICLE 6
 
 void fh_graphics_particlesystem_register(struct fh_program *prog);

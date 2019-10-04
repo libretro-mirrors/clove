@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_UI_TYPE 12
+#define FH_UI_TYPE 10
 
 void fh_ui_register(struct fh_program *prog);

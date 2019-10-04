@@ -10,6 +10,6 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_GRAPHICS_BATCH 20
+#define FH_GRAPHICS_BATCH 2
 
 void fh_graphics_batch_register(struct fh_program *prog);

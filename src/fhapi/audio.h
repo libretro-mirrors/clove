@@ -10,7 +10,7 @@
 
 #include "../3rdparty/FH/src/fh.h"
 
-#define FH_AUDIO_STATIC_SOURCE_TYPE 10
-#define FH_AUDIO_STREAM_SOURCE_TYPE 11
+#define FH_AUDIO_STATIC_SOURCE_TYPE 0
+#define FH_AUDIO_STREAM_SOURCE_TYPE 1
 
 void fh_audio_register(struct fh_program *prog);

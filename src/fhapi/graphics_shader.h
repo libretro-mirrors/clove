@@ -12,7 +12,7 @@
 
 #include "../include/shader.h"
 
-#define FH_GRAPHICS_SHADER 303
+#define FH_GRAPHICS_SHADER 8
 
 typedef struct {
   graphics_Shader shader;

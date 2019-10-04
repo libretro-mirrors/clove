@@ -13,7 +13,7 @@
 #include "../include/imagedata.h"
 #include "../include/image.h"
 
-#define FH_IMAGE_TYPE 0
+#define FH_IMAGE_TYPE 9
 
 typedef struct {
     image_ImageData *data;

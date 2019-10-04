@@ -34,7 +34,7 @@ void ui_rect(mu_Rect rect, mu_Color color);
 int ui_checkbox(const char *label, int state, int id);
 void ui_text(const char *text);
 int ui_button(const char* label, int id, int opt);
-int ui_textbox(char* label, int ls, mu_Id id, int opt);
+char *ui_textbox(char* label, int ls, mu_Id id, int opt);
 int ui_header(int state, const char *label, int id, int opt);
 void ui_label(const char *label, int opt);
 mu_Real ui_slider(mu_Real value, int low, int high, int step, mu_Id id, int opt);
