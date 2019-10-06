@@ -165,8 +165,8 @@ void ui_text(const char *text) {
     mu_text(moduleData.ctx, text);
 }
 
-char *ui_textbox(char* label, int ls, mu_Id id, int opt) {
-    return mu_textbox(moduleData.ctx, label, ls, id, opt);
+int ui_textbox(char* label, int ls, mu_Id id, char *typed_string, int opt) {
+    return mu_textbox(moduleData.ctx, label, ls, id, typed_string, opt);
 }
 
 int ui_header(int state, const char *label, int id, int opt) {
@@ -224,6 +224,7 @@ void ui_end(void) {
 }
 
 void ui_draw(void) {
+    graphics_clearScissor();
     mu_Command *cmd = NULL;
     while (mu_next_command(moduleData.ctx, &cmd)) {
       if (cmd->type == MU_COMMAND_TEXT) {
@@ -233,8 +234,8 @@ void ui_draw(void) {
       } else if (cmd->type == MU_COMMAND_ICON) {
           draw_icon(cmd->icon.id, cmd->icon.rect, cmd->icon.color);
       } else if (cmd->type == MU_COMMAND_CLIP) {
-          glScissor(cmd->clip.rect.x, graphics_getHeight() - (cmd->clip.rect.y + cmd->clip.rect.h),
-                    cmd->clip.rect.w, cmd->clip.rect.h);
+          graphics_setScissor(cmd->clip.rect.x, graphics_getHeight() - (cmd->clip.rect.y + cmd->clip.rect.h),
+                                      cmd->clip.rect.w, cmd->clip.rect.h);
       }
     }
 }

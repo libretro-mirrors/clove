@@ -497,6 +497,27 @@ static int fn_love_ui_label(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_ui_res_state(struct fh_program *prog,
+                            struct fh_value *ret, struct fh_value *args, int n_args)
+{
+    if (!fh_is_string(&args[0])) {
+        return fh_set_error(prog, "Expected string!");
+    }
+    const char *state = fh_get_string(&args[0]);
+    int num = 0;
+    if (strcmp(state, "active") == 0) {
+        num = MU_RES_ACTIVE;
+    } else if (strcmp(state, "submit") == 0) {
+        num = MU_RES_SUBMIT;
+    } else if (strcmp(state, "change") == 0) {
+        num = MU_RES_CHANGE;
+    } else {
+        return fh_set_error(prog, "invalid resource state %s\n", state);
+    }
+    *ret = fh_new_number(num);
+    return 0;
+}
+
 static int fn_love_ui_align(struct fh_program *prog,
                             struct fh_value *ret, struct fh_value *args, int n_args)
 {
@@ -653,6 +674,7 @@ static int fn_love_ui_button(struct fh_program *prog,
 
 // TODO: This value shouldn't be hard-coded!
 static char textbox_buf[128];
+static char type_string_textbox_buf[128];
 
 static int fn_love_ui_clear_textbox(struct fh_program *prog,
                               struct fh_value *ret, struct fh_value *args, int n_args) {
@@ -676,16 +698,29 @@ static int fn_love_ui_textbox(struct fh_program *prog,
 
     size_t len = strlen(label);
     size_t new_size = strlen(textbox_buf) + len;
-    if (new_size >= sizeof(textbox_buf)) {
+    int sizeof_textbox_buf = sizeof(textbox_buf);
+    if (new_size >= sizeof_textbox_buf) {
         *ret = fh_new_bool(false);
         return 0;
     }
     memcpy(textbox_buf + len, label, len);
     mu_Id id = (mu_Id) fh_get_number(&args[1]);
     int opt = (int) fh_optnumber(args, n_args, 2, MU_OPT_ALIGNLEFT);
-    char *ret_string = ui_textbox((char*)textbox_buf, sizeof(textbox_buf), id, opt);
-    if (strcmp(ret_string, " ") != 0) {
-        *ret = fh_new_string(prog, ret_string);
+    int ret_state = ui_textbox((char*)textbox_buf, sizeof_textbox_buf, id,
+               type_string_textbox_buf, opt);
+    if (strcmp(type_string_textbox_buf, " ") != 0) {
+
+        int pin_state = fh_get_pin_state(prog);
+        struct fh_array *arr = fh_make_array(prog, true);
+        fh_grow_array_object(prog, arr, 4);
+        arr->items[0] = fh_new_number(ret_state);
+        arr->items[1] = fh_new_string(prog, type_string_textbox_buf);
+
+        struct fh_value arr_value = fh_new_array(prog);
+        arr_value.data.obj = arr;
+
+        *ret = arr_value;
+        fh_restore_pin_state(prog, pin_state);
     } else {
         *ret = fh_new_bool(false);
     }
@@ -772,7 +807,8 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_setColor),
     DEF_FN(love_ui_getContainerScroll),
     DEF_FN(love_ui_setContainerScroll),
-    DEF_FN(love_ui_getContainerContentSize)
+    DEF_FN(love_ui_getContainerContentSize),
+    DEF_FN(love_ui_res_state)
 };
 
 void fh_ui_register(struct fh_program *prog) {
