@@ -58,7 +58,7 @@ static int fn_love_graphics_newShader(struct fh_program *prog,
     if (fh_is_string(&args[1])) {
         fragmentSrc = fh_get_string(&args[1]);
 
-        if (!isVertexShader(vertexSrc)) {
+        if (isVertexShader(vertexSrc)) {
             // TODO
             filesystem_read(vertexSrc, &loadedFile1);
             if (!loadedFile1 || !isVertexShader(loadedFile1)) {
@@ -149,14 +149,14 @@ static int fn_love_graphics_getShader(struct fh_program *prog,
 
 static int fn_love_graphics_setShader(struct fh_program *prog,
                                       struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (fh_is_null(&args[0])) {
-        graphics_setDefaultShader();
-        moduleData.currentShader = NULL;
-    } else if (fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)) {
+    UNUSED(prog);
+    UNUSED(n_args);
+    if (fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)) {
         moduleData.currentShader = fh_get_c_obj_value(&args[0]);
         graphics_setShader(&moduleData.currentShader->shader);
     } else {
-        return fh_set_error(prog, "expected null or shader");
+        graphics_setDefaultShader();
+        moduleData.currentShader = NULL;
     }
     *ret = fh_new_null();
     return 0;
@@ -198,6 +198,34 @@ static int fn_love_graphics_getShaderWarnings(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_shader_sendInteger(struct fh_program *prog,
+                                    struct fh_value *ret, struct fh_value *args, int n_args) {
+
+    if (n_args != 3)
+        return fh_set_error(prog, "Expected 3 arguments, got '%d'", n_args);
+
+    if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_SHADER)
+            || !fh_is_string(&args[1])
+            || !fh_is_number(&args[2]))
+        return fh_set_error(prog, "Expected shader, 'extern' aka uniform name and an integer");
+
+    fh_graphics_Shader *shader = fh_get_c_obj_value(&args[0]);
+    const char *name = fh_get_string(&args[1]);
+
+    graphics_ShaderUniformInfo info;
+    info.location = glGetUniformLocation(shader->shader.program, name);
+   // if (info.location == -1) {
+   //     return fh_set_error(prog, "Cannot find extern integer named '%s'", name);
+   // }
+    info.type = GL_INT;
+
+    int v = (int)args[2].data.num;
+    graphics_Shader_sendIntegers(&shader->shader, &info, 1, (GLint*)&v);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
 static int fn_love_shader_sendFloat(struct fh_program *prog,
                                     struct fh_value *ret, struct fh_value *args, int n_args) {
 
@@ -214,9 +242,9 @@ static int fn_love_shader_sendFloat(struct fh_program *prog,
 
     graphics_ShaderUniformInfo info;
     info.location = glGetUniformLocation(shader->shader.program, name);
-    if (info.location == -1) {
-        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
-    }
+   // if (info.location == -1) {
+   //     return fh_set_error(prog, "Cannot find extern float named '%s'", name);
+   // }
     info.type = GL_FLOAT;
 
     float v = (float)args[2].data.num;
@@ -242,9 +270,9 @@ static int fn_love_shader_sendBool(struct fh_program *prog,
 
     graphics_ShaderUniformInfo info;
     info.location = glGetUniformLocation(shader->shader.program, name);
-    if (info.location == -1) {
-        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
-    }
+    ////if (info.location == -1) {
+  //      return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+  //  }
     info.type = GL_BOOL;
 
     int v = (int)args[2].data.b;
@@ -271,9 +299,9 @@ static int fn_love_shader_sendVector(struct fh_program *prog,
     graphics_ShaderUniformInfo info;
 
     info.location = glGetUniformLocation(shader->shader.program, name);
-    if (info.location == -1) {
-        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
-    }
+   // if (info.location == -1) {
+     //   return fh_set_error(prog, "Cannot find extern vector named '%s'", name);
+    //}
 
     struct fh_array *arr = GET_VAL_ARRAY(&args[2]);
 
@@ -286,14 +314,15 @@ static int fn_love_shader_sendVector(struct fh_program *prog,
     } else
         return fh_set_error(prog, "Invalid array length!");
 
-    float *v = malloc(sizeof(float) * arr->len);
+    //float *v = malloc(sizeof(float) * arr->len);
+    GLfloat v[arr->len];
     for (uint32_t i = 0; i < arr->len; i++) {
         if (!fh_is_number(&arr->items[i]))
             return fh_set_error(prog, "Expected float got '%s'", fh_type_to_str(prog, arr->items[i].type));
-        v[i] = (float)arr->items[i].data.num;
+        v[i] = (GLfloat)arr->items[i].data.num;
     }
-    graphics_Shader_sendFloatVectors(&shader->shader, &info, 1, (GLfloat*)v);
-    free(v);
+    graphics_Shader_sendFloatVectors(&shader->shader, &info, 1, v);
+    //free(v);
 
     *ret = fh_new_null();
     return 0;
@@ -316,7 +345,7 @@ static int fn_love_shader_sendMatrice(struct fh_program *prog,
     graphics_ShaderUniformInfo info;
     info.location = glGetUniformLocation(shader->shader.program, name);
     if (info.location == -1) {
-        return fh_set_error(prog, "Cannot find extern variable named '%s'", name);
+        return fh_set_error(prog, "Cannot find extern matrice named '%s'", name);
     }
     info.type = GL_FLOAT;
 
@@ -394,6 +423,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_graphics_getMaxTextureUnits),
     DEF_FN(love_graphics_getShaderWarnings),
     DEF_FN(love_shader_sendFloat),
+    DEF_FN(love_shader_sendInteger),
     DEF_FN(love_shader_sendBool),
     DEF_FN(love_shader_sendVector),
     DEF_FN(love_shader_sendMatrice),
