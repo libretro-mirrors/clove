@@ -64,7 +64,7 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
     glGetShaderiv(shader, GL_COMPILE_STATUS, &state);
     glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &infolen);
 
-    char *info = malloc(infolen);
+    char *info = malloc(infolen | 1);
     glGetShaderInfoLog(shader, infolen, 0, info);
     info[infolen] = 0;
     switch(shaderType) {
@@ -78,7 +78,7 @@ bool graphics_Shader_compileAndAttachShaderRaw(graphics_Shader *program, GLenum 
         program->warnings.fragment = info;
         break;
     }
-
+    free(info);
     glDeleteShader(shader);
     return state;
 }

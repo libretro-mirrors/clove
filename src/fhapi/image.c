@@ -233,6 +233,8 @@ static int fn_love_image_setFilter(struct fh_program *prog,
     const char *mag = fh_get_string(&args[2]);
 
     graphics_Filter newFilter;
+    graphics_Image_getFilter(img->img, &newFilter);
+
     newFilter.maxAnisotropy = (float)fh_optnumber(args, n_args, 3, 1.0);
 
     if (strcmp(min, "none") == 0) {

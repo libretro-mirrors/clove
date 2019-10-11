@@ -79,13 +79,21 @@ void ui_init(void) {
     image_ImageData_new_with_surface(data, atlas_texture, ATLAS_WIDTH, ATLAS_HEIGHT, 1);
 
     graphics_Filter filter;
+
+    moduleData.img = malloc(sizeof(graphics_Image));
+    graphics_Image_new_with_ImageData(moduleData.img, data);
+
+    graphics_Image_getFilter(moduleData.img, &filter);
     filter.magMode = graphics_FilterMode_nearest;
     filter.minMode = graphics_FilterMode_nearest;
     filter.maxAnisotropy = 1;
 
-    moduleData.img = malloc(sizeof(graphics_Image));
-    graphics_Image_new_with_ImageData(moduleData.img, data);
     graphics_Image_setFilter(moduleData.img, &filter);
+
+    graphics_Font_getFilter(moduleData.font, &filter);
+    filter.magMode = graphics_FilterMode_nearest;
+    filter.minMode = graphics_FilterMode_nearest;
+    filter.maxAnisotropy = 1;
 
     graphics_Font_setFilter(moduleData.font, &filter);
 
