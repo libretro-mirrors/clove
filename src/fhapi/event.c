@@ -17,9 +17,16 @@ static int fn_love_event_quit(struct fh_program *prog, struct fh_value *ret, str
     return 0;
 }
 
+static int fn_love_event_reload(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+    clove_reload = true;
+    *ret = fh_new_null();
+    return 0;
+}
+
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_event_quit),
+    DEF_FN(love_event_reload),
 };
 
 void fh_event_register(struct fh_program *prog) {

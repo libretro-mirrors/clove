@@ -30,4 +30,4 @@
 #include "mouse.h"
 
 void fh_main_activity_load(int argc, char* argv[]);
-void fh_main_loop(void);
+void fh_main_loop(int argc, char **argv);

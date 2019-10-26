@@ -21,59 +21,81 @@ static fh_c_obj_gc_callback onFreeCallback(fh_image_t *data) {
     return (fh_c_obj_gc_callback)1;
 }
 
+static int fn_love_graphics_newImageData(struct fh_program *prog,
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (n_args == 0)
+        return fh_set_error(prog, "Expected width & height");
+
+    if (!fh_is_number(&args[0]) || !fh_is_number(&args[1]))
+        return fh_set_error(prog, "Expected width & height");
+
+    image_ImageData* data = malloc(sizeof(image_ImageData));
+
+    image_ImageData_new_with_size(data, (int) fh_get_number(&args[0]),
+            (int) fh_get_number(&args[1]), 4);
+    *ret = fh_new_c_obj(prog, data, NULL, FH_IMAGE_DATA_TYPE);
+    return 0;
+}
+
 static int fn_love_graphics_newImage(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
     if (n_args == 0)
-        return fh_set_error(prog, "Expected path or width & height");
+        return fh_set_error(prog, "Expected path");
 
-    fh_image_t *data = malloc(sizeof(fh_image_t));
-
-    data->data = malloc(sizeof(image_ImageData));
-    data->img = malloc(sizeof(graphics_Image));
+    fh_image_t *img = malloc(sizeof(fh_image_t));
+    img->img = malloc(sizeof(graphics_Image));
 
     fh_c_obj_gc_callback onFree = onFreeCallback;
 
-    enum fh_value_type type = args[0].type;
-    if (type == FH_VAL_STRING) {
+    if (fh_is_string(&args[0])) {
         const char *path = fh_get_string(&args[0]);
-        image_ImageData_new_with_filename(data->data, path);
-    }  else if (type == FH_VAL_FLOAT && args[1].type == FH_VAL_FLOAT) {
-        image_ImageData_new_with_size(data->data, args[0].data.num, args[1].data.num, 3);
+
+        img->data = malloc(sizeof(image_ImageData));
+        image_ImageData_new_with_filename(img->data, path);
+        graphics_Image_new_with_ImageData(img->img, img->data);
+    } else if(fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+        image_ImageData *data = fh_get_c_obj_value(&args[0]);
+        img->data = data;
+        graphics_Image_new_with_ImageData(img->img, data);
     } else {
-        free(data->img);
-        free(data->data);
-        free(data);
-        return fh_set_error(prog, "Expected path or width & height");
+        free(img->img);
+        return fh_set_error(prog, "Expected image data or path to image");
     }
 
-    graphics_Image_new_with_ImageData(data->img, data->data);
-    *ret = fh_new_c_obj(prog, data, onFree, FH_IMAGE_TYPE);
+    *ret = fh_new_c_obj(prog, img, onFree, FH_IMAGE_TYPE);
     return 0;
 }
 
 static int fn_love_image_getWidth(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
+
+    if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)) {
+        fh_image_t *img = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number(image_ImageData_getWidth(img->data));
+    } else if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+        image_ImageData *data = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number(image_ImageData_getWidth(data));
+    } else
         return fh_set_error(prog, "Expected image");
 
-    fh_image_t *img = fh_get_c_obj_value(&args[0]);
-    *ret = fh_new_number(image_ImageData_getWidth(img->data));
     return 0;
 }
 
 static int fn_love_image_getHeight(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
+    if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)) {
+        fh_image_t *img = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number(image_ImageData_getHeight(img->data));
+    } else if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+        image_ImageData *data = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number(image_ImageData_getHeight(data));
+    } else
         return fh_set_error(prog, "Expected image");
-
-    fh_image_t *img = fh_get_c_obj_value(&args[0]);
-
-    *ret = fh_new_number(image_ImageData_getHeight(img->data));
     return 0;
 }
 
 static int fn_love_image_getDimensions(struct fh_program *prog,
-                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+                                       struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
@@ -92,36 +114,88 @@ static int fn_love_image_getDimensions(struct fh_program *prog,
 
 static int fn_love_image_getPath(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
+
+    if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)) {
+        fh_image_t *img = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_string(prog, image_ImageData_getPath(img->data));
+    } else if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+        image_ImageData *data = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_string(prog, image_ImageData_getPath(data));
+    } else
         return fh_set_error(prog, "Expected image");
 
-    fh_image_t *img = fh_get_c_obj_value(&args[0]);
-
-    *ret = fh_new_string(prog, image_ImageData_getPath(img->data));
     return 0;
 }
 
 static int fn_love_image_getChannels(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
+
+    if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)) {
+        fh_image_t *img = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number(image_ImageData_getChannels(img->data));
+    } else if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+        image_ImageData *data = fh_get_c_obj_value(&args[0]);
+        *ret = fh_new_number(image_ImageData_getChannels(data));
+    } else
         return fh_set_error(prog, "Expected image");
-
-    fh_image_t *img = fh_get_c_obj_value(&args[0]);
-
-    *ret = fh_new_number(image_ImageData_getChannels(img->data));
     return 0;
 }
 
 static int fn_love_image_refresh(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE) || !fh_is_c_obj_of_type(&args[1], FH_IMAGE_TYPE))
-        return fh_set_error(prog, "Expected two image data");
+    if (!(fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)))
+        return fh_set_error(prog, "Expected image");
 
     fh_image_t *img = fh_get_c_obj_value(&args[0]);
     fh_image_t *imgd = fh_get_c_obj_value(&args[1]);
 
     graphics_Image_refresh(img->img, imgd->data);
     *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_image_setPixel(struct fh_program *prog,
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE))
+        return fh_set_error(prog, "Expected image");
+
+    for (int i = 1; i <= 5; i++) {
+        if (!fh_is_number(&args[i]))
+            return fh_set_error(prog, "Expected number at index: %d", i);
+    }
+
+    image_ImageData *data = fh_get_c_obj_value(&args[0]);
+    int x = (int) fh_get_number(&args[1]);
+    int y = (int) fh_get_number(&args[2]);
+
+    pixel p;
+    p.r = (unsigned char) fh_get_number(&args[3]);
+    p.g = (unsigned char) fh_get_number(&args[4]);
+    p.b = (unsigned char) fh_get_number(&args[5]);
+    p.a = (unsigned char) fh_get_number(&args[6]);
+
+    image_ImageData_setPixel(data, x, y, p);
+
+    *ret = fh_new_null();
+    return 0;
+}
+
+static int fn_love_image_getPixel(struct fh_program *prog,
+                                  struct fh_value *ret, struct fh_value *args, int n_args) {
+    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE))
+        return fh_set_error(prog, "Expected image");
+
+    for (int i = 1; i <= 2; i++) {
+        if (!fh_is_number(&args[i]))
+            return fh_set_error(prog, "Expected number at index: %d", i);
+    }
+
+    image_ImageData *data = fh_get_c_obj_value(&args[0]);
+    int x = (int) fh_get_number(&args[1]);
+    int y = (int) fh_get_number(&args[2]);
+
+    *ret = fh_new_number(image_ImageData_getPixel(data, x, y));
+
     return 0;
 }
 
@@ -187,7 +261,7 @@ static int fn_love_image_setWrap(struct fh_program *prog,
 }
 
 static int fn_love_image_getFilter(struct fh_program *prog,
-                                 struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
@@ -200,7 +274,6 @@ static int fn_love_image_getFilter(struct fh_program *prog,
     fh_grow_array(prog, &v, 3);
 
     struct fh_array *arr = GET_VAL_ARRAY(&v);
-
 
     if (filter.minMode == graphics_FilterMode_none)
         arr->items[0] = fh_new_string(prog, "none");
@@ -224,7 +297,7 @@ static int fn_love_image_getFilter(struct fh_program *prog,
 }
 
 static int fn_love_image_setFilter(struct fh_program *prog,
-                                 struct fh_value *ret, struct fh_value *args, int n_args) {
+                                   struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE) || !fh_is_string(&args[1]) || !fh_is_string(&args[2]))
         return fh_set_error(prog, "Expected image, min and mag string mode");
 
@@ -260,7 +333,7 @@ static int fn_love_image_setFilter(struct fh_program *prog,
 }
 
 static int fn_love_image_setMipmapFilter(struct fh_program *prog,
-                                 struct fh_value *ret, struct fh_value *args, int n_args) {
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image, min and mag string mode");
 
@@ -296,7 +369,7 @@ static int fn_love_image_setMipmapFilter(struct fh_program *prog,
 }
 
 static int fn_love_image_getMipmapFilter(struct fh_program *prog,
-                                 struct fh_value *ret, struct fh_value *args, int n_args) {
+                                         struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
 
@@ -326,6 +399,7 @@ static int fn_love_image_getMipmapFilter(struct fh_program *prog,
 
 #define DEF_FN(name) { #name, fn_##name }
 static const struct fh_named_c_func c_funcs[] = {
+    DEF_FN(love_graphics_newImageData),
     DEF_FN(love_graphics_newImage),
     DEF_FN(love_image_getWidth),
     DEF_FN(love_image_getHeight),
@@ -339,6 +413,8 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_image_setWrap),
     DEF_FN(love_image_setMipmapFilter),
     DEF_FN(love_image_getMipmapFilter),
+    DEF_FN(love_image_getPixel),
+    DEF_FN(love_image_setPixel),
 };
 
 void fh_image_register(struct fh_program *prog) {

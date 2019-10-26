@@ -96,7 +96,7 @@ static const char ui_button_map[256] = {
 };
 
 static struct fh_value update_args[2];
-void fh_main_loop(void) {
+void fh_main_loop(int argc, char **argv) {
     timer_step();
     focus_function();
     matrixstack_origin();
@@ -111,6 +111,11 @@ void fh_main_loop(void) {
 #ifdef USE_NATIVE
     game_update((float)timer_getDelta());
 #endif
+
+	/*if (clove_reload) {
+
+		clove_reload = false;
+	}*/
 
     graphics_clear();
     if (fh_call_function(loopData.prog, "love_draw", &loopData.opt, 1, NULL) == -2) {
@@ -249,7 +254,7 @@ void fh_main_loop(void) {
 void fh_main_activity_load(int argc, char* argv[])
 {
     fh_init();
-
+	clove_reload = false;
     clove_running = true;
     loopData.called_quit = false;
     loopData.prog = fh_new_program();
@@ -328,7 +333,8 @@ void fh_main_activity_load(int argc, char* argv[])
     fh_graphics_particlesystem_register(loopData.prog);
     fh_ui_register(loopData.prog);
 
-    int ret = fh_run_script_file(loopData.prog, false, "main.fh", argv, argc);
+	bool dump_bytecode = argv[1] && strcmp(argv[1], "show_bytecode") == 0 ? true : false;
+    int ret = fh_run_script_file(loopData.prog, dump_bytecode, "main.fh", argv, argc);
     if (ret < 0) {
         clove_error("ERROR: %s\n", fh_get_error(loopData.prog));
         main_clean();
@@ -356,7 +362,7 @@ void fh_main_activity_load(int argc, char* argv[])
     emscripten_set_main_loop(lua_main_loop, 60, 1);
 #else
     while (clove_running && fh_running) {
-        fh_main_loop();
+        fh_main_loop(argc, argv);
     }
 #endif
 

@@ -19,6 +19,7 @@ int clove_error(const char* format, ...);
 
 /* Used in the main loop in FH and Lua(to be done) activities*/
 bool clove_running;
+bool clove_reload;
 
 #ifndef USE_NATIVE
     #define USE_NATIVE 100

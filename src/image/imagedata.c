@@ -70,6 +70,7 @@ int image_ImageData_setPixel(image_ImageData *dst, int x, int y, pixel p) {
 
   dst->pixels = (pixel*) dst->surface;
   dst->pixels[y * dst->w + x] = p;
+
   return 1;
 }
 
