@@ -30,7 +30,7 @@ void audio_init(int stats) {
 		clove_error("OpenAL version: %s\n", alGetString(AL_VERSION));
 }
 
-void audio_setVolume(double value){
+void audio_setVolume(float value) {
 	alListenerf(AL_GAIN, value);
 }
 

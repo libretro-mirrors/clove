@@ -35,9 +35,21 @@ void image_ImageData_new_with_size(image_ImageData *dst, int width, int height, 
   dst->w = width;
   dst->h = height;
   dst->c = num_channels;
-  dst->path = "no path.";
-  memset(dst->surface, 0, sizeof(unsigned char) * width * height * dst->c);
+  dst->path = "";
+  memset(dst->surface, 255, sizeof(unsigned char) * width * height * num_channels);
   dst->pixels = (pixel*) dst->surface;
+}
+
+void image_ImageData_new_with_surface(image_ImageData *dst, unsigned char* surface,
+                                      unsigned int width, unsigned int height, unsigned int num_channels) {
+    size_t size = sizeof(unsigned char) * width * height * num_channels;
+    dst->surface = malloc(size);
+    memcpy(dst->surface, surface, width * height);
+    dst->w = width;
+    dst->h = height;
+    dst->c = num_channels;
+    dst->path = "";
+    dst->pixels = (pixel*) dst->surface;
 }
 
 const char* image_ImageData_getPath(image_ImageData* dst) {
@@ -58,6 +70,7 @@ int image_ImageData_setPixel(image_ImageData *dst, int x, int y, pixel p) {
 
   dst->pixels = (pixel*) dst->surface;
   dst->pixels[y * dst->w + x] = p;
+
   return 1;
 }
 
@@ -81,7 +94,7 @@ int image_ImageData_save(image_ImageData *dst, const char* format, const char* f
     }
 }
 
-void image_imageData_setSurface(image_ImageData* dst, unsigned char* data) {
+void image_ImageData_setSurface(image_ImageData* dst, unsigned char* data) {
   free(dst->surface);
   dst->surface = (unsigned char*)realloc(dst->surface,sizeof(data));
 }
@@ -106,5 +119,5 @@ void image_ImageData_free(image_ImageData *data) {
   free(data->surface);
 }
 
-void image_init() {}
+void image_init(void) {}
 

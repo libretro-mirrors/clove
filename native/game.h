@@ -10,8 +10,8 @@
 
 #include "../src/include/utils.h"
 
-void game_load();
+void game_load(void);
 void game_update(float delta);
-void game_draw();
-void game_quit();
+void game_draw(void);
+void game_quit(void);
 

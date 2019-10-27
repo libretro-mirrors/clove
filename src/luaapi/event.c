@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -11,8 +11,10 @@
 #include "event.h"
 #include "tools.h"
 
+#include "../include/utils.h"
+
 static int l_event_quit(lua_State* state) {
-  l_running = false;
+  clove_running = false;
   lua_pushinteger(state, l_running);
   return 1;
 }
@@ -29,12 +31,12 @@ static luaL_Reg const regFuncs[] = {
 };
 
 bool l_event_running() {
-  return l_running;
+  return clove_running;
 }
 
 int l_event_register(lua_State* state) {
 
-  l_running = true;
+  clove_running = true;
   l_tools_registerModule(state, "event", regFuncs);
   return 1;
 }

@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -25,5 +25,6 @@ typedef struct {
   graphics_FilterMode mipmapMode;
 } graphics_Filter;
 
-void graphics_Texture_getFilter(GLuint texID, graphics_Filter * filter);
-void graphics_Texture_setFilter(GLuint texID, graphics_Filter const * filter);
+float graphics_Texture_getMaxAnisotropy(void);
+void graphics_Texture_getFilter(GLuint texID, graphics_Filter *filter);
+void graphics_Texture_setFilter(GLuint texID, graphics_Filter *filter);

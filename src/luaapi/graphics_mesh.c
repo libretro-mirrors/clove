@@ -47,7 +47,6 @@ static void readVertex(lua_State* state, graphics_Vertex* vertices) {
         l_tools_trowError(state, "Table entry is not a valid vertex");
 
     float* t = (float*)vertices;
-
     for (int i = 0; i < 4; i++) {
         lua_rawgeti(state, -1, i+1);
         t[i] = l_tools_toNumberOrError(state, -1);

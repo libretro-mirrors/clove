@@ -39,6 +39,7 @@
 
 #include "utils.h"
 #include "graphics.h"
+#include "geometry.h"
 #include "particlesystem.h"
 #include "matrixstack.h"
 #include "filesystem.h"
@@ -50,10 +51,10 @@
 #include "keyboard.h"
 #include "mouse.h"
 
-	/* Only if USE_NATIVE is declared in tools/utils.c
-	 * then use it */
+/* Only if USE_NATIVE is declared in tools/utils.c
+ * then use it */
 #ifdef USE_NATIVE
-	#include "../../native/game.h"
+#include "../../native/game.h"
 #endif
 
 void lua_main_activity_load(int argc, char* argv[]);

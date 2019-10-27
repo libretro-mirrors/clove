@@ -29,7 +29,10 @@ typedef struct {
 char const* image_error(void);
 
 void image_ImageData_new_with_size(image_ImageData *dst, int width, int height,
-		int num_channels);
+        int num_channels);
+
+void image_ImageData_new_with_surface(image_ImageData *dst, unsigned char* surface,
+                                      unsigned int width, unsigned int height, unsigned int num_channels);
 
 void image_ImageData_new_with_filename(image_ImageData *dst, char const* filename);
 
@@ -49,4 +52,4 @@ unsigned char* image_ImageData_getSurface(image_ImageData *dst);
 void image_ImageData_setSurface(image_ImageData* dst, unsigned char* data);
 
 void image_ImageData_free(image_ImageData *data);
-void image_init();
+void image_init(void);

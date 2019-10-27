@@ -11,30 +11,26 @@ cmake_minimum_required(VERSION 2.8)
 
 project(clove)
 
-option(USE_PHYSFS "Build Clove using Physfs for filesystem?" ON)
-option(USE_LUA "Build CLove using Lua as scripting language" OFF)
-option(USE_FH "Build CLove using FH as scripting language" ON)
+option(USE_PHYSFS "Build Clove using Physfs for filesystem?" TRUE)
+option(USE_LUA "Build CLove using Lua as scripting language" FALSE)
+option(USE_FH "Build CLove using FH as scripting language" TRUE)
 
-option(STATIC_LIB "Builds CLove as a static library" ON)
-option(DYNAMIC_LIB "Builds CLove as a shared library" OFF)
+option(STATIC_LIB "Builds CLove as a static library" TRUE)
+option(DYNAMIC_LIB "Builds CLove as a shared library" FALSE)
 
 if (USE_PHYSFS)
-    ADD_DEFINITIONS(-DUSE_PHYSFS=1)
-	message(STATUS, "Using Physfs")
+    ADD_DEFINITIONS(-DUSE_PHYSFS=ON)
+    message(STATUS, "Using Physfs")
 endif(USE_PHYSFS)
 
 if (USE_LUA)
-	ADD_DEFINITIONS("-DUSE_LUA=1")
-	message(STATUS, "Using Lua")
-    else()
-        ADD_DEFINITIONS("-DUSE_LUA=0")
+    ADD_DEFINITIONS(-DUSE_LUA=ON)
+    message(STATUS, "Using Lua")
 endif(USE_LUA)
 
 if (USE_FH)
-        ADD_DEFINITIONS("-DUSE_FH=1")
-        message(STATUS, "Using FH")
-    else()
-        ADD_DEFINITIONS("-DUSE_FH=0")
+    ADD_DEFINITIONS(-DUSE_FH=ON)
+    message(STATUS, "Using FH")
 endif(USE_FH)
 
 IF(WIN32)
@@ -75,10 +71,10 @@ if (APPLE)
     find_library(CORE_SERVICES_LIB CoreServices)
     find_library(FOUNDATION_LIB Foundation)
     find_library(IOKIT_LIB IOKit)
-	FIND_LIBRARY(OPENAL_LIBRARY OpenAL)
+    FIND_LIBRARY(OPENAL_LIBRARY OpenAL)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -Wall -Wvla -O3 -DOSX")
-    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__ -g3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -O3 -DOSX")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -D__Debug__")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl")
@@ -119,8 +115,6 @@ FILE(
     src/graphics/*.c
     src/image/*.h
     src/image/*.c
-    src/luaapi/*.h
-    src/luaapi/*.c
     src/tools/*.c
     src/tools/*.h
     src/math/*.h
@@ -131,6 +125,8 @@ FILE(
     src/net/*.h
     src/physics/*.c
     src/physics/*.h
+    src/ui/*.c
+    src/ui/*.h
     src/include/*.h
     src/include/*.c
 
@@ -139,6 +135,9 @@ FILE(
     native/*.h
 
     #3rdparty "small" libs
+    src/3rdparty/microui/src/*.c
+    src/3rdparty/microui/src/*.inl
+    src/3rdparty/microui/src/*.h
     src/3rdparty/microtar/*.c
     src/3rdparty/microtar/*.h
     src/3rdparty/noise/*.c
@@ -147,19 +146,31 @@ FILE(
     src/3rdparty/slre/*.h
     src/3rdparty/CMath/*.h
     src/3rdparty/CMath/*.c
-    #FH
-    src/3rdparty/FH/src/*.c
-    src/3rdparty/FH/src/*.h
-    src/3rdparty/FH/src/map/*.c
-    src/3rdparty/FH/src/map/*.h
     )
-#TODO
-#I do not think we're allowed by ndk to have a main.cpp file
-FILE(
-    GLOB SOURCE_FILES_MAIN
-    src/*.c*
-    src/*.h
-    )
+
+if (USE_LUA)
+    FILE(
+        GLOB SOURCE_LUA_FILES
+        src/luaapi/*.h
+        src/luaapi/*.c
+        )
+endif()
+
+if (USE_FH)
+    FILE(
+        GLOB SOURCE_FH_FILES
+        src/fhapi/*.h
+        src/fhapi/*.c
+        src/3rdparty/FH/src/*.c
+        src/3rdparty/FH/src/*.h
+        src/3rdparty/FH/src/map/*.c
+        src/3rdparty/FH/src/map/*.h
+        src/3rdparty/FH/src/vec/*.c
+        src/3rdparty/FH/src/vec/*.h
+        src/3rdparty/FH/src/regex/*.c
+        src/3rdparty/FH/src/regex/*.h
+        )
+endif()
 
 set(clove_package "clove")
 set(clove_creator "Muresan Vlad")
@@ -176,18 +187,19 @@ endif(SHARED_LIB)
 
 if (NOT ANDROID)
     add_executable(
-	clove
-	${SOURCE_FILES_MAIN}
-	${SOURCE_FILES}
-	)
+        clove
+        ${SOURCE_FILES}
+        ${SOURCE_FH_FILES}
+    #    $(SOURCE_LUA_FILES)
+        )
 endif()
 
 if (ANDROID)
 
     set(INCLUDE_CLOVEANDROID
-	"src/"
-	"3rdparty/"
-	)
+        "src/"
+        "3rdparty/"
+        )
 
     include_directories( ${INCLUDE_CLOVEANDROID}	)
     add_library( clove SHARED ${SOURCE_FILES} )
@@ -218,9 +230,9 @@ set(OPENAL_INCLUDE_DIR src/3rdparty/openal/include/)
 
 #lua
 if (USE_LUA)
-	add_subdirectory(src/3rdparty/lua)
-	set(LUA_INCLUDE_DIR src/3rdparty/lua/)
-	set(LUA_LIBRARIES lua)
+    add_subdirectory(src/3rdparty/lua)
+    set(LUA_INCLUDE_DIR src/3rdparty/lua/)
+    set(LUA_LIBRARIES lua)
 endif(USE_LUA)
 
 #glew
@@ -253,38 +265,38 @@ add_definitions(-DSDL2)
 
 if(WIN32)
 
-	target_link_libraries(clove ws2_32.lib
-	${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
-	${FREETYPE_LIBRARIES})
+    target_link_libraries(clove ws2_32.lib
+        ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
+        ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
+        ${FREETYPE_LIBRARIES})
 
-	if (USE_PHYSFS)
-		target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
-	endif(USE_PHYSFS)
+    if (USE_PHYSFS)
+        target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
+    endif(USE_PHYSFS)
 
-	if (USE_LUA)
-		target_link_libraries(clove ${LUA_LIBRARIES})
-	endif(USE_LUA)
+    if (USE_LUA)
+        target_link_libraries(clove ${LUA_LIBRARIES})
+    endif(USE_LUA)
 
 else()
-	target_link_libraries(clove
-	${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-	${OPENGL_LIBRARIES}
-   	${FREETYPE_LIBRARIES} ${OPENAL_LIBRARIES})
-	#${CHIPMUNK_LIBRARIES})
+    target_link_libraries(clove
+        ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
+        ${OPENGL_LIBRARIES}
+        ${FREETYPE_LIBRARIES} ${OPENAL_LIBRARIES})
+    #${CHIPMUNK_LIBRARIES})
 
-	if (USE_PHYSFS)
-		target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
-	endif(USE_PHYSFS)
+    if (USE_PHYSFS)
+        target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
+    endif(USE_PHYSFS)
 
-	if (USE_LUA)
-		target_link_libraries(clove ${LUA_LIBRARIES})
-	endif(USE_LUA)
+    if (USE_LUA)
+        target_link_libraries(clove ${LUA_LIBRARIES})
+    endif(USE_LUA)
 
 endif(WIN32)
 
 if(ANDROID)
     target_link_libraries(clove
-	${SDL_LIBRARIES} ${OPENGL_LIBRARIES}
-	${OPENAL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES} )
+        ${SDL_LIBRARIES} ${OPENGL_LIBRARIES}
+        ${OPENAL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES} )
 endif()

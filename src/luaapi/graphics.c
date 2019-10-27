@@ -32,7 +32,7 @@
 #include "graphics_window.h"
 
 static int l_graphics_getBackgroundColor(lua_State* state) {
-	float * colors = graphics_getBackgroundColor();
+    float *colors = graphics_getBackgroundColor();
 
 	for(int i = 0; i < 4; ++i) {
 		lua_pushnumber(state, (int)(colors[i] * 255));
@@ -230,8 +230,18 @@ static int l_graphics_origin(lua_State* state) {
 }
 
 static int l_graphics_shear(lua_State* state) {
-	lua_pushstring(state, "not implemented");
-	lua_error(state);
+  float top = lua_getopt(state);
+  float x;
+  float y;
+  
+  if(top == 2){
+    x = l_tools_toNumberOrError(state, 1);
+    y = l_tools_toNumberOrError(state, 1);
+    graphics_shear( x, y );
+  }else {
+    luaL_error(state, "love.graphics.shear expects 2 params");
+  }
+
 	return 0;
 }
 
@@ -346,6 +356,10 @@ static int l_graphics_reset(lua_State* state) {
 	return 0;
 }
 
+static int l_graphics_getDPIScale(lua_State* state) {
+	lua_pushnumber(state, graphics_getDPIScale());
+	return 1;
+}
 
 static luaL_Reg const regFuncs[] = {
 	{"setBackgroundColor", l_graphics_setBackgroundColor},
@@ -372,6 +386,7 @@ static luaL_Reg const regFuncs[] = {
 	{"getWidth",           l_graphics_getWidth},
 	{"getHeight",          l_graphics_getHeight},
 	{"reset",              l_graphics_reset},
+	{"getDPIScale",        l_graphics_getDPIScale},
 	{NULL, NULL}
 };
 

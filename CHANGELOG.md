@@ -1,6 +1,9 @@
 version 0.8.0 not yet released
 ========================
-* added: misc math utilities.
+* added: New UI module
+* added: love.window.setMaxSize.
+* added: New scripting language, FH.
+* added: Misc math utilities.
 * added: Very powerful particle system.
 * added: Lua can be enabled or disabled at compile time.
 * added: Build system for web!
@@ -12,9 +15,10 @@ version 0.8.0 not yet released
 * added: love.system.getProcessorCount()
 
 * fixed: graphics_setFullscreen
-* fixed: newImageFont is not broke anymore.
+* fixed: newImageFont is not broken anymore.
 * modify: Changed the structure of folders, enabling the usage of the framework as a library.
-*removed: C++ support
+
+* removed: C++ support
 
 version 0.7.1 22.07.2017:
 ========================

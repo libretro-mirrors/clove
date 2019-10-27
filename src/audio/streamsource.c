@@ -170,6 +170,10 @@ void audio_StreamSource_setVelocity(audio_StreamSource* source, float x, float y
     alSource3f(source->source, AL_VELOCITY, x, y, z);
 }
 
+bool audio_StreamSource_isLooping(audio_StreamSource* source) {
+    return source->loop;
+}
+
 bool audio_StreamSource_isPlaying(audio_StreamSource* source) {
     return source->state == audio_SourceState_playing;
 }

@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -36,13 +36,14 @@ typedef struct {
     int nextBuffer;
 } audio_StreamSource;
 
-void audio_updateStreams();
-void audio_StreamInit();
+void audio_updateStreams(void);
+void audio_StreamInit(void);
 int audio_loadStream(audio_StreamSource* source, char const* filename);
 void audio_StreamSource_stop(audio_StreamSource* source);
 void audio_StreamSource_play(audio_StreamSource* source);
 void audio_StreamSource_pause(audio_StreamSource *source);
 void audio_StreamSource_resume(audio_StreamSource *source);
+bool audio_StreamSource_isLooping(audio_StreamSource* source);
 bool audio_StreamSource_isPlaying(audio_StreamSource* source);
 bool audio_StreamSource_isStopped(audio_StreamSource* source);
 bool audio_StreamSource_isPaused(audio_StreamSource* source);

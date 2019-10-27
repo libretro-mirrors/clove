@@ -1,16 +1,17 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "../include/gltools.h"
 #include "../include/gl.h"
+#include "../include/minmax.h"
 
-void graphics_Texture_setFilter(GLuint texID, graphics_Filter const* filter) {
-	glBindTexture(GL_TEXTURE_2D, texID);
+void graphics_Texture_setFilter(GLuint texID, graphics_Filter *filter) {
+    glBindTexture(GL_TEXTURE_2D, texID);
 
 	int minFilter = GL_NEAREST;
 	if(filter->mipmapMode == graphics_FilterMode_none) {
@@ -66,8 +67,29 @@ void graphics_Texture_setFilter(GLuint texID, graphics_Filter const* filter) {
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_LOD_BIAS, filter->mipmapLodBias);
 	}
 #endif
+
+    /*
+     * https://www.khronos.org/opengl/wiki/Sampler_Object
+     * Note: Though this feature only became core in OpenGL 4.6, it is widely available through the EXT_texture_filter_anisotropic extension.
+     */
+    if(glewIsExtensionSupported("GL_EXT_texture_filter_anisotropic") || GLEW_EXT_texture_filter_anisotropic) {
+        GLfloat fLargest;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
+        // GL_TEXTURE_MAX_ANISOTROPY does not accept values less than 1.0f!
+        GLfloat anisotropy = clampf(filter->maxAnisotropy, 1.0f, fLargest);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, anisotropy);
+    }
+
 }
 
+float graphics_Texture_getMaxAnisotropy(void) {
+    if(glewIsExtensionSupported("GL_EXT_texture_filter_anisotropic") || GLEW_EXT_texture_filter_anisotropic) {
+        GLfloat fLargest;
+        glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &fLargest);
+        return fLargest;
+    }
+    return 1.0f;
+}
 
 void graphics_Texture_getFilter(GLuint texID, graphics_Filter * filter) {
 	glBindTexture(GL_TEXTURE_2D, texID);
@@ -113,4 +135,10 @@ void graphics_Texture_getFilter(GLuint texID, graphics_Filter * filter) {
 	glGetTexParameteriv(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, &fil);
 
 	filter->magMode = (fil == GL_LINEAR) ? graphics_FilterMode_linear : graphics_FilterMode_nearest;
+
+    if(glewIsExtensionSupported("GL_EXT_texture_filter_anisotropic") || GLEW_EXT_texture_filter_anisotropic) {
+        glGetTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY, &filter->maxAnisotropy);
+    } else {
+        filter->maxAnisotropy = 1.0f;
+    }
 }

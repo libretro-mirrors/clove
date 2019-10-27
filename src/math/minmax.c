@@ -8,6 +8,27 @@
 */
 #include "../include/minmax.h"
 
-extern inline int max(int i, int j);
-extern inline int min(int i, int j);
-extern inline int clamp(int a, int i, int j);
+int max(int i, int j) {
+  return i > j ? i : j;
+}
+
+int min(int i, int j) {
+  return i < j ? i : j;
+}
+
+int clamp(int a, int i, int k) {
+  return max(i, min(k, a));
+}
+
+float maxf(float i, float j) {
+  return i > j ? i : j;
+}
+
+float minf(float i, float j) {
+  return i < j ? i : j;
+}
+
+float clampf(float a, float i, float k) {
+  return maxf(i, minf(k, a));
+}
+

@@ -1,13 +1,11 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
-
-#ifdef USE_LUA
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,7 +13,14 @@
 #include <string.h>
 
 #include "include/keyboard.h"
+
+#ifdef USE_LUA
 #include "luaapi/keyboard.h"
+#endif
+
+#ifdef USE_FH
+#include "fhapi/keyboard.h"
+#endif
 
 typedef struct {
     SDL_Keycode keycode;
@@ -224,6 +229,7 @@ static int normalizeKeyCode(int key) {
 }
 
 void keyboard_init(void) {
+    moduleData.textActive = false;
     moduleData.numKeys = 0;
     for(int i = 0; i < sizeof(keynames) / sizeof(KeyName); ++i) {
         int key = normalizeKeyCode(keynames[i].keycode);
@@ -266,7 +272,12 @@ void keyboard_keypressed(SDL_Keycode key) {
     if(nk < moduleData.numKeys) {
         bool repeat = moduleData.keystate[nk];
         moduleData.keystate[nk] = true;
+#ifdef USE_LUA
         l_keyboard_keypressed(nk, repeat);
+#endif
+#ifdef USE_FH
+        fh_keyboard_keypressed(nk, repeat);
+#endif
     }
 }
 
@@ -274,7 +285,12 @@ void keyboard_keyreleased(SDL_Keycode key) {
     int nk = normalizeKeyCode(key);
     if(nk < moduleData.numKeys) {
         moduleData.keystate[nk] = false;
+#ifdef USE_LUA
         l_keyboard_keyreleased(nk);
+#endif
+#ifdef USE_FH
+        fh_keyboard_keyreleased(nk);
+#endif
     }
 }
 
@@ -298,7 +314,10 @@ bool keyboard_isTextEnabled(void) {
 }
 
 void keyboard_textInput(char const* text) {
+#ifdef USE_LUA
     l_keyboard_textInput(text);
-}
-
 #endif
+#ifdef USE_FH
+        fh_keyboard_textInput(text);
+#endif
+}

@@ -21,3 +21,4 @@ void matrixstack_origin(void);
 void matrixstack_rotate_3d(float r, float x, float y, float z);
 void matrixstack_rotate(float a);
 void matrixstack_multiply(mat4x4 const* matrix);
+void matrixstack_shear_2d(float x, float y);

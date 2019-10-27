@@ -203,4 +203,4 @@ void l_tools_pushEnum(lua_State* state, int value, l_tools_Enum const* values);
 # define l_assertType(state, index, func)
 #endif
 
-#endif //USE_LUA
+#endif

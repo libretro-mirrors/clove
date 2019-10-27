@@ -48,7 +48,7 @@ void graphics_font_init() {
     moduleData.batchsize = 0;
 }
 
-void graphics_GlyphMap_newTexture(graphics_GlyphMap *map) {
+static void graphics_GlyphMap_newTexture(graphics_GlyphMap *map) {
     map->textures = realloc(map->textures, sizeof(GLuint) * (map->numTextures + 1));
     glGenTextures(1, &map->textures[map->numTextures]);
     glBindTexture(GL_TEXTURE_2D, map->textures[map->numTextures]);
@@ -64,7 +64,7 @@ void graphics_GlyphMap_newTexture(graphics_GlyphMap *map) {
     ++map->numTextures;
 }
 
-graphics_Glyph const* graphics_Font_findGlyph(graphics_Font *font, unsigned unicode) {
+static graphics_Glyph const* graphics_Font_findGlyph(graphics_Font *font, unsigned unicode) {
     // only 256
     unsigned idx = unicode & 0xFF;
     graphics_GlyphSet *set = &font->glyphs.glyphs[idx];
@@ -138,7 +138,7 @@ graphics_Glyph const* graphics_Font_findGlyph(graphics_Font *font, unsigned unic
     // This assumes pixel unpack alignment is set to 1 (glPixelStorei)
     glBindTexture(GL_TEXTURE_2D, font->glyphs.textures[font->glyphs.numTextures-1]);
     glTexSubImage2D(GL_TEXTURE_2D, 0, font->glyphs.currentX, font->glyphs.currentY,
-            b.width, b.rows, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, buf);
+                    b.width, b.rows, GL_LUMINANCE_ALPHA, GL_UNSIGNED_BYTE, buf);
 
     // Store geometric information for the glyph
     newGlyph->code = unicode;
@@ -172,14 +172,18 @@ int graphics_Font_new(graphics_Font *dst, char const* filename, int ptsize) {
         error = FT_New_Memory_Face(moduleData.ft, defaultFontData, defaultFontSize, 0, &dst->face);
     }
     if (error != 0) {
-        if ( error == FT_Err_Unknown_File_Format )
-            clove_error("Error, unknown font format: %s\n");
-        else
-            clove_error("Error, the font file: %s, could not be opened or read\n");
+        if ( error == FT_Err_Unknown_File_Format ) {
+            clove_error("Error, unknown font format: %s\n", filename);
+            return 1;
+        }
+        else {
+            clove_error("Error, the font file: %s, could not be opened or read\n", filename);
+            return 1;
+        }
     }
 
     FT_Set_Pixel_Sizes(dst->face, 0, ptsize);
-	dst->ptsize = ptsize;
+    dst->ptsize = ptsize;
 
     memset(&dst->glyphs, 0, sizeof(graphics_GlyphMap));
 
@@ -201,9 +205,30 @@ int graphics_Font_new(graphics_Font *dst, char const* filename, int ptsize) {
 }
 
 
-int graphics_Font_getWrap(graphics_Font * font, char const* text, int width, char ** wrapped) {
-    // TODO
-    return 0;
+int graphics_Font_getWrap(graphics_Font * font, char const* line, int wraplimit, char **wrappedtext) {
+    int width = 0, uni = 0, wrappedlines = 1;
+    size_t i = 0;
+    size_t len = strlen(line);
+    char *c = NULL;
+    while((uni = utf8_scan(&line))) {
+        c = *wrappedtext;
+        graphics_Glyph const* g = graphics_Font_findGlyph(font, uni);
+        width += g->advance;
+        if (i + 1 >= len) {
+            len <<= 2 + 1;
+            *wrappedtext = realloc(*wrappedtext, len);
+            c = *wrappedtext;
+        }
+        if(width >= wraplimit && (uni != '\n' && uni != ' ')) {
+            wrappedlines++;
+            c[i++] = '\n';
+            width = 0;
+        }
+        c[i++] = (char)uni;
+    }
+    c[i] = '\0';
+
+    return wrappedlines;
 }
 
 static void prepareBatches(graphics_Font* font, int chars) {
@@ -258,12 +283,12 @@ static void prepareBatches(graphics_Font* font, int chars) {
 void graphics_Font_render(graphics_Font* font, char const* text, int px, int py, float r, float sx, float sy, float ox, float oy, float kx, float ky) {
     prepareBatches(font, strlen(text));
     uint32_t cp;
-    graphics_Shader* shader = graphics_getShader();
-    graphics_setDefaultShader();
+    //graphics_Shader* shader = graphics_getShader();
+    //graphics_setDefaultShader();
     int x = 0;
     int y = font->ascent;
     while((cp = utf8_scan(&text))) {
-         // This will create the glyph if required
+        // This will create the glyph if required
         graphics_Glyph const* glyph = graphics_Font_findGlyph(font, cp);
 
         if(cp == '\n') {
@@ -282,7 +307,7 @@ void graphics_Font_render(graphics_Font* font, char const* text, int px, int py,
         graphics_Batch_draw(&moduleData.batches[i], px, py, r, sx, sy, ox, oy, kx, ky);
     }
 
-    graphics_setShader(shader);
+    //graphics_setShader(shader);
 }
 
 
@@ -299,7 +324,7 @@ int graphics_Font_getDescent(graphics_Font const* font) {
 }
 
 int graphics_Font_getBaseline(graphics_Font const* font) {
-    return floor(font->height / 1.25f + 0.5f);
+    return (int)floor(font->height / 1.25f + 0.5f);
 }
 
 int graphics_Font_getHeight(graphics_Font const* font) {
@@ -335,5 +360,3 @@ void graphics_Font_free(graphics_Font *obj) {
     FT_Done_Face(obj->face);
     graphics_GlyphMap_free(&obj->glyphs);
 }
-
-

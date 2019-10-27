@@ -56,11 +56,11 @@ typedef struct {
     float lineHeight;
     int batchsize;
     int batchcount;
-	int ptsize;
+    int ptsize;
 } graphics_Font;
 
 
-int graphics_Font_getWrap(graphics_Font * font, char const* line, int width, char **wrapped);
+int graphics_Font_getWrap(graphics_Font *font, char const* line, int wraplimit, char **wrappedtext);
 
 void graphics_font_init();
 

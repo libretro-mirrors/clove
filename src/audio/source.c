@@ -14,7 +14,9 @@
 
 void audio_SourceCommon_init(audio_SourceCommon *source) {
 
-	ALenum err; // openAL error checker
+    source->loop = false;
+
+    ALenum err; // openAL error checker
 
 	alGenSources(1, &source->source);
 	err = alGetError();
@@ -53,14 +55,10 @@ void audio_SourceCommon_init(audio_SourceCommon *source) {
 
 	if (err != AL_NO_ERROR)
 		clove_error("Error: Could not set openAL looping \n");
-
 }
 
-void audio_SourceCommon_setLooping(audio_SourceCommon const* source, int value){
-  if (value == 0)
-    alSourcei(source->source, AL_LOOPING, AL_FALSE);
-  else
-    alSourcei(source->source, AL_LOOPING, AL_TRUE);
+void audio_SourceCommon_setLooping(audio_SourceCommon const* source, bool value){
+    alSourcei(source->source, AL_LOOPING, value == true ? AL_TRUE : AL_FALSE);
 }
 
 void audio_SourceCommon_play(audio_SourceCommon *source) {
@@ -96,6 +94,10 @@ void audio_SourceCommon_resume(audio_SourceCommon *source) {
     alSourcePlay(source->source);
     source->state = audio_SourceState_playing;
   }
+}
+
+bool audio_SourceCommon_isLooping(audio_SourceCommon const* source) {
+    return source->loop;
 }
 
 bool audio_SourceCommon_isPlaying(audio_SourceCommon const* source) {
