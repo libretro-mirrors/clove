@@ -55,11 +55,13 @@ static int fn_love_graphics_newShader(struct fh_program *prog,
     char *loadedFile1 = NULL;
     char *loadedFile2 = NULL;
 
-    if (fh_is_string(&args[1])) {
+    if (n_args == 2) {
+        if (!fh_is_string(&args[1])) {
+            return fh_set_error(prog, "expected string as second argument");
+        }
         fragmentSrc = fh_get_string(&args[1]);
 
         if (isVertexShader(vertexSrc)) {
-            // TODO
             filesystem_read(vertexSrc, &loadedFile1);
             if (!loadedFile1 || !isVertexShader(loadedFile1)) {
                 free(loadedFile1);
@@ -69,7 +71,6 @@ static int fn_love_graphics_newShader(struct fh_program *prog,
         }
 
         if(!isSingleFragmentShader(fragmentSrc)) {
-            // TODO
             filesystem_read(fragmentSrc, &loadedFile2);
             if(!loadedFile2 || !isSingleFragmentShader(loadedFile2)) {
                 free(loadedFile1);
@@ -78,7 +79,7 @@ static int fn_love_graphics_newShader(struct fh_program *prog,
             }
             fragmentSrc = loadedFile2;
         }
-    } else {
+    } else if (n_args == 1) {
         if(isVertexShader(vertexSrc)) {
             // nothing required
         } else if(isSingleFragmentShader(vertexSrc)) {
@@ -103,6 +104,8 @@ static int fn_love_graphics_newShader(struct fh_program *prog,
                 return fh_set_error(prog, "input is not a valid shader");
             }
         }
+    } else {
+        return fh_set_error(prog, "Invalid parameter");
     }
 
     fh_graphics_Shader *shader = malloc(sizeof(fh_graphics_Shader));

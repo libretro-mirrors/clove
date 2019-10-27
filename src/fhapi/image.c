@@ -168,6 +168,9 @@ static int fn_love_image_setPixel(struct fh_program *prog,
     int x = (int) fh_get_number(&args[1]);
     int y = (int) fh_get_number(&args[2]);
 
+    if (x < 0 || x >= data->w || y < 0 || y >= data->h)
+        return fh_set_error(prog, "Index out of bounds %d %d", x, y);
+
     pixel p;
     p.r = (unsigned char) fh_get_number(&args[3]);
     p.g = (unsigned char) fh_get_number(&args[4]);
