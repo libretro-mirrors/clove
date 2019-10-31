@@ -248,16 +248,21 @@ static int fn_love_graphics_batch_getColor(struct fh_program *prog,
         return 0;
     }
 
-    struct fh_value arr = fh_new_array(prog);
-    fh_grow_array(prog, &arr, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr_val = GET_VAL_ARRAY(&arr);
-    arr_val->items[0] = fh_new_number(floorf(batch->color.x * 255));
-    arr_val->items[1] = fh_new_number(floorf(batch->color.y * 255));
-    arr_val->items[2] = fh_new_number(floorf(batch->color.z * 255));
-    arr_val->items[3] = fh_new_number(floorf(batch->color.w * 255));
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = fh_new_null();
+    ret_arr->items[0] = fh_new_number(floorf(batch->color.x * 255));
+    ret_arr->items[1] = fh_new_number(floorf(batch->color.y * 255));
+    ret_arr->items[2] = fh_new_number(floorf(batch->color.z * 255));
+    ret_arr->items[3] = fh_new_number(floorf(batch->color.w * 255));
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 

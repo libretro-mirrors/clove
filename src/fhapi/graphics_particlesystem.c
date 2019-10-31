@@ -79,14 +79,19 @@ static int fn_love_particleSystem_getLinearDamping(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getLinearDamping(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 
@@ -171,15 +176,20 @@ static int fn_love_particleSystem_getAreaSpread(struct fh_program *prog,
         break;
     }
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 3);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 3))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_string(prog, mode_str);
-    arr->items[1] = fh_new_number((double)dx);
-    arr->items[2] = fh_new_number((double)dy);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_string(prog, mode_str);
+    ret_arr->items[1] = fh_new_number((double)dx);
+    ret_arr->items[2] = fh_new_number((double)dy);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 
@@ -220,19 +230,24 @@ static int fn_love_particleSystem_getColors(struct fh_program *prog,
 
     graphics_Color const *color = graphics_ParticleSystem_getColors(p, &count);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, (uint32_t)count * 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, count * 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
+    struct fh_value new_val = fh_new_array(prog);
 
     for (uint32_t i = 0; i < count; i++) {
-        arr->items[i * 4 + 0] = fh_new_number((double)color[i].red);
-        arr->items[i * 4 + 1] = fh_new_number((double)color[i].green);
-        arr->items[i * 4 + 2] = fh_new_number((double)color[i].blue);
-        arr->items[i * 4 + 3] = fh_new_number((double)color[i].alpha);
+        ret_arr->items[i * 4 + 0] = fh_new_number((double)color[i].red);
+        ret_arr->items[i * 4 + 1] = fh_new_number((double)color[i].green);
+        ret_arr->items[i * 4 + 2] = fh_new_number((double)color[i].blue);
+        ret_arr->items[i * 4 + 3] = fh_new_number((double)color[i].alpha);
     }
 
-    *ret = arr_obj;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -503,33 +518,43 @@ static int fn_love_particleSystem_getOffset(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getOffset(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 
-static int fn_love_particleSystem_getParticleLifetime(struct fh_program *prog,
-                                                      struct fh_value *ret, struct fh_value *args, int n_args) {
+static int fn_love_particleSystem_getParticleLifetime(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
         return fh_set_error(prog, "Expected particle");
     float min, max;
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getParticleLifetime(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -541,14 +566,20 @@ static int fn_love_particleSystem_getPosition(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getPosition(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -560,14 +591,20 @@ static int fn_love_particleSystem_getRadialAcceleration(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getRadialAcceleration(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -579,14 +616,19 @@ static int fn_love_particleSystem_getRotation(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getRotation(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 
@@ -598,14 +640,20 @@ static int fn_love_particleSystem_getSpeed(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getSpeed(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -617,14 +665,20 @@ static int fn_love_particleSystem_getSpin(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getSpin(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -636,14 +690,20 @@ static int fn_love_particleSystem_getTangentialAcceleration(struct fh_program *p
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getTangentialAcceleration(p, &min, &max);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)min);
-    arr->items[1] = fh_new_number((double)max);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)min);
+    ret_arr->items[1] = fh_new_number((double)max);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -710,16 +770,20 @@ static int fn_love_particleSystem_getSizes(struct fh_program *prog,
 
     float const *sizes = graphics_ParticleSystem_getSizes(p, &count);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, (uint32_t)count);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, count))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
+    struct fh_value new_val = fh_new_array(prog);
 
     for (uint32_t i = 0; i < count; i++) {
-        arr->items[i] = fh_new_number((double)sizes[i]);
+        ret_arr->items[i] = fh_new_number((double)sizes[i]);
     }
 
-    *ret = arr_obj;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 
@@ -963,16 +1027,22 @@ static int fn_love_particleSystem_getLinearAcceleration(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     graphics_ParticleSystem_getLinearAcceleration(p, &xmin, &ymin, &xmax, &ymax);
 
-    struct fh_value arr_obj = fh_new_array(prog);
-    fh_grow_array(prog, &arr_obj, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_obj);
-    arr->items[0] = fh_new_number((double)xmin);
-    arr->items[1] = fh_new_number((double)ymin);
-    arr->items[2] = fh_new_number((double)xmax);
-    arr->items[3] = fh_new_number((double)ymax);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr_obj;
+    ret_arr->items[0] = fh_new_number((double)xmin);
+    ret_arr->items[1] = fh_new_number((double)ymin);
+    ret_arr->items[2] = fh_new_number((double)xmax);
+    ret_arr->items[3] = fh_new_number((double)ymax);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 

@@ -53,17 +53,22 @@ static int fn_love_quad_getViewport(struct fh_program *prog,
 
     graphics_Quad *quad = fh_get_c_obj_value(&args[0]);
 
-    struct fh_value arr_val = fh_new_array(prog);
-    fh_grow_array(prog, &arr_val, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_val);
+    struct fh_value new_val = fh_new_array(prog);
 
-    arr->items[0] = fh_new_number(quad->x);
-    arr->items[1] = fh_new_number(quad->y);
-    arr->items[2] = fh_new_number(quad->w);
-    arr->items[3] = fh_new_number(quad->h);
+    ret_arr->items[0] = fh_new_number(quad->x);
+    ret_arr->items[1] = fh_new_number(quad->y);
+    ret_arr->items[2] = fh_new_number(quad->w);
+    ret_arr->items[3] = fh_new_number(quad->h);
 
-    *ret = arr_val;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
     return 0;
 }
 

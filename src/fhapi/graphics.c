@@ -48,15 +48,19 @@ static int fn_love_graphics_getBackgroundColor(struct fh_program *prog,
                                                struct fh_value *ret, struct fh_value *args, int n_args) {
     float *colors = graphics_getBackgroundColor();
 
-    struct fh_value arr_value = fh_new_array(prog);
-    fh_grow_array(prog, &arr_value, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_value);
+    struct fh_value new_val = fh_new_array(prog);
 
     for (int i = 0; i < 4; i++)
-        arr->items[i] = fh_new_number((double)colors[i] * 255.0);
+        ret_arr->items[i] = fh_new_number((double)colors[i] * 255.0);
 
-    *ret = arr_value;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
     return 0;
 }
 
@@ -81,15 +85,18 @@ static int fn_love_graphics_getColor(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
     float *colors = graphics_getColor();
 
-    struct fh_value arr_value = fh_new_array(prog);
-    fh_grow_array(prog, &arr_value, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    fh_grow_array_object(prog, ret_arr, 4);
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_value);
+    struct fh_value new_val = fh_new_array(prog);
 
     for (int i = 0; i < 4; i++)
-        arr->items[i] = fh_new_number((double)colors[i] * 255.0);
+        ret_arr->items[i] = fh_new_number((double)colors[i] * 255.0);
 
-    *ret = arr_value;
+    new_val.data.obj = ret_arr;
+    fh_restore_pin_state(prog, pin_state);
+    *ret = new_val;
     return 0;
 }
 
@@ -208,17 +215,22 @@ static int fn_love_graphics_getColorMask(struct fh_program *prog,
     bool r, g, b, a;
     graphics_getColorMask(&r, &g, &b, &a);
 
-    struct fh_value arr_val = fh_new_array(prog);
-    fh_grow_array(prog, &arr_val, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&arr_val);
+    struct fh_value new_val = fh_new_array(prog);
 
-    arr->items[0] = fh_new_bool(r);
-    arr->items[1] = fh_new_bool(g);
-    arr->items[2] = fh_new_bool(b);
-    arr->items[3] = fh_new_bool(a);
-    *ret = fh_new_null();
+    ret_arr->items[0] = fh_new_bool(r);
+    ret_arr->items[1] = fh_new_bool(g);
+    ret_arr->items[2] = fh_new_bool(b);
+    ret_arr->items[3] = fh_new_bool(a);
 
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+
+    fh_restore_pin_state(prog, pin_state);
     return 0;
 }
 
@@ -335,16 +347,21 @@ static int fn_love_graphics_getScissor(struct fh_program *prog,
         return 0;
     }
 
-    struct fh_value array = fh_new_array(prog);
-    fh_grow_array(prog, &array, 4);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, arr, 4))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&array);
+    struct fh_value new_val = fh_new_array(prog);
+
     arr->items[0] = fh_new_number(x);
     arr->items[1] = fh_new_number(y);
     arr->items[2] = fh_new_number(w);
     arr->items[3] = fh_new_number(h);
 
-    *ret = array;
+    new_val.data.obj = arr;
+    *ret = new_val;
+    fh_restore_pin_state(prog, pin_state);
     return 0;
 }
 

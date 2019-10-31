@@ -28,14 +28,19 @@ int fn_love_window_getDimensions(struct fh_program *prog, struct fh_value *ret, 
     int w = graphics_getWidth();
     int h = graphics_getHeight();
 
-    struct fh_value a = fh_new_array(prog);
-    fh_grow_array(prog, &a, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&a);
-    arr->items[0] = fh_new_number(w);
-    arr->items[1] = fh_new_number(h);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = a;
+    ret_arr->items[0] = fh_new_number(w);
+    ret_arr->items[1] = fh_new_number(h);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
 
     return 0;
 }
@@ -45,14 +50,19 @@ int fn_love_window_getDesktopDimension(struct fh_program *prog, struct fh_value 
     int w = r[0];
     int h = r[1];
 
-    struct fh_value a = fh_new_array(prog);
-    fh_grow_array(prog, &a, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&a);
-    arr->items[0] = fh_new_number(w);
-    arr->items[1] = fh_new_number(h);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = a;
+    ret_arr->items[0] = fh_new_number(w);
+    ret_arr->items[1] = fh_new_number(h);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
 
     return 0;
 }

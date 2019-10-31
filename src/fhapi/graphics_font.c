@@ -241,14 +241,19 @@ static int fn_love_font_getWrap(struct fh_program *prog,
         wrappedlines = graphics_Font_getWrap(font, line, wraplimit, &wrappedtext);
     }
 
-    struct fh_value arr = fh_new_array(prog);
-    fh_grow_array(prog, &arr, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, ret_arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr_val = GET_VAL_ARRAY(&arr);
-    arr_val->items[0] = fh_new_string(prog, wrappedtext);
-    arr_val->items[1] = fh_new_number((int)wrappedlines);
+    struct fh_value new_val = fh_new_array(prog);
 
-    *ret = arr;
+    ret_arr->items[0] = fh_new_string(prog, wrappedtext);
+    ret_arr->items[1] = fh_new_number((int)wrappedlines);
+
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
 
     free(wrappedtext);
     return 0;
@@ -329,10 +334,12 @@ static int fn_love_font_getFilter(struct fh_program *prog,
         return fh_set_error(prog, "Expected bitmap font or ttf font");
     }
 
-    struct fh_value v = fh_new_array(prog);
-    fh_grow_array(prog, &v, 3);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, arr, 3))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&v);
+    struct fh_value new_val = fh_new_array(prog);
 
     if (filter.minMode == graphics_FilterMode_none)
         arr->items[0] = fh_new_string(prog, "none");
@@ -350,7 +357,9 @@ static int fn_love_font_getFilter(struct fh_program *prog,
 
     arr->items[2] = fh_new_number((double)filter.maxAnisotropy);
 
-    *ret = v;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = arr;
+    *ret = new_val;
 
     return 0;
 }

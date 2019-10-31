@@ -101,14 +101,20 @@ static int fn_love_image_getDimensions(struct fh_program *prog,
 
     fh_image_t *img = fh_get_c_obj_value(&args[0]);
 
-    struct fh_value v = fh_new_array(prog);
-    fh_grow_array(prog, &v, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&v);
+    struct fh_value new_val = fh_new_array(prog);
+
     arr->items[0] = fh_new_number(img->img->width);
     arr->items[1] = fh_new_number(img->img->height);
 
-    *ret = v;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = arr;;
+    *ret = new_val;
+
     return 0;
 }
 
@@ -212,10 +218,12 @@ static int fn_love_image_getWrap(struct fh_program *prog,
     graphics_Wrap wrap;
     graphics_Image_getWrap(img->img, &wrap);
 
-    struct fh_value v = fh_new_array(prog);
-    fh_grow_array(prog, &v, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr= fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&v);
+    struct fh_value new_val = fh_new_array(prog);
 
     if (wrap.horMode == graphics_WrapMode_clamp)
         arr->items[0] = fh_new_string(prog, "clamp");
@@ -224,12 +232,14 @@ static int fn_love_image_getWrap(struct fh_program *prog,
     }
 
     if (wrap.verMode == graphics_WrapMode_clamp)
-        arr->items[0] = fh_new_string(prog, "clamp");
+        arr->items[1] = fh_new_string(prog, "clamp");
     else if (wrap.verMode == graphics_WrapMode_repeat) {
-        arr->items[0] = fh_new_string(prog, "repeat");
+        arr->items[1] = fh_new_string(prog, "repeat");
     }
 
-    *ret = v;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = arr;
+    *ret = new_val;
 
     return 0;
 }
@@ -273,10 +283,12 @@ static int fn_love_image_getFilter(struct fh_program *prog,
     graphics_Filter filter;
     graphics_Image_getFilter(img->img, &filter);
 
-    struct fh_value v = fh_new_array(prog);
-    fh_grow_array(prog, &v, 3);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&v);
+    struct fh_value new_val = fh_new_array(prog);
 
     if (filter.minMode == graphics_FilterMode_none)
         arr->items[0] = fh_new_string(prog, "none");
@@ -294,7 +306,9 @@ static int fn_love_image_getFilter(struct fh_program *prog,
 
     arr->items[2] = fh_new_number(filter.maxAnisotropy);
 
-    *ret = v;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = arr;
+    *ret = new_val;
 
     return 0;
 }
@@ -381,10 +395,12 @@ static int fn_love_image_getMipmapFilter(struct fh_program *prog,
     graphics_Filter filter;
     graphics_Image_getFilter(img->img, &filter);
 
-    struct fh_value v = fh_new_array(prog);
-    fh_grow_array(prog, &v, 2);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *arr = fh_make_array(prog, true);
+    if (!fh_grow_array_object(prog, arr, 2))
+        return fh_set_error(prog, "out of memory");
 
-    struct fh_array *arr = GET_VAL_ARRAY(&v);
+    struct fh_value new_val = fh_new_array(prog);
 
     if (filter.mipmapMode == graphics_FilterMode_none)
         arr->items[0] = fh_new_string(prog, "none");
@@ -395,7 +411,9 @@ static int fn_love_image_getMipmapFilter(struct fh_program *prog,
 
     arr->items[1] = fh_new_number(filter.mipmapLodBias);
 
-    *ret = v;
+    fh_restore_pin_state(prog, pin_state);
+    new_val.data.obj = arr;
+    *ret = new_val;
 
     return 0;
 }

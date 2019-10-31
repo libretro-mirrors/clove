@@ -207,15 +207,18 @@ static int fn_love_filesystem_enumerate(struct fh_program *prog,
         return fh_set_error(prog, "Couldn't get files in directory %s, perhaps you didn't call setIdentity first?\n", path);
     size_t rez_size = strlen(*rez);
 
-    struct fh_value arr = fh_new_array(prog);
-    fh_grow_array(prog, &arr, rez_size);
+    int pin_state = fh_get_pin_state(prog);
+    struct fh_array *ret_arr = fh_make_array(prog, true);
+    fh_grow_array_object(prog, ret_arr, rez_size);
 
-    struct fh_array *arr_val = GET_VAL_ARRAY(&arr);
+    struct fh_value new_val = fh_new_array(prog);
     for (size_t i = 0; i < rez_size-1; i++) {
-        arr_val->items[i] = fh_new_string(prog, rez[i]);
+		ret_arr->items[i] = fh_new_string(prog, rez[i]);
     }
 
-    *ret = arr;
+    new_val.data.obj = ret_arr;
+    *ret = new_val;
+    fh_restore_pin_state(prog, pin_state);
     return 0;
 }
 
