@@ -11,17 +11,11 @@ cmake_minimum_required(VERSION 2.8)
 
 project(clove)
 
-option(USE_PHYSFS "Build Clove using Physfs for filesystem?" TRUE)
 option(USE_LUA "Build CLove using Lua as scripting language" FALSE)
 option(USE_FH "Build CLove using FH as scripting language" TRUE)
 
 option(STATIC_LIB "Builds CLove as a static library" TRUE)
 option(DYNAMIC_LIB "Builds CLove as a shared library" FALSE)
-
-if (USE_PHYSFS)
-    ADD_DEFINITIONS(-DUSE_PHYSFS=ON)
-    message(STATUS, "Using Physfs")
-endif(USE_PHYSFS)
 
 if (USE_LUA)
     ADD_DEFINITIONS(-DUSE_LUA=ON)
@@ -50,7 +44,7 @@ ENDIF()
 IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
 SET(OPENAL_LIBRARY "openal")
-set(CMAKE_C_FLAGS " -std=gnu99 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} -fPIC -DLINUX -ldl")
+set(CMAKE_C_FLAGS " -std=c99 -O2 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} -fPIC -DLINUX")
 set(CMAKE_C_FLAGS_DEBUG "  -std=c99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE " -std=c99 ${CMAKE_C_FLAGS_RELEASE} -O3")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${MTCL_BUILD_FLAGS} -fPIC -DLINUX -ldl")
@@ -146,6 +140,10 @@ FILE(
     src/3rdparty/slre/*.h
     src/3rdparty/CMath/*.h
     src/3rdparty/CMath/*.c
+
+	#physfs
+	src/3rdparty/physfs/*.c
+	src/3rdparty/physfs/*.h
     )
 
 if (USE_LUA)
@@ -212,12 +210,12 @@ endif()
 #set(CHIPMUNK_LIBRARIES chipmunk)
 
 #zlib
-if (USE_PHYSFS)
-    set(ZLIB_FOUND TRUE)
-    add_subdirectory(src/3rdparty/zlib)
-    set(ZLIB_INCLUDE_DIR src/3rdparty/zlib)
-    set(ZLIB_LIBRARIES zlibstatic)
-endif(USE_PHYSFS)
+#if (USE_PHYSFS)
+ #   set(ZLIB_FOUND TRUE)
+  #  add_subdirectory(src/3rdparty/zlib)
+   # set(ZLIB_INCLUDE_DIR src/3rdparty/zlib)
+   # set(ZLIB_LIBRARIES zlibstatic)
+#endif(USE_PHYSFS)
 
 #freetype
 add_subdirectory(src/3rdparty/freetype)
@@ -225,7 +223,7 @@ include_directories(src/3rdparty/freetype/include)
 set(FREETYPE_LIBRARIES freetype)
 
 #openal
-add_subdirectory(src/3rdparty/openal)
+#add_subdirectory(src/3rdparty/openal)
 set(OPENAL_INCLUDE_DIR src/3rdparty/openal/include/)
 
 #lua
@@ -245,13 +243,6 @@ add_subdirectory(src/3rdparty/SDL2/)
 set(SDL_INCLUDE_DIR src/3rdparty/SDL2/include/)
 set(SDL_LIBRARIES SDL2-static SDL2main)
 
-#physfs
-if (USE_PHYSFS)
-    add_subdirectory(src/3rdparty/physfs)
-    set(PHYSFS_INCLUDE_DIR src/3rdparty/physfs)
-    set(PHYSFS_LIBRARIES physfs-static)
-endif(USE_PHYSFS)
-
 if(WIN32)
     set(OPENAL_LIBRARIES "OpenAL32")
 else()
@@ -270,10 +261,6 @@ if(WIN32)
         ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
         ${FREETYPE_LIBRARIES})
 
-    if (USE_PHYSFS)
-        target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
-    endif(USE_PHYSFS)
-
     if (USE_LUA)
         target_link_libraries(clove ${LUA_LIBRARIES})
     endif(USE_LUA)
@@ -284,10 +271,6 @@ else()
         ${OPENGL_LIBRARIES}
         ${FREETYPE_LIBRARIES} ${OPENAL_LIBRARIES})
     #${CHIPMUNK_LIBRARIES})
-
-    if (USE_PHYSFS)
-        target_link_libraries(clove ${PHYSFS_LIBRARIES} ${ZLIB_LIBRARIES})
-    endif(USE_PHYSFS)
 
     if (USE_LUA)
         target_link_libraries(clove ${LUA_LIBRARIES})
