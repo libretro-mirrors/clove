@@ -8,8 +8,6 @@
 */
 #pragma once
 
-#include "../3rdparty/openal/include/AL/al.h"
-
 #include "audio.h"
 #include "source.h"
 
