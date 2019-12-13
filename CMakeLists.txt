@@ -36,14 +36,17 @@ set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Z7 /W4 /Od /MDd /D_DEBUG /D
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /W1 /Ox /Ot /MD /DNDEBUG")
 set(CMAKE_EXE_LINKER_FLAGS "")
 FIND_PACKAGE(OpenGL REQUIRED)
-SET(OPENAL_LIBRARY "OpenAL32")
 set(MTCL_BUILD_FLAGS "")
 set(OS_SPECIFIC_LIBRARIES)
+
+FILE(GLOB SOURCE_PHYSFS_FILES
+	src/3rdparty/physfs/*.c
+	src/3rdparty/physfs/*.h)
+
 ENDIF()
 
 IF(UNIX AND NOT APPLE)
 FIND_PACKAGE(OpenGL REQUIRED)
-SET(OPENAL_LIBRARY "openal")
 set(CMAKE_C_FLAGS " -std=c99 -O2 -Wvla -Wall -static-libgcc ${CMAKE_C_FLAGS} -fPIC -DLINUX -ldl")
 set(CMAKE_C_FLAGS_DEBUG "  -std=c99 ${CMAKE_C_FLAGS_DEBUG} -D__Debug__")
 set(CMAKE_C_FLAGS_RELEASE " -std=c99 ${CMAKE_C_FLAGS_RELEASE} -O3")
@@ -54,6 +57,11 @@ set(CMAKE_SHARED_LINKER_FLAGS "-ldl -Wl,-rpath=$ORIGIN,--as-needed,--allow-multi
 set(OS_SPECIFIC_LIBRARIES pthread Xxf86vm X11 Xrandr Xi)
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 set(CMAKE_INSTALL_RPATH "install")
+
+FILE(GLOB SOURCE_PHYSFS_FILES
+	src/3rdparty/physfs/*.c
+	src/3rdparty/physfs/*.h)
+
 ENDIF()
 
 if (APPLE)
@@ -65,7 +73,6 @@ if (APPLE)
     find_library(CORE_SERVICES_LIB CoreServices)
     find_library(FOUNDATION_LIB Foundation)
     find_library(IOKIT_LIB IOKit)
-    FIND_LIBRARY(OPENAL_LIBRARY OpenAL)
     set(MTCL_BUILD_FLAGS "-mmacosx-version-min=10.6")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${MTCL_BUILD_FLAGS} -Wall -Wvla -O3 -DOSX")
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -D__Debug__ -g3")
@@ -75,26 +82,12 @@ if (APPLE)
     set(OS_SPECIFIC_LIBRARIES ${COCOA_LIB} ${CORE_SERVICES_LIB} ${FOUNDATION_LIB} ${IOKIT_LIB})
     set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
     set(CMAKE_INSTALL_RPATH "install")
-endif()
 
-if (ANDROID)
-    #FIND_PACKAGE(OpenGLES REQUIRED)
-    #FIND_PACKAGE(OpenGLES2 REQUIRED)
+FILE(GLOB SOURCE_PHYSFS_FILES
+	src/3rdparty/physfs/*.c
+	src/3rdparty/physfs/*.h
+    src/3rdparty/physfs/*.m)
 
-    set (ARM_FLAGS "-march=armv6 -marm -mfloat-abi=softfp -mfpu=vfp")
-    set ( ANDROID_FORCE_ARM_BUILD ON )
-    set ( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O2 -g -DNDEBUG -DANDROID_NDK -DDISABLE_IMPORTGL" )
-    set ( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -g -DNDEBUG -DANDROID_NDK -DDISABLE_IMPORTGL" )
-    ADD_DEFINITIONS("-Dva_list=__builtin_va_list")
-    ADD_DEFINITIONS("-Dva_start=__builtin_va_start")
-    ADD_DEFINITIONS("-Dva_end=__builtin_va_end")
-    ADD_DEFINITIONS("-Dva_arg=__builtin_va_arg")
-    ADD_DEFINITIONS("-DHAVE_MALLOC")
-    ADD_DEFINITIONS("-DANDROID")
-    ADD_DEFINITIONS("-DUSE_GLES")
-    ADD_DEFINITIONS("-D__ANDROID__")
-
-    SET(LIBTYPE STATIC)
 endif()
 
 FILE(
@@ -141,9 +134,9 @@ FILE(
     src/3rdparty/CMath/*.h
     src/3rdparty/CMath/*.c
 
-	#physfs
-	src/3rdparty/physfs/*.c
-	src/3rdparty/physfs/*.h
+    #mojoAL
+    src/3rdparty/mojoAL/mojoal.c
+    src/3rdparty/mojoAL/AL/*.h
     )
 
 if (USE_LUA)
@@ -183,26 +176,13 @@ if (SHARED_LIB)
     add_library(love_shared SHARED ${SOURCE_FILES})
 endif(SHARED_LIB)
 
-if (NOT ANDROID)
-    add_executable(
-        clove
-        ${SOURCE_FILES}
-        ${SOURCE_FH_FILES}
-    #    $(SOURCE_LUA_FILES)
-        )
-endif()
-
-if (ANDROID)
-
-    set(INCLUDE_CLOVEANDROID
-        "src/"
-        "3rdparty/"
-        )
-
-    include_directories( ${INCLUDE_CLOVEANDROID}	)
-    add_library( clove SHARED ${SOURCE_FILES} )
-
-endif()
+add_executable(
+clove
+${SOURCE_FILES}
+${SOURCE_FH_FILES}
+${SOURCE_PHYSFS_FILES}
+#    $(SOURCE_LUA_FILES)
+)
 
 #chipmunk2d
 #add_subdirectory(src/3rdparty/Chipmunk2D)
@@ -222,10 +202,6 @@ add_subdirectory(src/3rdparty/freetype)
 include_directories(src/3rdparty/freetype/include)
 set(FREETYPE_LIBRARIES freetype)
 
-#openal
-#add_subdirectory(src/3rdparty/openal)
-set(OPENAL_INCLUDE_DIR src/3rdparty/openal/include/)
-
 #lua
 if (USE_LUA)
     add_subdirectory(src/3rdparty/lua)
@@ -243,13 +219,6 @@ add_subdirectory(src/3rdparty/SDL2/)
 set(SDL_INCLUDE_DIR src/3rdparty/SDL2/include/)
 set(SDL_LIBRARIES SDL2-static SDL2main)
 
-if(WIN32)
-    set(OPENAL_LIBRARIES "OpenAL32")
-else()
-    set(OPENAL_LIBRARIES openal)
-endif()
-
-
 add_definitions(-DFT2_BUILD_LIBRARY)
 add_definitions(-DSDL2)
 
@@ -258,7 +227,7 @@ if(WIN32)
 
     target_link_libraries(clove ws2_32.lib
         ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
-        ${OPENGL_LIBRARIES} ${OPENAL_LIBRARIES}
+        ${OPENGL_LIBRARIES}
         ${FREETYPE_LIBRARIES})
 
     if (USE_LUA)
@@ -269,8 +238,8 @@ else()
     target_link_libraries(clove
         ${SDL_LIBRARIES} ${GLEW_LIBRARIES}
         ${OPENGL_LIBRARIES}
-        ${FREETYPE_LIBRARIES} ${OPENAL_LIBRARIES})
-    #${CHIPMUNK_LIBRARIES})
+        ${FREETYPE_LIBRARIES}
+    )
 
     if (USE_LUA)
         target_link_libraries(clove ${LUA_LIBRARIES})
@@ -278,8 +247,3 @@ else()
 
 endif(WIN32)
 
-if(ANDROID)
-    target_link_libraries(clove
-        ${SDL_LIBRARIES} ${OPENGL_LIBRARIES}
-        ${OPENAL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LUA_LIBRARIES} )
-endif()

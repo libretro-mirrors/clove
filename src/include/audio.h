@@ -8,7 +8,11 @@
 */
 #pragma once
 
-#include "../3rdparty/openal/include/AL/al.h"
+// #include "../3rdparty/openal/include/AL/al.h"
+
+#include "../3rdparty/mojoAL/AL/al.h"
+#include "../3rdparty/mojoAL/AL/alc.h"
+
 #include "stb_vorbis.h"
 #include "streamsource.h"
 
