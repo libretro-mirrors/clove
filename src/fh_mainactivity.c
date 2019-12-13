@@ -67,14 +67,13 @@ static void focus_function(void) {
 }
 
 static void main_clean(void) {
-    fh_free_program(loopData.prog);
     joystick_close();
     ui_deinit();
     graphics_geometry_free();
     graphics_destroyWindow();
     filesystem_free();
     audio_close();
-    fh_deinit();
+    fh_deinit(loopData.prog);
 }
 
 static const char ui_key_map[256] = {
