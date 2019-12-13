@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -46,7 +46,7 @@ int audio_loadStatic(audio_StaticSource *source, char const * filename) {
 	}else if((strcmp(get_filename_ext(filename), "ogg")) == 0){
 		loaded = audio_vorbis_load(source->buffer, filename);
 	}else
-		loaded = -1; //Unknow file type :(
+		return -1; //Unknow file type :(
 
 	alSourcei(source->common.source, AL_BUFFER, source->buffer);
 
