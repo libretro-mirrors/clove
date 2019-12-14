@@ -63,8 +63,12 @@ static int fn_love_filesystem_append(struct fh_program *prog,
     return 0;
 }
 
-static int fn_love_filesystem_getSaveDirectory(struct fh_program *prog,
-                                               struct fh_value *ret, struct fh_value *args, int n_args) {
+static int fn_love_filesystem_getCurrentDirectory(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
+	*ret = fh_new_string(prog,filesystem_getCurrentDirectory());
+	return 0;
+}
+
+static int fn_love_filesystem_getSaveDirectory(struct fh_program *prog, struct fh_value *ret, struct fh_value *args, int n_args) {
     const char *company = fh_optstring(args, n_args, 0, "CLove");
     const char *projName = fh_optstring(args, n_args, 1, "myGame");
 
@@ -226,7 +230,7 @@ static int fn_love_filesystem_isDir(struct fh_program *prog,
 static int fn_love_filesystem_getUsrDir(struct fh_program *prog,
                                         struct fh_value *ret, struct fh_value *args, int n_args) {
 
-    *ret = fh_new_bool(filesystem_getUsrDir());
+    *ret = fh_new_string(prog, filesystem_getUsrDir());
     return 0;
 }
 
@@ -236,8 +240,7 @@ static int fn_love_filesystem_setIdentity(struct fh_program *prog,
         return fh_set_error(prog, "Illegal parameter, expected name:string");
     const char *name = fh_get_string(&args[0]);
 
-    filesystem_setIdentity(name);
-    *ret = fh_new_null();
+    *ret = fh_new_bool(filesystem_setIdentity(name));
     return 0;
 }
 
@@ -286,6 +289,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_filesystem_getUsrDir),
     DEF_FN(love_filesystem_setIdentity),
     DEF_FN(love_filesystem_enumerate),
+	DEF_FN(love_filesystem_getCurrentDirectory),
 };
 
 void fh_filesystem_register(struct fh_program *prog) {

@@ -247,7 +247,7 @@ int filesystem_append(const char* name, const char* data) {
 }
 
 const char* filesystem_getCurrentDirectory() {
-    //TODO Look into this
+/*
 #ifndef CLOVE_WEB
     char buffer[1024];
     const char* dir = getcwd(buffer, sizeof(buffer));
@@ -255,7 +255,8 @@ const char* filesystem_getCurrentDirectory() {
         return dir;
 #endif
     clove_error("Error, Could not get the current directory \n");
-    return NULL;
+*/
+    return PHYSFS_getBaseDir();
 }
 
 /**
@@ -470,6 +471,4 @@ bool filesystem_remove(const char* name) {
 bool filesystem_rename(const char *old_name, const char *new_name) {
     return rename(old_name, new_name);
 }
-
-
 
