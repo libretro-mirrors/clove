@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -61,6 +61,8 @@ void filesystem_init(char* argv0, int stats) {
 #ifdef USE_PHYSFS
     if (!PHYSFS_init(argv0))
         clove_error(PHYSFS_getLastError());
+	PHYSFS_mount("./", NULL, 1);
+
 #endif
     moduleData.hasIdentitySet = false;
 }
@@ -122,6 +124,36 @@ int filesystem_exists(const char* name)
     return PHYSFS_exists(name);
 #endif
 
+}
+
+int filesystem_getInfo(const char* path, struct FileInfo *info)
+{
+	#ifndef USE_PHYSFS
+	clove_error("filesystem:isFile is supported just with PHYSFS");
+	return 0;
+	#endif
+	if (!PHYSFS_isInit())
+		return false;
+	PHYSFS_Stat stat = {};
+	if (!PHYSFS_stat(path, &stat)) {
+		clove_error("Couldn't fetch information about path %s\n", path);
+		return 0;
+	}
+	info->modtime = stat.modtime;
+	info->accesstime = stat.accesstime;
+	info->createtime = stat.createtime;
+	info->size = stat.filesize;
+
+	if (stat.filetype == PHYSFS_FILETYPE_REGULAR) {
+		info->type = FileType_REGULAR;
+	} else if (stat.filetype == PHYSFS_FILETYPE_SYMLINK) {
+		info->type = FileType_DIRECTORY;
+	} else if (stat.filetype == PHYSFS_FILETYPE_DIRECTORY) {
+		info->type = FileType_DIRECTORY;
+	} else {
+		info->type = FileType_OTHER;
+	}
+	return 1;
 }
 
 int filesystem_write(const char* name, const char* data)

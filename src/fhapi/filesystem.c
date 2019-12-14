@@ -74,6 +74,51 @@ static int fn_love_filesystem_getSaveDirectory(struct fh_program *prog,
     return 0;
 }
 
+static int fn_love_filesystem_getInfo(struct fh_program *prog,
+                                     struct fh_value *ret, struct fh_value *args, int n_args) {
+
+	if (!fh_is_string(&args[0])) {
+		return fh_set_error(prog, "Expected path");
+	}
+
+	const char* path = fh_get_string(&args[0]);
+	struct FileInfo info;
+
+	bool rez = filesystem_getInfo(path, &info);
+
+	if (!rez) {
+		*ret = fh_new_bool(false);
+		return 0;
+	}
+
+	int pin_state = fh_get_pin_state(prog);
+	struct fh_array *ret_arr = fh_make_array(prog, true);
+	fh_grow_array_object(prog, ret_arr, 5);
+
+	struct fh_value new_val = fh_new_array(prog);
+
+	const char* type = "other";
+	if (info.type == FileType_REGULAR) {
+		type = "file";
+	} else if (info.type == FileType_DIRECTORY) {
+		type = "directory";
+	} else if (info.type == PHYSFS_FILETYPE_SYMLINK) {
+		type = "symlink";
+	}
+
+	ret_arr->items[0] = fh_new_string(prog, type);
+	ret_arr->items[1] = fh_new_number(info.size);
+	ret_arr->items[2] = fh_new_number(info.modtime);
+	ret_arr->items[3] = fh_new_number(info.accesstime);
+	ret_arr->items[4] = fh_new_number(info.createtime);
+
+    new_val.data.obj = ret_arr;
+    fh_restore_pin_state(prog, pin_state);
+    *ret = new_val;
+
+	return 0;
+}
+
 static int fn_love_filesystem_exists(struct fh_program *prog,
                                      struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_string(&args[0]))
@@ -228,6 +273,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_filesystem_write),
     DEF_FN(love_filesystem_append),
     DEF_FN(love_filesystem_getSaveDirectory),
+	DEF_FN(love_filesystem_getInfo),
     DEF_FN(love_filesystem_exists),
     DEF_FN(love_filesystem_setSource),
     DEF_FN(love_filesystem_getSource),

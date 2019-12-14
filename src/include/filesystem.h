@@ -10,11 +10,28 @@
 
 #include <stdbool.h>
 
+#define USE_PHYSFS 1
+
 #ifdef USE_PHYSFS
 #include "../3rdparty/physfs/physfs.h"
 #endif
 
 #include "../3rdparty/SDL2/include/SDL.h"
+
+enum FileType {
+	FileType_REGULAR,
+	FileType_DIRECTORY,
+	FileType_SYMLIN,
+	FileType_OTHER
+};
+
+struct FileInfo {
+	int64_t size;
+	int64_t modtime;
+	int64_t accesstime;
+	int64_t createtime;
+	enum FileType type;
+};
 
 void filesystem_init(char* argv0, int stats);
 void filesystem_free(void);
@@ -25,6 +42,7 @@ int filesystem_read(char const* filename, char** output);
 int filesystem_write(const char* name, const char* data);
 int filesystem_append(const char* name, const char* data);
 int filesystem_exists(const char* name);
+int filesystem_getInfo(const char* path, struct FileInfo *info);
 int filesystem_equals(const char* a,const char* b,int l);
 int filesystem_contain(const char* a, const char* b);
 bool filesystem_remove(const char* name);
