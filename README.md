@@ -3,7 +3,7 @@
 CLove
 =====
 CLove is a simple, easy to learn and use 2D game framework tested on
-Mac/Linux/Windows/Web, made in C with OpenGLES 2 which uses Lua as scripting language.
+Mac/Linux/Windows/Web, made in C with OpenGLES 2 which uses Lua and FH as scripting language.
 
 How to build
 ============
@@ -50,7 +50,7 @@ On Linux and OS X:
 	========
 	- Scripting languages: FH and Lua
 	- Can be used as a shared or static library.
-	- Native C/C++ support.
+	- Native C support.
 	- Easy to learn and use api.
 	- Cross platform (Linux, MacOS, Web and Windows).
 	- Custom package format.
@@ -65,18 +65,12 @@ On Linux and OS X:
 	- UI module.
 	- Filesystem functions.
 	- OpenGL ES 2.0.
-- Networking, unix only (TCP,IPv4 or IPv6)
+	- Networking, (unix only, TCP with IPv4 or IPv6, WIP).
 	- Powerful font loading and drawing using batch system.
 	- Support for image fonts.
 	- Keyboard, mouse and joystick support.
-	- Threads.
+	- Thread (WIP).
 	- Error handling.
-
-	Planned work
-	============
-	1. Fix/Improve Threads module
-	1. Networking module overall (plus support for Windows)
-	1. Mobile support
 
 	Examples
 	--------
@@ -94,19 +88,19 @@ On Linux and OS X:
 
 	```lua
 	-- Example of drawing some primitives
-function love.draw()
-	love.graphics.rectangle("fill", 100, 100, 32, 16)
-	love.graphics.rectangle("line", 200, 200, 32, 32)
-	love.graphics.circle("fill", 270, 200, 32, 16)
-	love.graphics.circle("line", 300, 100, 32, 8)
+	function love.draw()
+		love.graphics.rectangle("fill", 100, 100, 32, 16)
+		love.graphics.rectangle("line", 200, 200, 32, 32)
+		love.graphics.circle("fill", 270, 200, 32, 16)
+		love.graphics.circle("line", 300, 100, 32, 8)
 	end
 	```
 
 	```lua
 	-- Example of playing music
 	local ogg_music = love.audio.newSource("music.ogg")
-function love.load()
-	ogg_music:play()
+	function love.load()
+		ogg_music:play()
 	end
 	```
 
