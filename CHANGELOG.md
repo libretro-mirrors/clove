@@ -1,7 +1,8 @@
 version 0.8.0 not yet released
 ========================
-* added: New UI module
-* added: love.window.setMaxSize.
+* added: love#filesystem#getInfo (FH, only).
+* added: New UI module.
+* added: love#window#setMaxSize.
 * added: New scripting language, FH.
 * added: Misc math utilities.
 * added: Very powerful particle system.
@@ -10,13 +11,15 @@ version 0.8.0 not yet released
 * added: More C flags for compilation.
 * added: CLove can be compiled as shared or static library.
 * added: 'set' function to batch.c. Allows for changing the structure of an entity which is part of the batch.
-* added: love.system.setClipboardText(text)
-* added: love.system.getClipboardText()
-* added: love.system.getProcessorCount()
+* added: love.system.setClipboardText(text).
+* added: love#system#getClipboardText().
+* added: love#system#getProcessorCount().
 
-* fixed: graphics_setFullscreen
+* fixed: graphics#setFullscreen.
 * fixed: newImageFont is not broken anymore.
+
 * modify: Changed the structure of folders, enabling the usage of the framework as a library.
+* modify: Removed OpenAL and replaced it with MojoAL.
 
 * removed: C++ support
 
