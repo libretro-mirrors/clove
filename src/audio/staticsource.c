@@ -18,6 +18,16 @@
 #include "../include/wav_decoder.h"
 #include "../include/vorbis_decoder.h"
 
+static int check_openal_error(const char *where)
+{
+    const ALenum err = alGetError();
+    if (err != AL_NONE) {
+        printf("OpenAL Error at %s! %s (%u)\n", where, alGetString(err), (unsigned int) err);
+        return 1;
+    }
+    return 0;
+}
+
 static const char* get_filename_ext(const char *filename) {
 	const char *dot = strrchr(filename, '.');
 	if(!dot || dot == filename) return "";
@@ -80,7 +90,12 @@ void audio_StaticSource_pause(audio_StaticSource *source) {
 	audio_SourceCommon_pause(&source->common);
 }
 
-
 void audio_StaticSource_resume(audio_StaticSource *source) {
 	audio_SourceCommon_resume(&source->common);
 }
+
+void audio_StaticSource_free(audio_StaticSource *source) {
+    alDeleteBuffers(1, &source->buffer);
+    check_openal_error("alDeleteBuffers");
+}
+

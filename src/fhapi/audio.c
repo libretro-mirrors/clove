@@ -17,6 +17,7 @@
 
 static fh_c_obj_gc_callback gcStaticSource(audio_StaticSource *source) {
     audio_SourceCommon_free(&source->common);
+    audio_StaticSource_free(source);
     free(source);
     return (fh_c_obj_gc_callback)1;
 }

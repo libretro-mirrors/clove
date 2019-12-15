@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2018 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -23,6 +23,16 @@ static struct {
     int playingStreamCount;
     ALuint unqueueBuffer[6];
 } moduleData;
+
+static int check_openal_error(const char *where)
+{
+    const ALenum err = alGetError();
+    if (err != AL_NONE) {
+        printf("OpenAL Error at %s! %s (%u)\n", where, alGetString(err), (unsigned int) err);
+        return 1;
+    }
+    return 0;
+}
 
 /*static const char* get_filename_ext(const char *filename) {
     const char *dot = strrchr(filename, '.');
