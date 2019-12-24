@@ -1,7 +1,7 @@
 /*
 #   clove
 #
-#   Copyright (C) 2016-2017 Muresan Vlad
+#   Copyright (C) 2016-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
@@ -21,8 +21,10 @@ void audio_SourceCommon_init(audio_SourceCommon *source) {
 	alGenSources(1, &source->source);
 	err = alGetError();
 
-	if (err != AL_NO_ERROR)
+	if (err != AL_NO_ERROR) {
 		clove_error("Error: Could not generate openAL source \n");
+        return;
+    }
 
 	source->state = audio_SourceState_stopped;
 
@@ -74,6 +76,7 @@ void audio_SourceCommon_stop(audio_SourceCommon *source) {
 void audio_SourceCommon_free(audio_SourceCommon *source) {
   audio_SourceCommon_stop(source);
   alDeleteSources(1, &source->source);
+  alSourcei(source->source, AL_BUFFER, AL_NONE);
 }
 
 audio_SourceState audio_SourceCommon_getState(audio_SourceCommon const *source) {

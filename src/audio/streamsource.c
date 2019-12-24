@@ -140,8 +140,9 @@ void audio_StreamSource_setLooping(audio_StreamSource* source, int value) {
 
 void audio_StreamSource_stop(audio_StreamSource* source) {
     source->state = audio_SourceState_stopped;
-    if (source->state == audio_SourceState_playing)
+    if (source->state == audio_SourceState_playing) {
         alSourceStop(source->source);
+    }
 }
 
 void audio_StreamSource_resume(audio_StreamSource* source) {
@@ -203,5 +204,6 @@ void audio_StreamSource_setPosition(audio_StreamSource *source, float x, float y
 void audio_StreamSource_free(audio_StreamSource* source) {
     alDeleteSources(1, &source->source);
     alDeleteBuffers(6, source->buffers);
+    alSourcei(source->source, AL_BUFFER, AL_NONE);
 }
 

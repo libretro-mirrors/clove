@@ -79,7 +79,7 @@ void audio_StaticSource_stop(audio_StaticSource *source) {
 }
 
 void audio_StaticSource_rewind(audio_StaticSource *source) {
-	alSourceRewind(source->common.source);
+	alSourceRewindv(1, &source->common.source);
 
 	if(source->common.state == audio_SourceState_playing) {
 		audio_SourceCommon_play(&source->common);
@@ -95,7 +95,8 @@ void audio_StaticSource_resume(audio_StaticSource *source) {
 }
 
 void audio_StaticSource_free(audio_StaticSource *source) {
+    alSourceUnqueueBuffers(source->common.source, 1, &source->buffer);
     alDeleteBuffers(1, &source->buffer);
-    check_openal_error("alDeleteBuffers");
+    //check_openal_error("alDeleteBuffers");
 }
 

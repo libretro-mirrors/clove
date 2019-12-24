@@ -7,8 +7,6 @@
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 
-//#include "../3rdparty/openal/include/AL/al.h"
-//#include "../3rdparty/openal/include/AL/alc.h"
 #include "../3rdparty/mojoAL/AL/al.h"
 #include "../3rdparty/mojoAL/AL/alc.h"
 
