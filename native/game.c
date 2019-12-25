@@ -1,14 +1,17 @@
 /*
 #   clove
-#
-#   Copyright (C) 2017-2018 Muresan Vlad
+#   Copyright (C) 2017-2019 Muresan Vlad
 #
 #   This project is free software; you can redistribute it and/or modify it
 #   under the terms of the MIT license. See LICENSE.md for details.
 */
 #include "game.h"
 
-/*#include <stdbool.h>
+/*
+#include "../src/3rdparty/SDL2/include/SDL.h"
+#include <stdio.h>
+
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "../src/include/graphics.h"
@@ -22,6 +25,7 @@
 static mu_Container *container1 = NULL;
 static mu_Container *container2 = NULL;
 */
+
 void game_load(void) {
     /*container0 = ui_init_window(100, 100, 126, 126, 0);
     container1 = ui_init_window(400, 100, 126, 126, 0);

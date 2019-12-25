@@ -69,7 +69,6 @@ On Linux and OS X:
 	- Powerful font loading and drawing using batch system.
 	- Support for image fonts.
 	- Keyboard, mouse and joystick support.
-	- Thread (WIP).
 	- Error handling.
 
 	Examples

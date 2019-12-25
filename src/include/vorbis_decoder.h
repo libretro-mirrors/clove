@@ -9,6 +9,7 @@
 #pragma once
 
 #include "audio.h"
+#include "streamsource.h"
 
 int audio_vorbis_load(ALuint buffer, char const *filename);
 int audio_vorbis_loadStream(audio_vorbis_DecoderData* data, char const *filename);

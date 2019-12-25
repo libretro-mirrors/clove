@@ -10,6 +10,8 @@
 
 #include <stdbool.h>
 
+#include "stb_vorbis.h"
+
 #include "audio.h"
 #include "source.h"
 
