@@ -30,9 +30,6 @@ static int fn_love_ui_newContainer(struct fh_program *prog,
 
 static int fn_love_ui_newWindow(struct fh_program *prog,
                                 struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (n_args != 4) {
-        return fh_set_error(prog, "Invalid number of arguments, expected 4 got: %d", n_args);
-    }
     mu_Container *cnt = malloc(sizeof(mu_Container));
 
     for (int i = 0; i < 4; i++) {
@@ -45,8 +42,9 @@ static int fn_love_ui_newWindow(struct fh_program *prog,
     int y = (int)fh_get_number(&args[1]);
     int w = (int)fh_get_number(&args[2]);
     int h = (int)fh_get_number(&args[3]);
+    int opt = (int)fh_optnumber(args, n_args, 4, 0);
 
-    ui_init_window(cnt, x, y, w, h, 0);
+    ui_init_window(cnt, x, y, w, h, opt);
 
     fh_c_obj_gc_callback *callback = ui_container_gc;
     *ret = fh_new_c_obj(prog, cnt, callback, FH_UI_TYPE);
@@ -277,9 +275,6 @@ static int fn_love_ui_setContainerInfo(struct fh_program *prog,
 
 static int fn_love_ui_begin_window(struct fh_program *prog,
                                    struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (n_args != 2) {
-        return fh_set_error(prog, "Invalid number of arguments, expected 2 got: %d", n_args);
-    }
 
     if (!fh_is_c_obj_of_type(&args[0], FH_UI_TYPE)) {
         return fh_set_error(prog, "Expected argument 0 to be an ui window");
@@ -288,7 +283,9 @@ static int fn_love_ui_begin_window(struct fh_program *prog,
     mu_Container *cnt = fh_get_c_obj_value(&args[0]);
     const char *title = fh_get_string(&args[1]);
 
-    *ret = fh_new_bool(ui_begin_window(title, cnt));
+    int opt = fh_optnumber(args, n_args, 2, 0);
+
+    *ret = fh_new_bool(ui_begin_window(title, cnt, opt));
     return 0;
 }
 
@@ -513,6 +510,33 @@ static int fn_love_ui_res_state(struct fh_program *prog,
         num = MU_RES_CHANGE;
     } else {
         return fh_set_error(prog, "invalid resource state %s\n", state);
+    }
+    *ret = fh_new_number(num);
+    return 0;
+}
+
+static int fn_love_ui_opt(struct fh_program *prog,
+                            struct fh_value *ret, struct fh_value *args, int n_args)
+{
+    if (!fh_is_string(&args[0])) {
+        return fh_set_error(prog, "Expected string!");
+    }
+    const char *opt = fh_get_string(&args[0]);
+    int num = 0;
+    if (strcmp(opt, "noclose") == 0) {
+        num = MU_OPT_NOCLOSE;
+    } else if (strcmp(opt, "noframe") == 0) {
+        num = MU_OPT_NOFRAME;
+    } else if (strcmp(opt, "notitle") == 0) {
+        num = MU_OPT_NOTITLE;
+    } else if (strcmp(opt, "noresize") == 0) {
+        num = MU_OPT_NORESIZE;
+    } else if (strcmp(opt, "popup") == 0) {
+        num = MU_OPT_POPUP;
+    } else if (strcmp(opt, "autosize") == 0) {
+        num = MU_OPT_AUTOSIZE;;
+    } else {
+        return fh_set_error(prog, "invalid alignment %s\n", opt);
     }
     *ret = fh_new_number(num);
     return 0;
@@ -808,6 +832,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_ui_getContainerScroll),
     DEF_FN(love_ui_setContainerScroll),
     DEF_FN(love_ui_getContainerContentSize),
+    DEF_FN(love_ui_opt),
     DEF_FN(love_ui_res_state)
 };
 

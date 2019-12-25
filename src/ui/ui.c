@@ -145,8 +145,8 @@ void ui_init_window(mu_Container *cnt, int x, int y, int w, int h, int opt) {
     }
 }
 
-int ui_begin_window(const char* title, mu_Container *window) {
-    return mu_begin_window(moduleData.ctx, window, title);
+int ui_begin_window(const char* title, mu_Container *window, int opt) {
+    return mu_begin_window_ex(moduleData.ctx, window, title, opt);
 }
 
 void ui_draw_control_text(const char *str, mu_Rect rect, int colorid, int opt) {

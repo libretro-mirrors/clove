@@ -25,7 +25,7 @@ void ui_layout_set_next(int x, int y,
 mu_Container* ui_get_container(void);
 
 void ui_init_window(mu_Container *ctn, int x, int y, int w, int h, int opt);
-int ui_begin_window(const char *title, mu_Container *window);
+int ui_begin_window(const char *title, mu_Container *window, int opt);
 void ui_end_window(void);
 
 void ui_draw_control_text(const char *str, mu_Rect rect, int colorid, int opt);
