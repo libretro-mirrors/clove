@@ -1,6 +1,7 @@
 version 0.8.0 not yet released
 ========================
 * added: love#filesystem#getInfo (FH, only).
+* added: New particle module.
 * added: New UI module.
 * added: love#window#setMaxSize.
 * added: New scripting language, FH.

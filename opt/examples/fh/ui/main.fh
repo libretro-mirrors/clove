@@ -35,9 +35,9 @@ fn love_load()  {
 
 	self.panel = love_ui_newContainer();
 
-        self.show_info = false;
-        self.show_buttons = false;
-	self.header_2 = false;
+    self.show_info = false;
+    self.show_buttons = false;
+    self.header_2 = false;
 
 	self.show_tree = false;
 	self.show_tree_1 = false;
