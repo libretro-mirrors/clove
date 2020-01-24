@@ -144,22 +144,26 @@ static int fn_love_font_getHeight(struct fh_program *prog,
 
         *ret = fh_new_number((int)font->image->height);
     } else {
-        return fh_set_error(prog, "Expected font or bitmap font");
+        *ret = fh_new_number((int) graphics_Font_getHeight(&moduleData.defaultFont));
     }
     return 0;
 }
 
 static int fn_love_font_getWidth(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (n_args != 2) {
-        return fh_set_error(prog, "Illegal number of arguments, expected two, font/bitmap font and string");
+    int string_index = 0;
+    if (fh_is_c_obj_of_type(&args[0], FH_FONT_TYPE)) {
+        if (!fh_is_string(&args[1])) {
+            return fh_set_error(prog, "Expected string");
+        }
+        string_index = 1;
+    } else {
+        if (!fh_is_string(&args[0])) {
+            return fh_set_error(prog, "Expected string");
+        }
     }
 
-    if (!fh_is_string(&args[1])) {
-        return fh_set_error(prog, "Expected string");
-    }
-
-    char const *line = fh_get_string(&args[1]);
+    char const *line = fh_get_string(&args[string_index]);
 
     graphics_Font *font;
     graphics_BitmapFont *bitmap;
@@ -171,7 +175,7 @@ static int fn_love_font_getWidth(struct fh_program *prog,
         bitmap = fh_get_c_obj_value(&args[0]);
         *ret = fh_new_number((int)graphics_BitmapFont_getWidth(bitmap, line));
     } else {
-        return fh_set_error(prog, "Expected font or bitmap font");
+        *ret = fh_new_number((int) graphics_Font_getWidth(&moduleData.defaultFont, line));
     }
 
     return 0;
