@@ -334,8 +334,28 @@ void fh_main_activity_load(int argc, char* argv[])
     fh_ui_register(loopData.prog);
     fh_love_register(loopData.prog);
 
-	bool dump_bytecode = argv[1] && strcmp(argv[1], "show_bytecode") == 0 ? true : false;
-    int ret = fh_run_script_file(loopData.prog, dump_bytecode, "main.fh", argv, argc);
+	bool dump_bytecode = false;
+	bool run_package = false;
+
+	if (argv[1]) {
+		if (strstr(argv[1], ".love"))
+			run_package = true;
+		else
+			clove_error("ERROR: couldn't find pack named \"%s\" to run\n", argv[1]);
+	}
+
+	if (argv[2] && strcmp(argv[2], "true") == 0) {
+		dump_bytecode = true;
+	}
+
+    int ret = -1;
+
+	if (run_package) {
+		ret = fh_run_pack(loopData.prog, dump_bytecode, argv[1], "main.fh", argv, argc);
+	} else {
+		ret = fh_run_script_file(loopData.prog, dump_bytecode, "main.fh", argv, argc);
+	}
+
     if (ret < 0) {
         clove_error("ERROR: %s\n", fh_get_error(loopData.prog));
         main_clean();
