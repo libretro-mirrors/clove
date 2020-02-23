@@ -206,17 +206,21 @@ void graphics_ParticleSystem_new(graphics_ParticleSystem *ps, graphics_Image con
     ps->colors = 0;
     ps->quads = 0;
     ps->active = false;
+    ps->colorCount = 0;
+    ps->quadCount = 0;
+    ps->sizeCount = 0;
     graphics_Batch_new(&ps->batch, texture, buffer, graphics_BatchUsage_stream);
 
     graphics_ParticleSystem_setBufferSize(ps, buffer);
     graphics_ParticleSystem_reset(ps);
     graphics_ParticleSystem_setTexture(ps, texture);
-    graphics_ParticleSystem_setInsertMode(ps, graphics_ParticleInsertMode_top);
+    graphics_ParticleSystem_setInsertMode(ps, graphics_ParticleInsertMode_random);
     graphics_ParticleSystem_setEmissionRate(ps, 0.0f);
     graphics_ParticleSystem_setPosition(ps, 0.0f, 0.0f);
-    graphics_ParticleSystem_setAreaSpread(ps, graphics_AreaSpreadDistribution_none, 0.0f, 0.0f);
+    graphics_ParticleSystem_setAreaSpread(ps,
+        graphics_AreaSpreadDistribution_none, 0.0f, 0.0f);
     graphics_ParticleSystem_setEmitterLifetime(ps, -1.0f);
-    graphics_ParticleSystem_setParticleLifetime(ps, 0.0f, 0.0f);
+    graphics_ParticleSystem_setParticleLifetime(ps, 0.5f, 2.0f);
     graphics_ParticleSystem_setDirection(ps, 0.0f);
     graphics_ParticleSystem_setSpread(ps, 0.0f);
     graphics_ParticleSystem_setSpeed(ps, 0.0f, 0.0f);
@@ -662,7 +666,7 @@ void graphics_ParticleSystem_update(graphics_ParticleSystem *ps, float dt) {
 }
 
 void graphics_ParticleSystem_draw(graphics_ParticleSystem *ps, float x, float y, float r, float sx, float sy, float ox, float oy, float kx, float ky) {
-    //printf("Drawing particle system, %zu particles\n", ps->activeParticles);
+   // printf("Drawing particle system, %zu particles\n", ps->activeParticles);
 
     graphics_Batch *b = &ps->batch;
     graphics_Batch_bind(b);

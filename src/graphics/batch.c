@@ -162,14 +162,12 @@ void graphics_Batch_set(graphics_Batch* batch, int id, graphics_Quad const* q, f
   v[3].uv.x = q->x + q->w;
   v[3].uv.y = q->y + q->h;
 
-  /*
   if(batch->bound) {
     batch->dirty = true;
   } else {
     glBindBuffer(GL_ARRAY_BUFFER, batch->vbo);
     glBufferSubData(GL_ARRAY_BUFFER, id * 4, 4*sizeof(graphics_Vertex), v);
   }
-  */
 }
 static const graphics_Quad fullQuad = {
 	0.0f,0.0f,1.0f,1.0f

@@ -204,16 +204,20 @@ static int fn_love_particleSystem_setColors(struct fh_program *prog,
     if (arr->len % 4 != 0)
         return fh_set_error(prog, "Array of colors must be power of 4");
 
-    graphics_Color *color = malloc(sizeof(graphics_Color) * (arr->len / 4));
+    uint32_t len = arr->len / 4;
+    graphics_Color *color = malloc(sizeof(graphics_Color) * len);
+    if (!color) {
+        return 0;
+    }
 
-    for (uint32_t i = 0; i < arr->len / 4; i++) {
+    for (uint32_t i = 0; i < len; i++) {
         color[i].red = (float)fh_get_number(&arr->items[i * 4 + 0]);
         color[i].blue = (float)fh_get_number(&arr->items[i * 4 + 1]);
         color[i].green = (float)fh_get_number(&arr->items[i * 4 + 2]);
         color[i].alpha = (float)fh_get_number(&arr->items[i * 4 + 3]);
     }
 
-    graphics_ParticleSystem_setColors(p, arr->len / 4, color);
+    graphics_ParticleSystem_setColors(p, len, color);
 
     free(color);
     *ret = fh_new_null();
@@ -1065,6 +1069,7 @@ static const struct fh_named_c_func c_funcs[] = {
     DEF_FN(love_particleSystem_setSpinVariation),
     DEF_FN(love_particleSystem_setSpread),
     DEF_FN(love_particleSystem_getDirection),
+    DEF_FN(love_particleSystem_setEmissionRate),
     DEF_FN(love_particleSystem_getEmissionRate),
     DEF_FN(love_particleSystem_getEmitterLifetime),
     DEF_FN(love_particleSystem_getSizeVariation),

@@ -308,9 +308,11 @@ void fh_main_activity_load(int argc, char* argv[])
     }
 
     love_Version const * version = love_getVersion();
-    if (1/*config.window.stats > 0*/)
+    if (1/*config.window.stats > 0*/) {
         printf("%s %s %d.%d.%d \n", "CLove version - ",
                 version->codename,version->major,version->minor,version->revision);
+		printf("FH version - %s\n", FH_VERSION);
+	}
 
     fh_keyboard_register(loopData.prog);
     fh_mouse_register(loopData.prog);
