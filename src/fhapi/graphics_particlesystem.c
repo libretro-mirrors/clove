@@ -212,8 +212,8 @@ static int fn_love_particleSystem_setColors(struct fh_program *prog,
 
     for (uint32_t i = 0; i < len; i++) {
         color[i].red = (float)fh_get_number(&arr->items[i * 4 + 0]);
-        color[i].blue = (float)fh_get_number(&arr->items[i * 4 + 1]);
-        color[i].green = (float)fh_get_number(&arr->items[i * 4 + 2]);
+        color[i].green = (float)fh_get_number(&arr->items[i * 4 + 1]);
+        color[i].blue = (float)fh_get_number(&arr->items[i * 4 + 2]);
         color[i].alpha = (float)fh_get_number(&arr->items[i * 4 + 3]);
     }
 
