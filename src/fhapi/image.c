@@ -149,8 +149,10 @@ static int fn_love_image_getChannels(struct fh_program *prog,
 
 static int fn_love_image_refresh(struct fh_program *prog,
                                  struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!(fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)))
+    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE))
         return fh_set_error(prog, "Expected image");
+    if (!fh_is_c_obj_of_type(&args[1], FH_IMAGE_DATA_TYPE))
+        return fh_set_error(prog, "Expected image data as second argument");
 
     fh_image_t *img = fh_get_c_obj_value(&args[0]);
     fh_image_t *imgd = fh_get_c_obj_value(&args[1]);
@@ -170,20 +172,34 @@ static int fn_love_image_setPixel(struct fh_program *prog,
             return fh_set_error(prog, "Expected number at index: %d", i);
     }
 
-    image_ImageData *data = fh_get_c_obj_value(&args[0]);
-    int x = (int) fh_get_number(&args[1]);
-    int y = (int) fh_get_number(&args[2]);
+	int x = (int) fh_get_number(&args[1]);
+	int y = (int) fh_get_number(&args[2]);
 
-    if (x < 0 || x >= data->w || y < 0 || y >= data->h)
-        return fh_set_error(prog, "Index out of bounds %d %d", x, y);
+	pixel p;
+	p.r = (unsigned char) fh_get_number(&args[3]);
+	p.g = (unsigned char) fh_get_number(&args[4]);
+	p.b = (unsigned char) fh_get_number(&args[5]);
+	p.a = (unsigned char) fh_get_number(&args[6]);
 
-    pixel p;
-    p.r = (unsigned char) fh_get_number(&args[3]);
-    p.g = (unsigned char) fh_get_number(&args[4]);
-    p.b = (unsigned char) fh_get_number(&args[5]);
-    p.a = (unsigned char) fh_get_number(&args[6]);
 
-    image_ImageData_setPixel(data, x, y, p);
+	if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+		image_ImageData *data = fh_get_c_obj_value(&args[0]);
+
+		if (x < 0 || x >= data->w || y < 0 || y >= data->h)
+			return fh_set_error(prog, "Index out of bounds %d %d", x, y);
+
+		image_ImageData_setPixel(data, x, y, p);
+	} else if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)) {
+		fh_image_t *img = fh_get_c_obj_value(&args[0]);
+		image_ImageData *data = img->data;
+
+		if (x < 0 || x >= data->w || y < 0 || y >= data->h)
+			return fh_set_error(prog, "Index out of bounds %d %d", x, y);
+
+		image_ImageData_setPixel(data, x, y, p);
+	}  else {
+        return fh_set_error(prog, "Expected image");
+	}
 
     *ret = fh_new_null();
     return 0;
@@ -191,19 +207,66 @@ static int fn_love_image_setPixel(struct fh_program *prog,
 
 static int fn_love_image_getPixel(struct fh_program *prog,
                                   struct fh_value *ret, struct fh_value *args, int n_args) {
-    if (!fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE))
-        return fh_set_error(prog, "Expected image");
-
     for (int i = 1; i <= 2; i++) {
         if (!fh_is_number(&args[i]))
             return fh_set_error(prog, "Expected number at index: %d", i);
     }
 
-    image_ImageData *data = fh_get_c_obj_value(&args[0]);
-    int x = (int) fh_get_number(&args[1]);
-    int y = (int) fh_get_number(&args[2]);
+	int x = (int) fh_get_number(&args[1]);
+	int y = (int) fh_get_number(&args[2]);
 
-    *ret = fh_new_number(image_ImageData_getPixel(data, x, y));
+	if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_DATA_TYPE)) {
+		image_ImageData *data = fh_get_c_obj_value(&args[0]);
+
+		if (x < 0 || x >= data->w || y < 0 || y >= data->h)
+			return fh_set_error(prog, "Index out of bounds %d %d", x, y);
+
+		pixel p = image_ImageData_getPixel(data, x, y);
+
+		int pin_state = fh_get_pin_state(prog);
+		struct fh_array *arr= fh_make_array(prog, true);
+		if (!fh_grow_array_object(prog, arr, 4))
+			return fh_set_error(prog, "out of memory");
+
+		struct fh_value new_val = fh_new_array(prog);
+
+		arr->items[0] = fh_new_number(p.r);
+		arr->items[1] = fh_new_number(p.g);
+		arr->items[2] = fh_new_number(p.b);
+		arr->items[3] = fh_new_number(p.a);
+
+		new_val.data.obj = arr;
+
+		*ret = new_val;
+		fh_restore_pin_state(prog, pin_state);
+	} else if (fh_is_c_obj_of_type(&args[0], FH_IMAGE_TYPE)) {
+		fh_image_t *img = fh_get_c_obj_value(&args[0]);
+		image_ImageData *data = img->data;
+
+		if (x < 0 || x >= data->w || y < 0 || y >= data->h)
+			return fh_set_error(prog, "Index out of bounds %d %d", x, y);
+
+		pixel p = image_ImageData_getPixel(data, x, y);
+
+		int pin_state = fh_get_pin_state(prog);
+		struct fh_array *arr= fh_make_array(prog, true);
+		if (!fh_grow_array_object(prog, arr, 4))
+			return fh_set_error(prog, "out of memory");
+
+		struct fh_value new_val = fh_new_array(prog);
+
+		arr->items[0] = fh_new_number(p.r);
+		arr->items[1] = fh_new_number(p.g);
+		arr->items[2] = fh_new_number(p.b);
+		arr->items[3] = fh_new_number(p.a);
+
+		new_val.data.obj = arr;
+
+		*ret = new_val;
+		fh_restore_pin_state(prog, pin_state);
+	} else {
+		return fh_set_error(prog, "Expected image");
+	}
 
     return 0;
 }

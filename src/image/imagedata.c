@@ -60,8 +60,8 @@ int image_ImageData_getChannels(image_ImageData *dst) {
   return dst->c;
 }
 
-int image_ImageData_getPixel(image_ImageData *dst, int x, int y) {
-  return dst->surface[y * dst->w + x];
+pixel image_ImageData_getPixel(image_ImageData *dst, int x, int y) {
+  return dst->pixels[y * dst->w + x];
 }
 
 int image_ImageData_setPixel(image_ImageData *dst, int x, int y, pixel p) {

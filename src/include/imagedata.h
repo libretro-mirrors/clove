@@ -40,7 +40,7 @@ int image_ImageData_getWidth(image_ImageData *dst);
 int image_ImageData_getHeight(image_ImageData *dst);
 
 int image_ImageData_getChannels(image_ImageData *dst);
-int image_ImageData_getPixel(image_ImageData *dst, int x, int y);
+pixel image_ImageData_getPixel(image_ImageData *dst, int x, int y);
 int image_ImageData_setPixel(image_ImageData *dst, int x, int y, pixel p);
 
 //named encode in Love
