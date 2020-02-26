@@ -211,10 +211,11 @@ static int fn_love_particleSystem_setColors(struct fh_program *prog,
     }
 
     for (uint32_t i = 0; i < len; i++) {
-        color[i].red = (float)fh_get_number(&arr->items[i * 4 + 0]);
-        color[i].green = (float)fh_get_number(&arr->items[i * 4 + 1]);
-        color[i].blue = (float)fh_get_number(&arr->items[i * 4 + 2]);
-        color[i].alpha = (float)fh_get_number(&arr->items[i * 4 + 3]);
+        uint32_t value_index = i * 4;
+        color[i].red = (float)fh_get_number(&arr->items[value_index]);
+        color[i].green = (float)fh_get_number(&arr->items[value_index + 1]);
+        color[i].blue = (float)fh_get_number(&arr->items[value_index + 2]);
+        color[i].alpha = (float)fh_get_number(&arr->items[value_index + 3]);
     }
 
     graphics_ParticleSystem_setColors(p, len, color);
@@ -242,10 +243,11 @@ static int fn_love_particleSystem_getColors(struct fh_program *prog,
     struct fh_value new_val = fh_new_array(prog);
 
     for (uint32_t i = 0; i < count; i++) {
-        ret_arr->items[i * 4 + 0] = fh_new_number((double)color[i].red);
-        ret_arr->items[i * 4 + 1] = fh_new_number((double)color[i].green);
-        ret_arr->items[i * 4 + 2] = fh_new_number((double)color[i].blue);
-        ret_arr->items[i * 4 + 3] = fh_new_number((double)color[i].alpha);
+        uint32_t key_index = i * 4;
+        ret_arr->items[key_index  + 0] = fh_new_number((double)color[i].red);
+        ret_arr->items[key_index  + 1] = fh_new_number((double)color[i].green);
+        ret_arr->items[key_index  + 2] = fh_new_number((double)color[i].blue);
+        ret_arr->items[key_index  + 3] = fh_new_number((double)color[i].alpha);
     }
 
     fh_restore_pin_state(prog, pin_state);
@@ -724,12 +726,6 @@ static int fn_love_particleSystem_setTexture(struct fh_program *prog,
     return 0;
 }
 
-static fh_c_obj_gc_callback image_gc(fh_image_t *img) {
-    graphics_Image_free(img->img);
-    free(img);
-    return (fh_c_obj_gc_callback)1;
-}
-
 static int fn_love_particleSystem_getTexture(struct fh_program *prog,
                                              struct fh_value *ret, struct fh_value *args, int n_args) {
     if (!fh_is_c_obj_of_type(&args[0], FH_GRAPHICS_PARTICLE))
@@ -738,7 +734,9 @@ static int fn_love_particleSystem_getTexture(struct fh_program *prog,
     graphics_ParticleSystem *p = fh_get_c_obj_value(&args[0]);
     fh_image_t *x = malloc(sizeof(fh_image_t));
     x->img = graphics_ParticleSystem_getTexture(p);
-    *ret = fh_new_c_obj(prog, x, image_gc, FH_IMAGE_TYPE);
+    // We don't have to free the texture from the particle system that
+    // we just fetched because it's just a reference, the object itself has its own life events
+    *ret = fh_new_c_obj(prog, x, NULL, FH_IMAGE_TYPE);
     return 0;
 }
 
@@ -785,9 +783,9 @@ static int fn_love_particleSystem_getSizes(struct fh_program *prog,
         ret_arr->items[i] = fh_new_number((double)sizes[i]);
     }
 
-    fh_restore_pin_state(prog, pin_state);
     new_val.data.obj = ret_arr;
     *ret = new_val;
+    fh_restore_pin_state(prog, pin_state);
     return 0;
 }
 
