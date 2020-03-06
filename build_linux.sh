@@ -2,5 +2,5 @@
 
 mkdir -p build &&
 cd build &&
-cmake -DUSE_LUA=ON -DUSE_PHYSFS=ON ../ &&
+cmake ../ &&
 make -j2

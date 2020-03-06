@@ -76,16 +76,16 @@ On Linux and OS X:
 
 	Lua:
 
-	```lua
+	~~~lua
 	-- Example of drawing an image
 	local image = love.graphics.newImage("image.png")
 
 	function love.draw()
 		love.graphics.draw(image, 200, 200)
 	end
-	```
+	~~~
 
-	```lua
+	~~~lua
 	-- Example of drawing some primitives
 	function love.draw()
 		love.graphics.rectangle("fill", 100, 100, 32, 16)
@@ -93,19 +93,19 @@ On Linux and OS X:
 		love.graphics.circle("fill", 270, 200, 32, 16)
 		love.graphics.circle("line", 300, 100, 32, 8)
 	end
-	```
+	~~~
 
-	```lua
+	~~~lua
 	-- Example of playing music
 	local ogg_music = love.audio.newSource("music.ogg")
 	function love.load()
 		ogg_music:play()
 	end
-	```
+	~~~
 
 	FH:
 
-	```php
+~~~php
 	# Example of drawing an image
 	fn love_load() {
 		let self = {};
@@ -119,9 +119,9 @@ On Linux and OS X:
 	fn love_draw(self) {
 		love_graphics_draw(self.image, 200, 200);
 	}
-```
+~~~
 
-```php
+~~~php
 # Example of drawing some primitives
 fn love_draw() {
 	love_graphics_rectangle("fill", 100, 100, 32, 16);
@@ -129,9 +129,9 @@ fn love_draw() {
 	love_graphics_circle("fill", 270, 200, 32, 16);
 	love_graphics_circle("line", 300, 100, 32, 8);
 }
-```
+~~~
 
-```php
+~~~php
 # Example of playing music
 fn love_load() {
 	let self = {}
@@ -142,7 +142,7 @@ fn love_load() {
 
 	return self;
 }
-```
+~~~
 
 
 Contact
@@ -170,7 +170,7 @@ License
 
 CLove comes with two licenses which you can choose from:
 
-Copyright © 2015 - 2019 Mureșan Vlad Mihail
+Copyright © 2015 - 2020 Mureșan Vlad Mihail
 
 Contact Info muresanvladmihail@gmail.com
 
@@ -184,7 +184,7 @@ THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR I
 
 OR: 
 
-Copyright © 2015 - 2019 Mureșan Vlad Mihail
+Copyright © 2015 - 2020 Mureșan Vlad Mihail
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
